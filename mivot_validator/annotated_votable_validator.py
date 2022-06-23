@@ -45,6 +45,8 @@ class AnnotatedVOTableValidator:
             files = os.listdir(data_path)
             for sample_file in files:
                 file_path = os.path.join(data_path, sample_file)
+                if os.path.isdir(file_path):  
+                    continue
                 if self.__is_xml(file_path) is True:
                     if self.__validate_file(file_path) is False:
                         return False

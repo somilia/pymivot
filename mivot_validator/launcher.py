@@ -13,7 +13,7 @@ def main():
     if len(sys.argv) != 2 :
         print("USAGE: mivot-validate [path]")
         print("   path: either a simple file or a directory")
-        print("         all directory files matching *.vot or *.xml are validatedß")
+        print("         all directory XML files are validated")
         print("   exit status: 0 in case of success, 1 otherwise")
         sys.exit(1)
         
