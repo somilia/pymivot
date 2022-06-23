@@ -1,7 +1,16 @@
 # mivot-validator
+
 Python package for validating model annotations in VOTables
 
-## Usage
+The validation process is 2 steps;
+- VOTable validation (against 1.3)
+- MIVOT validation
+
+Both must succeed for tne file to be considered as valid
+
+The validator can process either individual files or directory contents (no recursivity)
+
+## Installation
 
 The validator is distributed as a Python package.
 It won't be published in the PIP repo while MIVOT is not a standard.
