@@ -6,7 +6,7 @@ Created on 23 Jun 2022
 import sys
 from .annotated_votable_validator import AnnotatedVOTableValidator
 
-if __name__ == '__main__':
+def main():
     """
     Package launcher (script)
     """
@@ -22,3 +22,6 @@ if __name__ == '__main__':
         sys.exit(0)
     else:
         sys.exit(1)
+
+if __name__ == '__main__':
+    main()
