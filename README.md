@@ -1,6 +1,6 @@
 # mivot-validator
 
-Python package for validating model annotations in VOTables
+Python package for validating VOTables annotated with [MIVOT](https://github.com/ivoa-std/ModelInstanceInVot)
 
 The validation process is 2 steps;
 - VOTable validation (against 1.3)
