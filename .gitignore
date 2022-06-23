@@ -1,0 +1,59 @@
+##########################
+#Linux Specific GitIgnore#
+##########################
+!.gitignore
+*~
+*.sw[a-p]
+
+# KDE
+.directory
+
+.DS_Store
+############################
+#Eclipse Specific GitIgnore#
+############################
+*.pydevproject
+*.pyc
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# CDT-specific
+.cproject
+
+################
+# Others
+################
+_pycache__/
+build/
+logs/
+tmp/
+coverage/
+pylint/
+reports/
+badges/
+.scannerwork/
+.cache/
+*.egg*
+*.log*
+*.pyc*
+.coverage
+.pytest_cache
+
+# pycharm config
+.idea/
+
+# personal config
+*.bkp
+tests/data_tests/
+Pipfile
