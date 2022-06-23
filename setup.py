@@ -1,4 +1,11 @@
-from setuptools import setup
+from setuptools import setup, find_packages
+
+entry_points = {
+    "console_scripts": [
+        "mivot-validate = mivot_validator.launcher:main",
+        ]
+    }
+
 
 setup(
     name='mivot-validator',
@@ -19,6 +26,6 @@ setup(
         "Natural Language :: English",
         "Programming Language :: Python :: >=3.6",
     ],
-
+    entry_points = entry_points
 )
 
