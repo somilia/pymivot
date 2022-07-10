@@ -6,7 +6,7 @@ The validation process is 2 steps;
 - VOTable validation (against 1.3)
 - MIVOT validation
 
-Both must succeed for tne file to be considered as valid
+Both must succeed for the file to be considered as valid
 
 The validator can process either individual files or directory contents (no recursivity)
 
@@ -24,7 +24,7 @@ BossMacBookPro$ pip3 install --force-reinstall git+https://github.com/ivoa/mivot
 ### Let's play with the unit-test sample
 
 ```bash
-BossMacBookPro$ git laurentmichel$ ls mivot-validator/tests/data/
+BossMacBookPro$ ls mivot-validator/tests/data/
 test_instance_ko_1.xml	test_instance_ok_1.xml
 ```
 
