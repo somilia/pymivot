@@ -32,7 +32,8 @@ test_instance_ko_1.xml	test_instance_ok_1.xml
 
 ```bash
 BossMacBookPro$ ls mivot-validator/tests/data/
-test_instance_ko_1.xml	test_instance_ok_1.xml$ mivot-validate  mivot-validator/tests/data/test_instance_ok_1.xml 
+test_instance_ko_1.xml	test_instance_ok_1.xml
+BossMacBookPro$ mivot-validate  mivot-validator/tests/data/test_instance_ok_1.xml 
    INFO - [__init__.py:  7 -   <module>()] - mivot_validator package intialized
    INFO - [schemas.py:1228 - include_schema()] - Resource 'XMLSchema.xsd' is already loaded
    INFO - [xml_validator.py: 17 -   __init__()] - Using schema http://www.ivoa.net/xml/VOTable/v1.3
