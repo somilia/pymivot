@@ -2,7 +2,8 @@ from setuptools import setup, find_packages
 
 entry_points = {
     "console_scripts": [
-        "mivot-validate = mivot_validator.launcher:main",
+        "mivot-votable-validate = mivot_validator.votable_launcher:main",
+        "mivot-mapping-validate = mivot_validator.mivot_launcher:main",
         ]
     }
 

@@ -16,7 +16,7 @@ class AnnotatedVOTableValidator:
     - One for the VOTable
     - One for the MIVOT annotations
     
-    See the launcher to get how to use it
+    See the mivot_launcher to get how to use it
     """
     
     # VOtable schema
@@ -83,11 +83,28 @@ class AnnotatedVOTableValidator:
         logger.info("- passed")
         # and then validate the annotations
         logger.info("- Validate against MIVOT")
+        retour = self.validate_mivot(file_path)
+        if retour is True:
+            logger.info("{} is a valid annotated VOTable".format(file_name))
+        return retour
+
+
+    def validate_mivot(self, file_path):
+        """
+        Validate MIVOT block in one XML file.
+        :param file_path: file to be evaluated
+        :type file_path: string
+        :return: true all files validate
+        :rtype: boolean
+        """
+        # non XML files are considered as non valid
+        if self.__is_xml(file_path) is False:
+            logger.error("File {} does not look like XML".format(file_path))
+            return False
         if AnnotatedVOTableValidator.vodml_validator.validate_file(file_path, verbose=False) is False:
             AnnotatedVOTableValidator.vodml_validator.validate_file(file_path, verbose=True)
             logger.error("MIVOT annotations are not valid")
             return  False                
-        logger.info("{} is a valid annotated VOTable".format(file_name))
         return True
 
     def __is_xml(self, file_path):
@@ -97,7 +114,10 @@ class AnnotatedVOTableValidator:
         :return: true if file_path is an XML file (test based on the prolog)
         :rtype: boolean
         """
-        with open(file_path) as unknown_file:
-            prolog = unknown_file.read(45)
-            return (prolog.startswith('<?xml') is True)
+        try:
+            with open(file_path) as unknown_file:
+                prolog = unknown_file.read(45)
+                return (prolog.startswith('<?xml') is True)
+        except Exception:
+            pass
         return False
