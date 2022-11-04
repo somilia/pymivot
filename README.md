@@ -26,14 +26,29 @@ BossMacBookPro$ pip3 install --force-reinstall git+https://github.com/ivoa/mivot
 ```bash
 BossMacBookPro$ ls mivot-validator/tests/data/
 test_instance_ko_1.xml	test_instance_ok_1.xml
+cd mivot-validator/
+pytest tests
 ```
 
-### Check the file tagged as valid
+### Commands
+
+Validate an annotated VOTable
+```bash
+ mivot-votable-validate  <VOTable path>
+```
+
+Validate an XML file containing just a MAPPING block
+
+```bash
+ mivot-mapping-validate  <XML path>
+```
+## Examples taken out the unit test suite
+### Check the VOTable tagged as valid
 
 ```bash
 BossMacBookPro$ ls mivot-validator/tests/data/
 test_instance_ko_1.xml	test_instance_ok_1.xml
-BossMacBookPro$ mivot-validate  mivot-validator/tests/data/test_instance_ok_1.xml 
+BossMacBookPro$ mivot-votable-validate  mivot-validator/tests/data/test_instance_ok_1.xml 
    INFO - [__init__.py:  7 -   <module>()] - mivot_validator package intialized
    INFO - [schemas.py:1228 - include_schema()] - Resource 'XMLSchema.xsd' is already loaded
    INFO - [xml_validator.py: 17 -   __init__()] - Using schema http://www.ivoa.net/xml/VOTable/v1.3
@@ -48,7 +63,7 @@ BossMacBookPro$ mivot-validate  mivot-validator/tests/data/test_instance_ok_1.xm
 ### Check the file tagged as not valid
 
 ```bash
-laurentmichel$ mivot-validate  mivot-validator/tests/data/test_instance_ko_1.xml 
+laurentmichel$ mivot-votable-validate  mivot-validator/tests/data/test_instance_ko_1.xml 
    INFO - [__init__.py:  7 -   <module>()] - mivot_validator package intialized
    INFO - [schemas.py:1228 - include_schema()] - Resource 'XMLSchema.xsd' is already loaded
    INFO - [xml_validator.py: 17 -   __init__()] - Using schema http://www.ivoa.net/xml/VOTable/v1.3
