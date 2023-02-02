@@ -111,3 +111,18 @@ Path: /VOTABLE/RESOURCE/RESOURCE[1]/default:VODML/default:GLOBALS
   ERROR - [annotated_votable_validator.py: 88 - __validate_file()] - MIVOT annotations are not valid
 
 ```
+
+### Experimental feature
+
+The validator has a new end point that can check that all `dmtype`et `dmrole` referenced in the mapping block are known 
+by mapped models.
+It does not care of the class structures
+This checking only works with the Meas/Coord/ivoa models, other models are ignored.
+
+```bash
+types-and-roles-validate <VOTABLE path>
+```
+
+
+
+
