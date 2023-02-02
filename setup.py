@@ -5,6 +5,7 @@ entry_points = {
         "mivot-votable-validate = mivot_validator.votable_launcher:main",
         "mivot-validate = mivot_validator.votable_launcher:main",
         "mivot-mapping-validate = mivot_validator.mivot_launcher:main",
+        "types-and-roles-validate = mivot_validator.typesandroles_launcher:main"
         ]
     }
 
@@ -15,8 +16,8 @@ setup(
     author='Laurent Michel',
     author_email='laurent.michel@astro.unistra.fr',
     packages=find_packages(),
-    install_requires=['xmlschema'],
-    version='1.0',
+    install_requires=['xmlschema', 'etree'],
+    version='1.1',
     license='MIT',
     description='Validator for model annotations in VOTable',
     long_description=open('README.md').read(),
