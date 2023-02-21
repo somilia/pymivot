@@ -1,0 +1,18 @@
+<INSTANCE dmrole="" dmtype="meas:Position">
+   <!-- Provides a complete description of a measured positional instant." -->
+   <ATTRIBUTE dmrole="meas:Measure.ucd" dmtype="ivoa:string" ref="@@@@@" value=""/>
+   <INSTANCE dmrole="meas:Measure.error" dmtype="meas:Error">
+      <!-- The Error class uses the Uncertainty types to describe measurement errors from various sources." -->
+      <!-- Symmetrical taken as concrete type for Uncertainty -->
+      <INSTANCE dmrole="meas:Error.statError" dmtype="meas:Symmetrical">
+         <!-- Symmetrical uncertainty, constant in all dimensions and directions from the associated Coordinate.  ie: PlusMinus in 1D, circular in 2D, spherical in 3D." -->
+         <ATTRIBUTE dmrole="meas:Symmetrical.radius" dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value=""/>
+      </INSTANCE>
+      <!-- Symmetrical taken as concrete type for Uncertainty -->
+      <INSTANCE dmrole="meas:Error.sysError" dmtype="meas:Symmetrical">
+         <!-- Symmetrical uncertainty, constant in all dimensions and directions from the associated Coordinate.  ie: PlusMinus in 1D, circular in 2D, spherical in 3D." -->
+         <ATTRIBUTE dmrole="meas:Symmetrical.radius" dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value=""/>
+      </INSTANCE>
+   </INSTANCE>
+   <INSTANCE dmrole="meas:Position.coord" dmtype="coords:Point"/>
+</INSTANCE>
