@@ -1,0 +1,22 @@
+<INSTANCE dmrole="meas:Measure.error" dmtype="meas:Asymmetrical2DXXX">
+   <COLLECTION dmrole="meas:Asymmetrical2D.plus">
+      <INSTANCE dmtype="ivoa:RealQuantity">
+         <ATTRIBUTE dmrole="ivoa:Quantity.val" dmtype="ivoa:real" ref="pmra_error" index="8" unit_org="mas.yr**-1" value="1.1181648806844922"/>
+         <ATTRIBUTE dmrole="ivoa:Quantity.unit" dmtype="ivoa:Unit" value="mas/year"/>
+      </INSTANCE>
+      <INSTANCE dmtype="ivoa:RealQuantity">
+         <ATTRIBUTE dmrole="ivoa:Quantity.val" dmtype="ivoa:real" ref="pmdec_error" index="10" unit_org="mas.yr**-1" value="1.25939285414833"/>
+         <ATTRIBUTE dmrole="ivoa:Quantity.unit" dmtype="ivoa:Unit" value="mas/year"/>
+      </INSTANCE>
+   </COLLECTION>
+   <COLLECTION dmrole="meas:Asymmetrical2D.plus">
+      <INSTANCE dmtype="ivoa:RealQuantity">
+         <ATTRIBUTE dmrole="ivoa:Quantity.val" dmtype="ivoa:real" ref="pmra_error" index="8" unit_org="mas.yr**-1" value="1.1181648806844922"/>
+         <ATTRIBUTE dmrole="ivoa:Quantity.unit" dmtype="ivoa:Unit" value="mas/year"/>
+      </INSTANCE>
+      <INSTANCE dmtype="ivoa:RealQuantity">
+         <ATTRIBUTE dmrole="ivoa:Quantity.val" dmtype="ivoa:real" ref="pmdec_error" index="10" unit_org="mas.yr**-1" value="1.25939285414833"/>
+         <ATTRIBUTE dmrole="ivoa:Quantity.unit" dmtype="ivoa:Unit" value="mas/year"/>
+      </INSTANCE>
+   </COLLECTION>
+</INSTANCE>

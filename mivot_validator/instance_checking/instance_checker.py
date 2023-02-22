@@ -19,6 +19,7 @@ inheritence_tree = {
     "meas:Symmetrical": ["meas:Asymmetrical3D"],
     "meas:Error": ["meas:Asymmetrical2D"],
     }
+inheritence_tree = {}
 
 class CheckFailedException(Exception):
     pass
@@ -34,6 +35,8 @@ class InstanceChecker(object):
     
     The VODML files are stored locally for the moment
     '''
+
+    inheritence_tree = {}
 
     @staticmethod
     def _get_vodml_class_tree(model, dmtype):
@@ -76,10 +79,65 @@ class InstanceChecker(object):
             )
             # build the XML snippet and store it on disk
             builder.build()
+            CheckFailedException._build_inheritence_graph(vodml_filename)
         else:
             print(f"-> snippet for class {dmtype} already in the cache")
             
         return XmlUtils.xmltree_from_file(filepath)
+
+    @staticmethod
+    def _build_inheritence_graph(vodml_filepath):
+        vodml_tree = XmlUtils.xmltree_from_file(vodml_filepath)
+        graph = {}
+        for ele in vodml_tree.xpath(f'./name'):
+            model_name = ele.text
+            
+        # Build a map superclass : [sublcasses]
+        # No distinctions between objecttypeand datatypes
+        # MIVOT does not make any difference 
+        # the vodml)id are unique within the scope of the whole model
+        for ele in vodml_tree.xpath(f'./dataType'):
+            for tags in ele.getchildren  (): 
+                if tags.tag == "vodml-id":
+                    sub_class = model_name + ":" + tags.text
+                for ext in ele.xpath("./extends/vodml-ref"):
+                    super_class = ext.text
+                    if super_class not in graph:
+                        graph[super_class] = []
+                    if sub_class not in graph[super_class]:
+                        graph[super_class].append(sub_class)
+                        
+        for ele in vodml_tree.xpath(f'./objectType'):
+            for tags in ele.getchildren  (): 
+                if tags.tag == "vodml-id":
+                    sub_class = model_name + ":" + tags.text
+                for ext in ele.xpath("./extends/vodml-ref"):
+                    super_class = ext.text
+                    if super_class not in graph:
+                        graph[super_class] = []
+                    if sub_class not in graph[super_class]:
+                        graph[super_class].append(sub_class)
+        #
+        # We have inheritance with multiple levels (A->B->C)
+        # In such a case we must consider (in term of validation) that C extends A as well 
+        # This the purpose of the code below.
+        # {A: [B, C, D]  C:[X, Y]} --> {A: [B, C, D, X, Y],  C:[X, Y]}  
+        deep_tree = {}
+        for superclass, subclasses in graph.items():
+            for subclass in subclasses:
+                if subclass in graph:
+                    if superclass not in deep_tree:
+                        deep_tree[superclass] = []
+                    for sc in graph[subclass]:
+                        if sc not in deep_tree[superclass]:
+                            deep_tree[superclass].append(sc)  
+
+        for key in deep_tree:
+            for val in  deep_tree[key]:
+                if val not in graph[key]:
+                    graph[key].append(val)  
+               
+        InstanceChecker.inheritence_tree = graph
 
     @staticmethod
     def _check_attribute(attribute_etree, vodml_instance):
@@ -120,8 +178,8 @@ class InstanceChecker(object):
                 vodml_type = vodml_instance.get("dmtype")
                 if actual_type == vodml_type:
                     return
-                if (vodml_type in inheritence_tree and 
-                    actual_type in inheritence_tree[vodml_type]
+                if (vodml_type in InstanceChecker.inheritence_tree and 
+                    actual_type in InstanceChecker.inheritence_tree[vodml_type]
                     ):
                     print(f"-> found that {actual_type} inherits from {vodml_type}")
                     return
@@ -133,6 +191,7 @@ class InstanceChecker(object):
             
     @staticmethod
     def check_instance_validity(instance_etree):
+        checked_roles = []
         dmtype = instance_etree.get("dmtype")
         eles = dmtype.split(":")
         print(f"-> check class {eles[0]}:{eles[1]}")
@@ -144,9 +203,14 @@ class InstanceChecker(object):
         for child in instance_etree.xpath("./*"):
             if child.tag == "ATTRIBUTE":
                 InstanceChecker._check_membership(child, vodml_instance)
-
+                
+                dmrole = child.get("dmrole")
+                if dmrole in checked_roles:
+                    raise CheckFailedException(f"Duplicated dmrole {dmrole}")
+                checked_roles.append(child.get("dmrole"))
+                
                 if InstanceChecker._check_attribute(child, vodml_instance) is False:
-                    message = (f'cannot find attribute with dmrole={child.get("dmrole")} '
+                    message = (f'cannot find attribute with dmrole={dmrole} '
                                f'dmtype={child.get("dmtype")} in complex type {dmtype}')
                     raise CheckFailedException(message)
                 else :
@@ -155,21 +219,32 @@ class InstanceChecker(object):
             elif child.tag == "INSTANCE":
                 InstanceChecker._check_membership(child, vodml_instance)
                 
-                if InstanceChecker.check_class_validity(child) is False:
-                    message = (f'cannot find instance with dmrole={child.get("dmrole")} '
+                dmrole = child.get("dmrole")
+                if dmrole in checked_roles:
+                    raise CheckFailedException(f"Duplicated dmrole {dmrole}")
+                checked_roles.append(child.get("dmrole"))
+                
+                if InstanceChecker.check_instance_validity(child) is False:
+                    message = (f'cannot find instance with dmrole={dmrole} '
                                f'dmtype={child.get("dmtype")} in complex type {dmtype}')
                     raise CheckFailedException(message)
                 else :
-                    print(f'VALID: instance with dmrole={child.get("dmrole")} '
+                    print(f'VALID: instance with dmrole={dmrole} '
                           f'dmtype={child.get("dmtype")} in complex type {dmtype}')
 
             elif child.tag == "COLLECTION":
+                
+                dmrole = child.get("dmrole")
+                if dmrole in checked_roles:
+                    raise CheckFailedException(f"Duplicated dmrole {dmrole}")
+                checked_roles.append(child.get("dmrole"))
+                
                 if InstanceChecker._check_collection(child, vodml_instance) is False:
-                    message = (f'cannot find collection with dmrole={child.get("dmrole")} '
+                    message = (f'cannot find collection with dmrole={dmrole} '
                                f'in complex type {dmtype}')
                     raise CheckFailedException(message)
                 else :
-                    print(f'VALID: collection with dmrole={child.get("dmrole")} '
+                    print(f'VALID: collection with dmrole={dmrole} '
                           f'in complex type {dmtype}')
             else:
                 raise CheckFailedException(f'unsupported tag {child.tag}')

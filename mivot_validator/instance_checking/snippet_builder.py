@@ -7,11 +7,13 @@ import xmltodict
 import os
 from lxml import etree
 from mivot_validator.utils.xml_utils import XmlUtils
+from mivot_validator.instance_checking.xml_interpreter.exceptions import MappingException
 
 DEFAULT_CONCRETE_CLASSES = {
     "RefLocation": "StdRefLocation",
     "Uncertainty": "Symmetrical"
     }
+DEFAULT_CONCRETE_CLASSES = {}
 
 class Constraints:
     def __init__(self, model_name):
@@ -58,9 +60,7 @@ class Builder:
         self.constraints = Constraints(model_name)
         self.class_name = class_name
         
-    def build(self):
-        
-         
+    def build(self):         
         for ele in self.vodml.xpath(f'.//dataType'):
             for tags in ele.getchildren  (): 
                 if tags.tag == "vodml-id" and  tags.text == self.class_name :
@@ -72,6 +72,7 @@ class Builder:
                 if tags.tag == "vodml-id" and  tags.text == self.class_name :
                     self.build_object(ele, "", True, True)
                     return
+        raise MappingException(f"Complex type {self.class_name} not found")
             
     def build_object(self, ele, role, root, aggregate):
         print(f"build object with role={role}")
@@ -109,7 +110,6 @@ class Builder:
                     self.write_out(f'<!-- {tags.text}" -->')
             elif tags.tag == "multiplicity":
                 max_occurs = int(tags.xpath(".//maxOccurs")[0].text)
-                print("@@@@@@@@@@@@ " + max_occurs)
                 
         if aggregate is True :
             self.write_out("</INSTANCE>")

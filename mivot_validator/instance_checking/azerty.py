@@ -7,6 +7,7 @@ import os
 from astropy.io.votable import parse
 from mivot_validator.instance_checking.xml_interpreter.model_viewer import ModelViewer
 from mivot_validator.instance_checking.instance_checker import InstanceChecker
+from mivot_validator.utils.xml_utils import XmlUtils
 
 if __name__ == '__main__':
     data_path = os.path.dirname(os.path.realpath(__file__))
@@ -21,5 +22,7 @@ if __name__ == '__main__':
         model_view = mviewer.get_model_view(resolve_ref=True)
         for instance in model_view.xpath(".//INSTANCE"):
             print(f'CHECKING: instance{instance.get("dmtype")}')
-            InstanceChecker.check_class_validity(instance)
+            InstanceChecker.check_instance_validity(instance)
+            print("ANNOTATIONS seem to be valid")
+            XmlUtils.pretty_print(instance)
 
