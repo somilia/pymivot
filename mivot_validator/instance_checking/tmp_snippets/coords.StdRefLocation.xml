@@ -1,4 +1,0 @@
-<INSTANCE dmrole="" dmtype="coords:StdRefLocation">
-   <!-- An absolute a-priori known location in phase space (position and velocity).  Values are selected from the StdRefPosition vocabulary.  Considering that the GEOCENTER is really the only place for which we know the absolute location at all times, all other locations require the specification of a planetary ephemeris.  LSR[KD] are reserved for spectral and reshift frames.  TOPOCENTER (location of the observer) is special in that it assumes that the observing location is available through other means (e.g. a geographic location or an orbit ephemeris).  RELOCATABLE is available for simulations.  UNKNOWN should only be used if absolutely necessary." -->
-   <ATTRIBUTE dmrole="coords:StdRefLocation.position" dmtype="ivoa:string" ref="@@@@@" value=""/>
-</INSTANCE>
