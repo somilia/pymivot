@@ -58,5 +58,5 @@ badges/
 tests/data_tests/
 Pipfile
 
-tmp_snippets/a.xml
+tmp_snippets/*
 !tmp_snippets/.gitkeep 
