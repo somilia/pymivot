@@ -1,10 +1,12 @@
 '''
 Created on 22 Feb 2023
 
+Test suite validating that the object instances resulting from the annotation parsing 
+are compliant with their VODML class definitions
+
 @author: laurentmichel
 '''
 import os
-import json
 import unittest
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.utils.dict_utils import DictUtils
@@ -15,11 +17,15 @@ from mivot_validator.instance_checking.instance_checker import (
     )
 from mivot_validator.instance_checking.xml_interpreter.exceptions import MappingException
 
-mapping_sample = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
-vodml_sample = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                  "../mivot_validator/",
-                                                  "instance_checking/",
-                                                  "vodml/")
+mapping_sample = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    "data")
+vodml_sample = os.path.join(os.path.dirname(
+    os.path.realpath(__file__)),
+    "../mivot_validator/",
+    "instance_checking/",
+    "vodml/")
+
 class TestInstCheck(unittest.TestCase):
 
     def testInheritenceGraph(self):
@@ -76,6 +82,20 @@ class TestInstCheck(unittest.TestCase):
             self.assertEqual(str(exp),
                              "Duplicated dmrole coords:LonLatPoint.lon")
 
+    def testModelLocation(self):
+        InstanceChecker._clean_tmpdata_dir()
+        self.assertTrue(
+            InstanceChecker._get_model_location("Meas").endswith("tmp_snippets/Meas-v1.vo-dml.xml")
+            )
+        self.assertTrue(
+            InstanceChecker._get_model_location("coords").endswith("tmp_snippets/Coords-v1.0.vo-dml.xml")
+            )
+        self.assertTrue(
+            InstanceChecker._get_model_location("phot").endswith("tmp_snippets/Phot-v1.vodml.xml")
+            )
+        self.assertTrue(
+            InstanceChecker._get_model_location("ivoa").endswith("tmp_snippets/IVOA-v1.vo-dml.xml")
+            )
+
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

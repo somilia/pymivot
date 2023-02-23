@@ -1,9 +1,11 @@
 '''
 Created on 21 Feb 2023
 
+Script used to test various features along of the development
+
 @author: laurentmichel
 '''
-import os
+import os, sys
 from astropy.io.votable import parse
 from mivot_validator.instance_checking.xml_interpreter.model_viewer import ModelViewer
 from mivot_validator.instance_checking.instance_checker import InstanceChecker
@@ -14,6 +16,11 @@ if __name__ == '__main__':
     votable_path = os.path.join(data_path, "../../tests/data/gaia_luhman16.xml")
     votable = parse(votable_path)
     
+    print(InstanceChecker._get_model_location("Meas"))
+    print(InstanceChecker._get_model_location("coords"))
+    print(InstanceChecker._get_model_location("phot"))
+    print(InstanceChecker._get_model_location("ivoa"))
+    sys.exit()
     mviewer = None
     for resource in votable.resources:
         mviewer = ModelViewer(resource, votable_path=votable_path)

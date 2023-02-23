@@ -125,10 +125,10 @@ This checking only works with the Meas/Coord/ivoa models, other models are ignor
 types-and-roles-validate <VOTABLE path>
 ```
 
-#### Types and Roles Checking
+#### Model Hierarchy Checking
 
 This tool checks that mapped classes match the model they refer to. It requires as input an annotated VOTable. This VOTable is parsed with a model viewer issuing a model view on the first data row. Each instance of that view is compared
-with the VODML class definition. This beta feature only works with PhotDM, Meas and Coords DMs. Other models, including ivoa are ignored. 
+with the VODML class definition. This beta feature only works with PhotDM, Meas and Coords. Other models, but ivoa which is skipped, make the process failing. 
 
 ```bash
 mivot-instance-validate <VOTABLE path>

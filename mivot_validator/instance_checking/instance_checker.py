@@ -4,6 +4,8 @@ Created on 21 Feb 2023
 @author: laurentmichel
 '''
 import os
+import urllib.request
+
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.snippet_builder import Builder
 
@@ -63,14 +65,8 @@ class InstanceChecker(object):
 
         if os.path.exists(filepath) is False:
             print(f"-> build snippet for class {model}:{dmtype}")
-
-            if model == "meas":
-                vodml_filename = os.path.join(vodml_path, "Meas-v1.vo-dml.xml")
-            elif model == "coords":
-                vodml_filename = os.path.join(vodml_path, "Coords-v1.0.vo-dml.xml")
-            elif model == "Phot":
-                vodml_filename = os.path.join(vodml_path, "Phot-v1.1.vodml.xml")
             
+            vodml_filename = InstanceChecker._get_model_location(model)
             builder = Builder(
                 model,
                 dmtype,
@@ -86,7 +82,42 @@ class InstanceChecker(object):
         return XmlUtils.xmltree_from_file(filepath)
 
     @staticmethod
+    def _clean_tmpdata_dir():
+        for filename in os.listdir(tmp_data_path):
+            file_path = os.path.join(tmp_data_path, filename)
+            if filename.endswith(".xml") and os.path.isfile(file_path):
+                os.unlink(file_path)
+
+    @staticmethod
+    def _get_model_location(model):
+        """
+        Store locally the VODML file in the local cache
+        """
+        if model.lower() == "meas":
+            vodml_filename = "Meas-v1.vo-dml.xml"
+        elif model.lower() == "coords":
+            vodml_filename = "Coords-v1.0.vo-dml.xml"
+        elif model.lower() == "phot":
+            vodml_filename = "Phot-v1.vodml.xml"
+        elif model.lower() == "ivoa":
+            vodml_filename = "IVOA-v1.vo-dml.xml"
+        else:
+            raise CheckFailedException(f"Model {model} not supported yet")
+        
+        output_path = os.path.join(tmp_data_path, vodml_filename)
+        if os.path.exists(output_path) is False:
+            url = f"https://ivoa.net/xml/VODML/{vodml_filename}"
+            print(f"-> downloading {url}")
+            urllib.request.urlretrieve(url,output_path)  
+        return output_path     
+        
+    @staticmethod
     def _build_inheritence_graph(vodml_filepath):
+        """
+        Build a map of the inheritance links.
+        This is necessary to resolve cases where the model refer to abstract types
+        and the annotation uses concrete types (sub-types)
+        """
         vodml_tree = XmlUtils.xmltree_from_file(vodml_filepath)
         graph = {}
         for ele in vodml_tree.xpath(f'./name'):
@@ -141,6 +172,19 @@ class InstanceChecker(object):
 
     @staticmethod
     def _check_attribute(attribute_etree, vodml_instance):
+        """
+        checks that the MIVOT representation of the attribute matches the model definition
+        
+        parameters
+        ----------
+        attribute_etree: etree
+            MIVOT representation of the attribute
+        vodml_instance: etree
+            VODML serialization of that attribute
+        return
+        ------
+            boolean
+        """
         for child in vodml_instance.xpath("./ATTRIBUTE"):
             if( child.get("dmrole") == attribute_etree.get("dmrole") and 
                 child.get("dmtype") == attribute_etree.get("dmtype")
@@ -150,14 +194,29 @@ class InstanceChecker(object):
     
     @staticmethod
     def _check_collection(collection_etree, vodml_instance):
+        """
+        checks that the MIVOT representation of the collection matches the model definition
+        
+        parameters
+        ----------
+        collection_etree: etree
+            MIVOT representation of the collection
+        vodml_instance: etree
+            VODML serialization of that collection
+        return
+        ------
+            a documented  exception in case of failure
+        """
         collection_role = collection_etree.get("dmrole")
+        # First checks that all collection items have the same type
         item_type = ""
         for item in collection_etree.xpath("./*"):
             local_item_type = item.get("dmtype") 
             if (item_type != "" and item_type != local_item_type):
                 raise CheckFailedException(f"Collection with dmrole={collection_role} has items with different dmtypes ")
             item_type = local_item_type
-        
+            
+        # check that the mapped collection has the same role as defined in the model
         for child in vodml_instance.xpath("./COLLECTION"):
             if child.get("dmrole") == collection_etree.get("dmrole"):
                 for item in child.xpath("./*"):
@@ -171,6 +230,19 @@ class InstanceChecker(object):
 
     @staticmethod
     def _check_membership (actual_instance, enclosing_vodml_instance):   
+        """
+        Checks that the MIVOT component is a component of the VODML class
+        
+        parameters
+        ----------
+        actual_instance: etree
+            MIVOT instance
+        enclosing_vodml_instance: etree
+            VODML class supposed to enclose the actual instance
+        return
+        -------
+            a documented exception ins case of failure
+        """
         actual_role = actual_instance.get("dmrole")
         for vodml_instance in enclosing_vodml_instance.getroot().xpath("./*"):
             if vodml_instance.get("dmrole") == actual_role:
@@ -191,6 +263,18 @@ class InstanceChecker(object):
             
     @staticmethod
     def check_instance_validity(instance_etree):
+        """
+        Public method. The only one meant to be used from from outside
+        Checks that instance_etree is compliant with the model it refers to
+        
+        parameters
+        ----------
+        instance_etree: etree
+            MIVOT instance to be checked
+        return
+        -------
+            a documented exception ins case of failure
+        """
         checked_roles = []
         dmtype = instance_etree.get("dmtype")
         eles = dmtype.split(":")

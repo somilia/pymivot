@@ -1,5 +1,7 @@
 '''
-Created on 2021/07/01
+Created on 2022/09
+
+Test suite validating the whole votables against both schema (VOTable MIVOT)
 
 @author: laurentmichel
 '''
@@ -19,7 +21,7 @@ class Test(unittest.TestCase):
         annotated_votable_validator = AnnotatedVOTableValidator()
         files = os.listdir(mapping_sample)
         for sample_file in files:
-            if "_ok_" in sample_file:
+            if sample_file.startswith("test_") and "_ok_" in sample_file:
                 file_path = os.path.join(mapping_sample, sample_file)
                 self.assertTrue(annotated_votable_validator.validate(file_path))
                 
@@ -29,7 +31,7 @@ class Test(unittest.TestCase):
         """
         files = os.listdir(mapping_sample)
         for sample_file in files:
-            if "_ko_" in sample_file:
+            if sample_file.startswith("test_") and "_ko_" in sample_file:
                 file_path = os.path.join(mapping_sample, sample_file)
                 annotated_votable_validator = AnnotatedVOTableValidator()
                 self.assertFalse(annotated_votable_validator.validate(file_path))
