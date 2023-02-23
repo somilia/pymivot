@@ -57,4 +57,4 @@ badges/
 *.bkp
 tests/data_tests/
 Pipfile
-tmp_snippets/**
+tmp_snippets/*.xml
