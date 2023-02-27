@@ -43,19 +43,16 @@ class TestInstCheck(unittest.TestCase):
                                  os.path.join(mapping_sample, "instcheck_inherit_coords.json"))
                              )
 
-
     def testOK(self):
-        return
-        instance = XmlUtils.xmltree_from_file(os.path.join(mapping_sample, "instcheck_ok_1.xml"))
-        status = InstanceChecker.check_instance_validity(instance.getroot())
-        self.assertTrue(status)
-        
-        instance = XmlUtils.xmltree_from_file(os.path.join(mapping_sample, "instcheck_ok_2.xml"))
-        status = InstanceChecker.check_instance_validity(instance.getroot())
-        self.assertTrue(status)
+        files = os.listdir(mapping_sample)
+        for sample_file in files:
+            if sample_file.startswith("instcheck_") and "_ok_" in sample_file:
+                file_path = os.path.join(mapping_sample, sample_file)
+                instance = XmlUtils.xmltree_from_file(file_path)
+                status = InstanceChecker.check_instance_validity(instance.getroot())
+                self.assertTrue(status)
 
     def testKO(self):
-        return
         instance = XmlUtils.xmltree_from_file(os.path.join(mapping_sample, "instcheck_ko_1.xml"))
         try:
             InstanceChecker.check_instance_validity(instance.getroot())
@@ -81,6 +78,15 @@ class TestInstCheck(unittest.TestCase):
             print(exp)
             self.assertEqual(str(exp),
                              "Duplicated dmrole coords:LonLatPoint.lon")
+
+        instance = XmlUtils.xmltree_from_file(os.path.join(mapping_sample, "instcheck_photdm_ko.xml"))
+        try:
+            InstanceChecker.check_instance_validity(instance.getroot())
+            self.assertTrue(False, "test should fail")
+        except CheckFailedException as exp:
+            print(exp)
+            self.assertEqual(str(exp),
+                             "Object type Phot:Flux has no component with dmrole=Phot:Flux.ucd and dmtype=UCD type should be Phot:UCD")
 
     def testModelLocation(self):
         InstanceChecker._clean_tmpdata_dir()
