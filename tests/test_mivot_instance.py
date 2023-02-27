@@ -8,13 +8,15 @@ VOTables against the MIVOT schema
 '''
 import os
 import unittest
+from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.annotated_votable_validator import AnnotatedVOTableValidator
+from mivot_validator.instance_checking.instance_checker import InstanceChecker
 
 mapping_sample = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
  
 
 class Test(unittest.TestCase):
-
+      
     def testOK(self):
         """
         Check that all sample files tagged as OK are actually valid
