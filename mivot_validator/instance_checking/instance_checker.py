@@ -75,7 +75,7 @@ class InstanceChecker(object):
             )
             # build the XML snippet and store it on disk
             builder.build()
-            CheckFailedException._build_inheritence_graph(vodml_filename)
+            InstanceChecker._build_inheritence_graph(vodml_filename)
         else:
             print(f"-> snippet for class {dmtype} already in the cache")
             
@@ -249,6 +249,9 @@ class InstanceChecker(object):
                 actual_type = actual_instance.get("dmtype")
                 vodml_type = vodml_instance.get("dmtype")
                 if actual_type == vodml_type:
+                    return
+                # Sort of ad_hoc patch meanwhile ivoa DM is properly supported
+                if actual_type == "ivoa:RealQuantity" and vodml_type == "ivoa:Quantity":
                     return
                 if (vodml_type in InstanceChecker.inheritence_tree and 
                     actual_type in InstanceChecker.inheritence_tree[vodml_type]
