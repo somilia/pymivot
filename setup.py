@@ -18,7 +18,7 @@ setup(
     author_email='laurent.michel@astro.unistra.fr',
     packages=find_packages(),
     install_requires=['xmlschema', 'etree'],
-    version='1.1',
+    version='2.0',
     license='MIT',
     description='Validator for model annotations in VOTable',
     long_description=open('README.md').read(),
