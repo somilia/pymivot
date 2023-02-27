@@ -1,5 +1,7 @@
 '''
-Created on 2021/07/01
+Created on 2022/09
+
+Test suite validating that all role and types of the annotation are consistent with the model they refer to.
 
 @author: laurentmichel
 '''

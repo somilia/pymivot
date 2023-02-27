@@ -1,17 +1,22 @@
 '''
-Created on 2021/07/01
+Created on 2022/09
+
+Test suite validating the annotation blocks extracted from annotated 
+VOTables against the MIVOT schema 
 
 @author: laurentmichel
 '''
 import os
 import unittest
+from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.annotated_votable_validator import AnnotatedVOTableValidator
+from mivot_validator.instance_checking.instance_checker import InstanceChecker
 
 mapping_sample = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
  
 
 class Test(unittest.TestCase):
-
+      
     def testOK(self):
         """
         Check that all sample files tagged as OK are actually valid
@@ -19,7 +24,7 @@ class Test(unittest.TestCase):
         annotated_votable_validator = AnnotatedVOTableValidator()
         files = os.listdir(mapping_sample)
         for sample_file in files:
-            if "_ok_" in sample_file:
+            if sample_file.startswith("test_") and "_ok_" in sample_file:
                 file_path = os.path.join(mapping_sample, sample_file)
                 self.assertTrue(annotated_votable_validator.validate_mivot(file_path))
                 
@@ -29,7 +34,7 @@ class Test(unittest.TestCase):
         """
         files = os.listdir(mapping_sample)
         for sample_file in files:
-            if "_ko_" in sample_file:
+            if sample_file.startswith("test_") and "_ko_" in sample_file:
                 file_path = os.path.join(mapping_sample, sample_file)
                 annotated_votable_validator = AnnotatedVOTableValidator()
                 self.assertFalse(annotated_votable_validator.validate_mivot(file_path))

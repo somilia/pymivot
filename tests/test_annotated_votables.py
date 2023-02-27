@@ -1,6 +1,8 @@
 '''
-Created on 2021/07/01
 
+The annotated votables against both schemas (MIVOT and VOTable 1.3)
+
+Created on 2022/07/01
 @author: laurentmichel
 '''
 import os
@@ -19,7 +21,7 @@ class Test(unittest.TestCase):
         annotated_votable_validator = AnnotatedVOTableValidator()
         files = os.listdir(mapping_sample)
         for sample_file in files:
-            if "_ok_" in sample_file:
+            if sample_file.startswith("test_instance_ok") is True:
                 file_path = os.path.join(mapping_sample, sample_file)
                 self.assertTrue(annotated_votable_validator.validate(file_path))
                 
@@ -29,7 +31,7 @@ class Test(unittest.TestCase):
         """
         files = os.listdir(mapping_sample)
         for sample_file in files:
-            if "_ko_" in sample_file:
+            if  sample_file.startswith("test_instance_ko") is True:
                 file_path = os.path.join(mapping_sample, sample_file)
                 annotated_votable_validator = AnnotatedVOTableValidator()
                 self.assertFalse(annotated_votable_validator.validate(file_path))

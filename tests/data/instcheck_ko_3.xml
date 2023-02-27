@@ -1,0 +1,10 @@
+<INSTANCE dmrole="meas:ProperMotion.coord" dmtype="coords:LonLatPoint">
+   <INSTANCE dmrole="coords:LonLatPoint.lon" dmtype="ivoa:RealQuantity">
+      <ATTRIBUTE dmrole="ivoa:Quantity.val" dmtype="ivoa:real" ref="pmra" index="7" unit_org="mas.yr**-1" value="-5.7542627420782715"/>
+      <ATTRIBUTE dmrole="ivoa:Quantity.unit" dmtype="ivoa:Unit" value="mas/year"/>
+   </INSTANCE>
+   <INSTANCE dmrole="coords:LonLatPoint.lon" dmtype="ivoa:RealQuantity">
+      <ATTRIBUTE dmrole="ivoa:Quantity.val" dmtype="ivoa:real" ref="pmdec" index="9" unit_org="mas.yr**-1" value="-0.33989307394919027"/>
+      <ATTRIBUTE dmrole="ivoa:Quantity.unit" dmtype="ivoa:Unit" value="mas/year"/>
+   </INSTANCE>
+</INSTANCE>

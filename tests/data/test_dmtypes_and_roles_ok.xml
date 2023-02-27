@@ -28,7 +28,7 @@
   At the time of writing, a VO recommendation has not yet been released.
   </DESCRIPTION>
   <RESOURCE type="results">
-    <RESOURCE type="meta">
+    <RESOURCE>
       <VODML
         xmlns="http://www.ivoa.net/xml/mivot" >
         <!-- @\label{REPORT_snippet}@ back to @\ref{REPORT}@ -->
@@ -49,12 +49,12 @@
           <!--
               Container for the coordinate systems
             -->
-         <COLLECTION dmid="\_CoordinateSystems" dmrole="" >
+         <COLLECTION dmid="_CoordinateSystems" dmrole="" >
             <!--
                 Time coordinate system
               -->
             <!-- @\label{INSTANCE_snippet}@ back to @\ref{INSTANCE}@ -->
-            <INSTANCE dmid="\_timesys" dmrole="" dmtype="coords:TimeSys">
+            <INSTANCE dmid="_timesys" dmrole="" dmtype="coords:TimeSys">
               <PRIMARY_KEY dmtype="ivoa:string" value="TCB"/>
               <INSTANCE dmrole="coords:PhysicalCoordSys.frame" dmtype="coords:TimeFrame">
                 <ATTRIBUTE dmrole="coords:TimeFrame.timescale" dmtype="ivoa:string" value="TCB" />
@@ -67,7 +67,7 @@
             <!--
                 Space coordinate system
               -->
-            <INSTANCE dmid="\_spacesys1" dmrole="" dmtype="coords:SpaceSys">
+            <INSTANCE dmid="_spacesys1" dmrole="" dmtype="coords:SpaceSys">
               <PRIMARY_KEY dmtype="ivoa:string" value="ICRS"/>
               <INSTANCE dmrole="coords:PhysicalCoordSys.frame" dmtype="coords:SpaceFrame">
                 <ATTRIBUTE dmrole="coords:SpaceFrame.spaceRefFrame" 
@@ -81,7 +81,7 @@
                 in VODML. 
                 We use a class of the first MANGO draft
               -->
-            <INSTANCE dmid="\_photsys\_G" dmtype="mango:coordinates.PhotometryCoordSys">
+            <INSTANCE dmid="_photsys\_G" dmtype="mango:coordinates.PhotometryCoordSys">
               <PRIMARY_KEY dmtype="ivoa:string" value="G"/>
               <INSTANCE dmrole="coords:PhysicalCoordSys.frame" 
                         dmtype="mango:coordinates.PhotFilter">
@@ -99,7 +99,7 @@
                         dmtype="ivoa:real" value="4578.32"/>
               </INSTANCE>
             </INSTANCE>
-            <INSTANCE dmid="\_photsys\_RP" dmrole="" 
+            <INSTANCE dmid="_photsys\_RP" dmrole="" 
                         dmtype="mango:coordinates.PhotometryCoordSys">
               <PRIMARY_KEY dmtype="ivoa:string" value="RP"/>
               <INSTANCE dmrole="coords:PhysicalCoordSys.frame" 
@@ -118,7 +118,7 @@
                            dmtype="ivoa:real" value="2943.72"/>
               </INSTANCE>
             </INSTANCE>
-            <INSTANCE dmid="\_photsys\_BP" dmrole="" dmtype="mango:coordinates.PhotometryCoordSys">
+            <INSTANCE dmid="_photsys\_BP" dmrole="" dmtype="mango:coordinates.PhotometryCoordSys">
               <PRIMARY_KEY dmtype="ivoa:string" value="BP"/>
               <INSTANCE dmrole="coords:PhysicalCoordSys.frame" 
                          dmtype="mango:coordinates.PhotFilter">
@@ -141,8 +141,8 @@
               Container for the datasets (one per timeseries)
             -->
           <!-- @\label{COLLECTION_snippet_1}@ back to @\ref{COLLECTION}@ -->
-          <COLLECTION dmid="\_Datasets" dmrole="">
-            <INSTANCE dmid="\_ds1" dmrole="" dmtype="ds:experiment.ObsDataset">
+          <COLLECTION dmid="_Datasets" dmrole="">
+            <INSTANCE dmid="_ds1" dmrole="" dmtype="ds:experiment.ObsDataset">
               <!--
                   The primary keys of that collection items are set by the mapping 
                 -->
@@ -155,14 +155,14 @@
               <ATTRIBUTE dmrole="ds:experiment.ObsDataset.calibLevel" 
                          dmtype="ivoa:integer" value="1"/>
               <!-- @\label{REFERENCE_snippet_1}@ back to @\ref{REFERENCE}@ -->
-              <REFERENCE dmrole="ds:experiment.ObsDataset.target" dmref="\_tg1"/>
+              <REFERENCE dmrole="ds:experiment.ObsDataset.target" dmref="_tg1"/>
             </INSTANCE>
           </COLLECTION>
           <!--
               Time series target
               Value set as a literal by the mapping
             -->
-          <INSTANCE dmid="\_tg1" dmrole="" dmtype="ds:experiment.Target">
+          <INSTANCE dmid="_tg1" dmrole="" dmtype="ds:experiment.Target">
             <ATTRIBUTE dmrole="ds:experiment.BaseTarget.name" 
                        dmtype="ivoa:string" value="5813181197970338560"/>
           </INSTANCE>
@@ -170,15 +170,15 @@
         <!--
             Mapping of the rows of the table \_PKTable
           -->
-         <TEMPLATES tableref="\_PKTable">
-          <INSTANCE dmid="\_TimeSeries" dmrole="" dmtype="cube:SparseCube">
+         <TEMPLATES tableref="_PKTable">
+          <INSTANCE dmid="_TimeSeries" dmrole="" dmtype="cube:SparseCube">
             <!--
                 The dataset object is the item of the COLLECTION[dmid=\_Datasets]
                 having a primary key matching the value of the column \_pksrcid 
                 for that particular row
               -->
-            <REFERENCE dmrole="cube:DataProduct.dataset" sourceref="\_Datasets">
-              <FOREIGN_KEY ref="\_pksrcid"/>
+            <REFERENCE dmrole="cube:DataProduct.dataset" sourceref="_Datasets">
+              <FOREIGN_KEY ref="_pksrcid"/>
             </REFERENCE>
             <!--
                 Sparse cube data are given by the INSTANCE[dmid=\_ts\_data]
@@ -190,10 +190,10 @@
             <!-- @\label{COLLECTION_snippet_2}@ back to @\ref{COLLECTION}@ -->
             <COLLECTION dmrole="cube:SparseCube.data">
               <!-- @\label{JOIN_snippet}@ back to @\ref{JOIN}@ -->
-              <JOIN dmref="\_ts\_data">
+              <JOIN dmref="_ts\_data">
                 <!-- @\label{WHERE_snippet}@ back to @\ref{WHERE}@ -->
-                <WHERE foreignkey="\_srcid" primarykey="\_pksrcid" />
-                <WHERE foreignkey="\_band" primarykey="\_pkband"  />
+                <WHERE foreignkey="_srcid" primarykey="_pksrcid" />
+                <WHERE foreignkey="_band" primarykey="_pkband"  />
               </JOIN>
             </COLLECTION>
           </INSTANCE>
@@ -203,19 +203,19 @@
           -->
         <!-- @\label{TEMPLATES_snippet}@ back to @\ref{TEMPLATES}@ -->
         <TEMPLATES tableref="Results">
-          <INSTANCE dmid="\_ts\_data" dmrole="" dmtype="cube:NDPoint">
+          <INSTANCE dmid="_ts\_data" dmrole="" dmtype="cube:NDPoint">
             <COLLECTION dmrole="cube:NDPoint.observable">
               <!-- @\label{ATTRIBUTE_snippet}@ back to @\ref{ATTRIBUTE}@ -->
               <INSTANCE dmtype="cube:Observable">
                 <ATTRIBUTE dmrole="cube:DataAxis.dependent" dmtype="ivoa:boolean" value="False"/>
                 <INSTANCE dmrole="cube:MeasurementAxis.measure" dmtype="meas:Time">
                   <INSTANCE dmrole="meas:Time.coord" dmtype="coords:MJD">
-                    <ATTRIBUTE dmrole="coords:MJD.date" dmtype="ivoa:real" ref="\_obstime"/>
+                    <ATTRIBUTE dmrole="coords:MJD.date" dmtype="ivoa:real" ref="_obstime"/>
                     <!--
                        The time coodinate is givel by the INSTANCE[dmid=\_timesys]
                        This instance must be located by the client
                       -->
-                    <REFERENCE dmrole="coords:Coordinate.coordSys" dmref="\_timesys"/>
+                    <REFERENCE dmrole="coords:Coordinate.coordSys" dmref="_timesys"/>
                   </INSTANCE>
                 </INSTANCE>
               </INSTANCE>
@@ -224,7 +224,7 @@
                 <INSTANCE dmrole="cube:MeasurementAxis.measure" dmtype="meas:GenericMeasure">
                   <INSTANCE dmrole="meas:GenericMeasure.coord" dmtype="coords:PhysicalCoordinate">
                     <INSTANCE dmrole="coords:PhysicalCoordinate.cval" dmtype="ivoa:RealQuantity">
-                      <ATTRIBUTE dmrole="ivoa:RealQuantity.value" dmtype="ivoa:real" ref="\_mag"/>
+                      <ATTRIBUTE dmrole="ivoa:RealQuantity.value" dmtype="ivoa:real" ref="_mag"/>
                       <ATTRIBUTE dmrole="ivoa:Quantity.unit" dmtype="ivoa:Unit" value="mag"/>
                     </INSTANCE>
                     <!--
@@ -233,9 +233,9 @@
                         the value of the column \_band for that particular row
                       -->
                     <!-- @\label{REFERENCE_snippet_2}@ back to @\ref{REFERENCE}@ -->
-                    <REFERENCE dmrole="coords:Coordinate.coordSys" sourceref="\_CoordinateSystems">
+                    <REFERENCE dmrole="coords:Coordinate.coordSys" sourceref="_CoordinateSystems">
                       <!-- @\label{FOREIGN_KEY_snippet}@ back to @\ref{FOREIGN_KEY}@ -->
-                      <FOREIGN_KEY ref="\_band"/>
+                      <FOREIGN_KEY ref="_band"/>
                     </REFERENCE>
                   </INSTANCE>
                 </INSTANCE>
@@ -245,7 +245,7 @@
                 <INSTANCE dmrole="cube:MeasurementAxis.measure" dmtype="meas:GenericMeasure">
                   <INSTANCE dmrole="meas:GenericMeasure.coord" dmtype="coords:PhysicalCoordinate">
                     <INSTANCE dmrole="coords:PhysicalCoordinate.cval" dmtype="ivoa:RealQuantity">
-                      <ATTRIBUTE dmrole="ivoa:RealQuantity.value" dmtype="ivoa:real" ref="\_flux"/>
+                      <ATTRIBUTE dmrole="ivoa:RealQuantity.value" dmtype="ivoa:real" ref="_flux"/>
                       <ATTRIBUTE dmrole="ivoa:Quantity.unit" dmtype="ivoa:Unit" value="e-/s"/>
                     </INSTANCE>
                     <!--
@@ -253,15 +253,15 @@
                         the COLLECTION[dmid=\_CoordinateSystems] having a primary key matching 
                         the value of the column \_band for that particular row
                       -->
-                    <REFERENCE dmrole="coords:Coordinate.coordSys" sourceref="\_CoordinateSystems">
-                      <FOREIGN_KEY ref="\_band"/>
+                    <REFERENCE dmrole="coords:Coordinate.coordSys" sourceref="_CoordinateSystems">
+                      <FOREIGN_KEY ref="_band"/>
                     </REFERENCE>
                   </INSTANCE>
                   <INSTANCE dmrole="meas:Measure.error" dmtype="meas:Error">
                     <INSTANCE dmrole="meas:Error.statError" dmtype="meas:Symmetrical">
                       <INSTANCE dmrole="meas:Symmetrical.radius" dmtype="ivoa:RealQuantity">
                         <ATTRIBUTE dmrole="ivoa:RealQuantity.value" 
-                                   dmtype="ivoa:real" ref="\_fluxerr"/>
+                                   dmtype="ivoa:real" ref="_fluxerr"/>
                         <ATTRIBUTE dmrole="ivoa:Quantity.unit" dmtype="ivoa:Unit" value="e-/s"/>
                       </INSTANCE>
                     </INSTANCE>
@@ -276,11 +276,11 @@
       mapping block end
     -->
     </RESOURCE>
-    <TABLE  name="\_PKTable">
-      <FIELD ID="\_pksrcid" datatype="char" arraysize="*" name="pksrcid">
+    <TABLE  name="_PKTable">
+      <FIELD ID="_pksrcid" datatype="char" arraysize="*" name="pksrcid">
         <DESCRIPTION>Source \_</DESCRIPTION>
       </FIELD>
-      <FIELD ID="\_pkband" name="pkband" datatype="char" arraysize="*">
+      <FIELD ID="_pkband" name="pkband" datatype="char" arraysize="*">
         <DESCRIPTION>Photometric Band</DESCRIPTION>
       </FIELD>
       <DATA>
@@ -301,29 +301,29 @@
       </DATA>
     </TABLE>
     <TABLE name="Results">
-      <FIELD ID="\_srcid" datatype="char" arraysize="*" 
+      <FIELD ID="_srcid" datatype="char" arraysize="*" 
               name="source\_id" utype="meta.id;meta.main">
         <DESCRIPTION>Source Id.</DESCRIPTION>
       </FIELD>
       <FIELD datatype="long" name="transit\_id" ucd="meta.version">
         <DESCRIPTION>Transit unique identifier.</DESCRIPTION>
       </FIELD>
-      <FIELD ID="\_band" arraysize="*" datatype="char" 
+      <FIELD ID="_band" arraysize="*" datatype="char" 
              name="band" ucd="instr.bandpass" utype="ssa:Data\_.Bandpass">
         <DESCRIPTION>Photometric band. Values: G .</DESCRIPTION>
       </FIELD>
-      <FIELD ID="\_obstime" datatype="double" name="time" ucd="time.epoch;VOX:Image\_MJDateObs" 
+      <FIELD ID="_obstime" datatype="double" name="time" ucd="time.epoch;VOX:Image\_MJDateObs" 
              unit="d" utype="spec:Spectrum.Data.TimeAxis.Value">
         <DESCRIPTION>Different times are defined for each band. </DESCRIPTION>
       </FIELD>
-      <FIELD ID="\_mag" datatype="float" name="mag" ucd="phot.mag;em.opt" unit="mag">
+      <FIELD ID="_mag" datatype="float" name="mag" ucd="phot.mag;em.opt" unit="mag">
         <DESCRIPTION>Vega magnitude</DESCRIPTION>
       </FIELD>
-      <FIELD ID="\_flux" datatype="float" name="flux" ucd="em.opt;phot.flux;stat.mean" 
+      <FIELD ID="_flux" datatype="float" name="flux" ucd="em.opt;phot.flux;stat.mean" 
              unit="e-/s" utype="spec:Spectrum.Data.SpectralAxis.Value">
         <DESCRIPTION>Band flux value for the transit. </DESCRIPTION>
       </FIELD>
-      <FIELD ID="\_fluxerr" datatype="float" name="flux\_error" 
+      <FIELD ID="_fluxerr" datatype="float" name="flux\_error" 
              ucd="em.opt;phot.flux;stat.error" unit="e-/s">
         <DESCRIPTION>Flux error.</DESCRIPTION>
       </FIELD>

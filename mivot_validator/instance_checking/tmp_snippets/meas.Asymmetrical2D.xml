@@ -1,0 +1,11 @@
+<INSTANCE dmrole="" dmtype="meas:Asymmetrical2D">
+   <!-- 2D Uncertainty with different extent in the positive and negative axis directions from the associated Coordinate.  i.e.: an offset rectangle." -->
+   <COLLECTION dmrole="meas:Asymmetrical2D.plus">
+      <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value=""/>
+      <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value=""/>
+   </COLLECTION>
+   <COLLECTION dmrole="meas:Asymmetrical2D.minus">
+      <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value=""/>
+      <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value=""/>
+   </COLLECTION>
+</INSTANCE>
