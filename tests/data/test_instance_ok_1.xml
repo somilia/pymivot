@@ -18,7 +18,7 @@
 <VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
   <DESCRIPTION>Epoch photometry. This table contains light curve data points. Each entry is a photometric flux-time pair for a given object, band and time. It follows the (evolving) VO convention for time series as much as possible. At the time of writing, a VO recommendation has not yet been released.</DESCRIPTION>
   <RESOURCE type="results">
-    <RESOURCE type="meta">
+    <RESOURCE>
       <VODML xmlns="http://www.ivoa.net/xml/mivot" >
           <REPORT status="OK">Hand made mapping</REPORT>
           <MODEL name="mango"  url="file:/Users/sao/Documents/IVOA/GitHub/ivoa-dm-examples/tmp/Mango-v1.0.vo-dml.xml" />

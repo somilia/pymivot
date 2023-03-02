@@ -32,7 +32,7 @@ class Constraints:
         print(f"add constraint on role {self.role}: type={self.datatype} ")
         
     def get_contraint(self, const_key):
-        print(f"look for const {const_key} in {self.constraints.keys()}")
+        print(f"look for the constrains {const_key} in {self.constraints.keys()}")
         for key in self.constraints.keys():
             if const_key.endswith(key):
                 print(f"  found as {self.constraints[key]}")
@@ -59,11 +59,13 @@ class Builder:
         self.outputname = None
         self.constraints = Constraints(model_name)
         self.class_name = class_name
+        self.resolved_references = []
         
     def build(self):         
         for ele in self.vodml.xpath(f'.//dataType'):
             for tags in ele.getchildren  (): 
                 if tags.tag == "vodml-id" and  tags.text == self.class_name :
+                    print(f"build datatype {tags.text}")
                     self.build_object(ele, "", True, True)
                     return
                 
@@ -72,10 +74,11 @@ class Builder:
                 if tags.tag == "vodml-id" and  tags.text == self.class_name :
                     self.build_object(ele, "", True, True)
                     return
+                
         raise MappingException(f"Complex type {self.class_name} not found")
             
     def build_object(self, ele, role, root, aggregate):
-        print(f"build object with role={role}")
+        print(f"build object with role={role} within the class {self.class_name}")
         for tags in list(ele): 
             if tags.tag == "constraint":
                 self.constraints.add_constraint(tags)
@@ -123,6 +126,8 @@ class Builder:
         for tags in ele.getchildren():        
             if tags.tag == "vodml-id":
                 vodmlid = tags.text
+            elif tags.tag == "multiplicity":
+                max_occurs = tags.xpath(".//maxOccurs")[0].text
             elif tags.tag == "datatype":
                 for dttag in list(tags):
                     if dttag.tag == "vodml-ref":
@@ -133,9 +138,21 @@ class Builder:
 
         if const_type is not None:
             reftype = const_type
-        print("coucou 4")
+            
+        if vodmlid in self.resolved_references:
+            print(f"   Reference {vodmlid} skipped to break a model loop (already processed)")
+            return
+        print(f"   Reference {vodmlid} processed for the fist time")
+        self.resolved_references.append(vodmlid)
+         
+        if max_occurs != "1":
 
-        self.get_object_by_ref(reftype.replace(self.model_name + ":", ""),
+            self.write_out(f'<COLLECTION dmrole="{(self.model_name + ":" + vodmlid)}" >')
+            self.get_object_by_ref(reftype.replace(self.model_name + ":", ""),
+                                   self.model_name + ":" + vodmlid, True)
+            self.write_out("</COLLECTION>")
+        else:    
+            self.get_object_by_ref(reftype.replace(self.model_name + ":", ""),
                                self.model_name + ":" + vodmlid, True)
             
     def addComposition(self, ele):
@@ -155,14 +172,14 @@ class Builder:
         const_type = self.constraints.get_contraint(vokey) 
         if const_type is not None:
             reftype = const_type
+
         if max_occurs != "1":
+
             self.write_out(f'<COLLECTION dmrole="{(self.model_name + ":" + vodmlid)}" >')
-            print("coucou 10 ") 
             self.get_object_by_ref(reftype.replace(self.model_name + ":", ""),
                                "", True)
             self.write_out("</COLLECTION>")
             return
-        print("coucou 1")
         self.get_object_by_ref(reftype.replace(self.model_name + ":", ""),
                                self.model_name + ":" + vodmlid, True)
             
@@ -177,7 +194,6 @@ class Builder:
         const_type = self.constraints.get_contraint(reftype) 
         if const_type is not None in self.constraints.constraints:
             reftype = const_type
-        print("coucou 2")
 
         self.get_object_by_ref(reftype.replace(self.model_name + ":", ""), reftype, False, extend=True)
                 
@@ -194,7 +210,6 @@ class Builder:
                     else:
                         dmtype = f"{self.model_name}:{vodmlref}"
                     if vodmlref.startswith("ivoa:") is False:
-                        print("coucou 5 " + dmrole)
                         self.get_object_by_ref(vodmlref.replace(self.model_name + ":", ""), dmrole, True)
                         return
                     break
@@ -227,9 +242,13 @@ class Builder:
             for tags in list(ele):  
                 if tags.tag == "vodml-id" and tags.text == vodmlid:
                     print("  found in objecttype")
+                    print("111111")
+
                     if extend is False and abstract_att is not None and abstract_att.lower() == "true":
+                        print("2222222")
                         self.get_concrete_type_by_ref(vodmlid, role, aggregate, extend)                    
                     else:
+                        print("44444444")
                         self.build_object(ele, role, False, aggregate)
                     return
 
@@ -241,8 +260,10 @@ class Builder:
                     print("  found in datatype")  
                     print(extend)                  
                     if extend is False and abstract_att is not None and abstract_att.lower() == "true":
+                        print("8888888888888")
                         self.get_concrete_type_by_ref(vodmlid, role, aggregate, extend)                    
                     else:
+                        print("99999999999")
                         self.build_object(ele, role, False, aggregate)
                     return
                         
@@ -286,6 +307,7 @@ class Builder:
         #filename = vodmlid.replace(":", ".") + ".xml"
         #filename = filename.replace(".Point.", ".LonLatPoint.")
         #ilename = filename.replace(".TimeStamp.", ".MJD.")
+        print("zzzzzzzzzz")
         self.write_out(f'<INSTANCE dmrole="{role}" dmtype="{vodmlid}"/>')
 
         #if self.include_file(filename) is False:
@@ -311,7 +333,6 @@ class Builder:
             concrete_type = DEFAULT_CONCRETE_CLASSES[abstract_vodmlid]
             print(f"    Take {concrete_type} as concrete type for {abstract_vodmlid}")
             self.write_out(f"<!-- {concrete_type} taken as concrete type for {abstract_vodmlid} -->")
-            print("coucou 3")
 
             self.get_object_by_ref(concrete_type, role, aggregate, extend)
             return
@@ -326,7 +347,7 @@ class Builder:
             self.output.write("\n") 
 
     def is_abstract(self, ele):
-        print(f' abbbb {ele.get("abstract")}')
+        print(f' is that abstract {ele.get("abstract")} ?')
         return ele.get("abstract") is not None
     
 if __name__ == '__main__':

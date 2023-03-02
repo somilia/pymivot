@@ -1,0 +1,40 @@
+<INSTANCE dmrole="" dmtype="mango:Source">
+    <COLLECTION dmrole="mango:Source.propertyDock">
+    
+        <INSTANCE dmtype="mango:PhysicalProperty">
+        
+            <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
+                <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" value=""/>
+                <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" value=""/>
+            </INSTANCE>
+            <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" value="Photometric point"/>
+            
+            <INSTANCE dmrole="mango:PhysicalProperty.measure" dmtype="mango:extmeas.PhotometricMeasure">
+                <INSTANCE dmrole="mango:extmeas.PhotometricMeasure.photCal" dmtype="Phot:PhotCal">
+                </INSTANCE>          
+            </INSTANCE>
+            
+            <COLLECTION dmrole="mango:Property.associatedProperties">
+            </COLLECTION>
+            
+        </INSTANCE>
+        
+        <INSTANCE dmtype="mango:PhysicalProperty">
+        
+            <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
+                <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" value=""/>
+                <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" value=""/>
+            </INSTANCE>
+            <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" value="Photometric point"/>
+            
+            <INSTANCE dmrole="mango:PhysicalProperty.measure" dmtype="meas:Position">
+         
+            </INSTANCE>
+            
+            <COLLECTION dmrole="mango:Property.associatedProperties">
+            </COLLECTION>
+            
+        </INSTANCE>
+        
+    </COLLECTION>
+</INSTANCE>

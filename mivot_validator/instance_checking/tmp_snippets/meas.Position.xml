@@ -1,0 +1,10 @@
+<INSTANCE dmrole="" dmtype="meas:Position">
+   <!-- Provides a complete description of a measured positional instant." -->
+   <ATTRIBUTE dmrole="meas:Measure.ucd" dmtype="ivoa:string" ref="@@@@@" value=""/>
+   <INSTANCE dmrole="meas:Measure.error" dmtype="meas:Error">
+      <!-- The Error class uses the Uncertainty types to describe measurement errors from various sources." -->
+      <!-- Put here a concrete INSTANCE of Uncertainty or left blank -->
+      <!-- Put here a concrete INSTANCE of Uncertainty or left blank -->
+   </INSTANCE>
+   <INSTANCE dmrole="meas:Position.coord" dmtype="coords:Point"/>
+</INSTANCE>
