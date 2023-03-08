@@ -4,6 +4,7 @@ A source has an identifier and two docks: one for the parameters and one for the
    <ATTRIBUTE dmrole="mango:Source.identifier" dmtype="ivoa:string" ref="@@@@@" value=""/>
    <COLLECTION dmrole="mango:Source.associatedDataDock">
       <!-- Put here a concrete INSTANCE of AssociatedData or left blank -->
+      <INSTANCE dmrole="" dmtype="mango:AssociatedData"/>
    </COLLECTION>
    <COLLECTION dmrole="mango:Source.propertyDock">
       <INSTANCE dmrole="" dmtype="mango:Property">

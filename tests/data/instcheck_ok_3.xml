@@ -1,40 +1,146 @@
 <INSTANCE dmrole="" dmtype="mango:Source">
-    <COLLECTION dmrole="mango:Source.propertyDock">
+  <COLLECTION dmrole="mango:Source.propertyDock">
+
+    <!-- Property enclosing a Photometric point -->
+    <INSTANCE dmtype="mango:PhysicalProperty">
+
+      <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
+        <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" value="" />
+        <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" value="" />
+      </INSTANCE>
+      <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" value="Photometric point" />
+
+      <INSTANCE dmrole="mango:PhysicalProperty.measure" dmtype="mango:extmeas.PhotometricMeasure">
+        <REFERENCE dmrole="mango:extmeas.PhotometricMeasure.photCal" dmref="_ONE_GLOBALS_PHOTCALS" />
+      </INSTANCE>
+
+      <COLLECTION dmrole="mango:Property.associatedProperties">
+      </COLLECTION>
+
+    </INSTANCE>
+
+    <!-- Property enclosing a Position -->
+    <INSTANCE dmtype="mango:PhysicalProperty">
+
+      <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
+        <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" value="" />
+        <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" value="" />
+      </INSTANCE>
+      <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" value="Sky Position" />
+
+      <INSTANCE dmrole="mango:PhysicalProperty.measure" dmtype="meas:Position">
+        <!-- Provides a complete description of a measured positional instant." -->
+        <ATTRIBUTE dmrole="meas:Measure.ucd" dmtype="ivoa:string" ref="@@@@@" value="" />
+        <INSTANCE dmrole="meas:Measure.error" dmtype="meas:Error">
+          <!-- The Error class uses the Uncertainty types to describe measurement errors from various sources." -->
+          <INSTANCE dmrole="meas:Error.statError" dmtype="meas:Asymmetrical2D">
+            <COLLECTION dmrole="meas:Asymmetrical2D.plus">
+              <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" />
+              <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" />
+            </COLLECTION>
+            <COLLECTION dmrole="meas:Asymmetrical2D.minus">
+              <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" />
+              <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" />
+            </COLLECTION>
+          </INSTANCE>
+        </INSTANCE>
+        <INSTANCE dmrole="meas:Position.coord" dmtype="coords:LonLatPoint">
+          <!-- The Coordinate system can be pushed up to the GLOBALS and replaced here with -->
+          <REFERENCE dmref="_ONE_GLOBALS_SPACEFRAME" dmrole="coords:Coordinate.coordSys" dmtype="coords:SpaceSys" />
+          <ATTRIBUTE dmrole="coords:LonLatPoint.lon" dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value="" />
+          <ATTRIBUTE dmrole="coords:LonLatPoint.lat" dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value="" />
+        </INSTANCE>
+      </INSTANCE>
+
+      <COLLECTION dmrole="mango:Property.associatedProperties">
+          <REFERENCE dmref="_PROPER_MOTION" dmtype="mango:Property" />
+          <REFERENCE dmref="_PARALLAX" dmtype="mango:Property" />
+          <REFERENCE dmref="_RADIAL_VELOCITY" dmtype="mango:Property" />
+      </COLLECTION>
+
+    </INSTANCE>
     
-        <INSTANCE dmtype="mango:PhysicalProperty">
-        
-            <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
-                <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" value=""/>
-                <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" value=""/>
-            </INSTANCE>
-            <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" value="Photometric point"/>
-            
-            <INSTANCE dmrole="mango:PhysicalProperty.measure" dmtype="mango:extmeas.PhotometricMeasure">
-                <INSTANCE dmrole="mango:extmeas.PhotometricMeasure.photCal" dmtype="Phot:PhotCal">
-                </INSTANCE>          
-            </INSTANCE>
-            
-            <COLLECTION dmrole="mango:Property.associatedProperties">
+        <!-- Property enclosing a ProperMotion -->
+    <INSTANCE dmid="_PROPER_MOTION" dmtype="mango:PhysicalProperty">
+
+      <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
+        <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" value="" />
+        <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" value="" />
+      </INSTANCE>
+      <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" value="Sky Position" />
+
+      <INSTANCE dmrole="mango:PhysicalProperty.measure" dmtype="meas:ProperMotion">
+        <!-- Provides a complete description of a measured positional instant." -->
+        <ATTRIBUTE dmrole="meas:Measure.ucd" dmtype="ivoa:string" value="phys.veloc" />
+        <INSTANCE dmrole="meas:Measure.error" dmtype="meas:Error">
+          <!-- The Error class uses the Uncertainty types to describe measurement errors from various sources." -->
+          <INSTANCE dmrole="meas:Error.statError" dmtype="meas:Asymmetrical2D">
+            <COLLECTION dmrole="meas:Asymmetrical2D.plus">
+              <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" />
+              <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" />
             </COLLECTION>
-            
-        </INSTANCE>
-        
-        <INSTANCE dmtype="mango:PhysicalProperty">
-        
-            <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
-                <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" value=""/>
-                <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" value=""/>
-            </INSTANCE>
-            <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" value="Photometric point"/>
-            
-            <INSTANCE dmrole="mango:PhysicalProperty.measure" dmtype="meas:Position">
-         
-            </INSTANCE>
-            
-            <COLLECTION dmrole="mango:Property.associatedProperties">
+            <COLLECTION dmrole="meas:Asymmetrical2D.minus">
+              <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" />
+              <ATTRIBUTE dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" />
             </COLLECTION>
-            
+          </INSTANCE>
         </INSTANCE>
-        
-    </COLLECTION>
+        <INSTANCE dmrole="meas:ProperMotion.coord" dmtype="coords:LonLatPoint">
+          <ATTRIBUTE dmrole="coords:LonLatPoint.lon" dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value="" />
+          <ATTRIBUTE dmrole="coords:LonLatPoint.lat" dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value="" />
+          <ATTRIBUTE dmrole="coords:LonLatPoint.dist" dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value="" />
+        </INSTANCE>
+        <ATTRIBUTE dmrole="meas:ProperMotion.cosLat_applied" dmtype="ivoa:boolean" value=""/>
+      </INSTANCE>
+      </INSTANCE>
+      
+    <!-- Property enclosing a Parallax  -->
+    <INSTANCE dmid="_PARALLAX" dmtype="mango:PhysicalProperty">
+
+      <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
+        <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" value="" />
+        <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" value="" />
+      </INSTANCE>
+      <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" value="Parallax" />
+
+      <INSTANCE dmrole="mango:PhysicalProperty.measure" dmtype="meas:GenericMeasure">
+        <!-- Provides a complete description of a measured parallax " -->
+        <ATTRIBUTE dmrole="meas:Measure.ucd" dmtype="ivoa:string" ref="@@@@@" value="" />
+        <INSTANCE dmrole="meas:Measure.error" dmtype="meas:Error">
+          <!-- The Error class uses the Uncertainty types to describe measurement errors from various sources." -->
+          <INSTANCE dmrole="meas:Error.statError" dmtype="meas:Symmetrical">
+              <ATTRIBUTE dmrole="meas:Symmetrical.radius" dmtype="ivoa:RealQuantity" unit="mas" ref="@@@@@" />
+          </INSTANCE>
+        </INSTANCE>
+        <INSTANCE dmrole="meas:GenericMeasure.coord" dmtype="coords:PhysicalCoordinate">
+          <ATTRIBUTE dmrole="coords:PhysicalCoordinate.cval" dmtype="ivoa:RealQuantity" unit="mas" ref="@@@@@" value="" />
+        </INSTANCE>
+      </INSTANCE>
+    </INSTANCE>
+    
+    <!-- Property enclosing the radial velocity  -->
+    <INSTANCE dmid="_RADIAL_VELOCITY" dmtype="mango:PhysicalProperty">
+
+      <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
+        <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" value="" />
+        <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" value="" />
+      </INSTANCE>
+      <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" value="Parallax" />
+
+      <INSTANCE dmrole="mango:PhysicalProperty.measure" dmtype="meas:GenericMeasure">
+        <!-- Provides a complete description of a measured parallax " -->
+        <ATTRIBUTE dmrole="meas:Measure.ucd" dmtype="ivoa:string" ref="@@@@@" value="" />
+        <INSTANCE dmrole="meas:Measure.error" dmtype="meas:Error">
+          <!-- The Error class uses the Uncertainty types to describe measurement errors from various sources." -->
+          <INSTANCE dmrole="meas:Error.statError" dmtype="meas:Symmetrical">
+              <ATTRIBUTE dmrole="meas:Symmetrical.radius" dmtype="ivoa:RealQuantity" unit="mas" ref="@@@@@" />
+          </INSTANCE>
+        </INSTANCE>
+        <INSTANCE dmrole="meas:GenericMeasure.coord" dmtype="coords:PhysicalCoordinate">
+          <ATTRIBUTE dmrole="coords:PhysicalCoordinate.cval" dmtype="ivoa:RealQuantity" unit="mas" ref="@@@@@" value="" />
+        </INSTANCE>
+      </INSTANCE>
+    </INSTANCE>
+
+  </COLLECTION>
 </INSTANCE>

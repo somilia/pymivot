@@ -15,15 +15,9 @@ tmp_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
 vodml_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "vodml")
 
-# must be built from VODML in a later version
-inheritence_tree = {
-    "coords:Point": ["coords:LonLatPoint"],
-    "ivoa:Quantity": ["ivoa:RealQuantity"],
-    "meas:Symmetrical": ["meas:Asymmetrical3D"],
-    "meas:Error": ["meas:Asymmetrical2D"],
-    }
+# types to be ignored for now
 inheritence_tree = {}
-
+ivoa_types = ["ivoa:RealQuantity", "ivoa:IntQuantity"]
 class CheckFailedException(Exception):
     pass
 
@@ -178,21 +172,15 @@ class InstanceChecker(object):
             for val in  deep_tree[key]:
                 if val not in graph[key]:
                     graph[key].append(val)  
-        print("graph===========")
-        print(graph)            
         for key in graph:
             if key not in InstanceChecker.inheritence_tree:
                 InstanceChecker.inheritence_tree[key] = graph[key]
             else :
                 InstanceChecker.inheritence_tree[key] = InstanceChecker.inheritence_tree[key] + graph[key]
+        # ivoa model is not parsed yet....
+        if "ivoa:Quantity" not in InstanceChecker.inheritence_tree:
+            InstanceChecker.inheritence_tree["ivoa:Quantity"] = ivoa_types
         return
-               
-        InstanceChecker.inheritence_tree = graph
-        #
-        # Patch ad-hoc meanwhile cross model inheritence is not supported
-        if "meas:Measure" not in InstanceChecker.inheritence_tree:
-            InstanceChecker.inheritence_tree["meas:Measure"] = []
-        InstanceChecker.inheritence_tree["meas:Measure"].append("mango:extmeas.PhotometricMeasure")
 
     @staticmethod
     def _check_attribute(attribute_etree, vodml_instance):
@@ -255,11 +243,12 @@ class InstanceChecker(object):
                 # Get the item type as used by mivot 
                 for item in collection_etree.xpath("./*"):
                     mivot_item_type = item.get("dmtype")
-                    if (vodml_type not in InstanceChecker.inheritence_tree or 
+                    if (mivot_item_type not in ivoa_types and mivot_item_type != vodml_type and 
+                        (vodml_type not in InstanceChecker.inheritence_tree or 
                         mivot_item_type not in InstanceChecker.inheritence_tree[vodml_type]
-                    ):
+                    )):
                         raise CheckFailedException(f"Collection with dmrole={collection_role} "
-                                                   f"has items with prohibited types ({mivot_item_type})"
+                                                   f"has items with prohibited types ({mivot_item_type}) "
                                                    f"instead of expected {vodml_type} ")
                     else:
                         for item in collection_etree.xpath("./*"):
@@ -297,7 +286,6 @@ class InstanceChecker(object):
                     ):
                     print(f"-> found that {actual_type} inherits from {vodml_type}")
                     return
-                print(InstanceChecker.inheritence_tree)
                 raise CheckFailedException(f"Object type {enclosing_vodml_instance.getroot().get('dmtype')} "
                                            f"has no component with dmrole={actual_role} and dmtype={actual_type} "
                                            f"type should be {vodml_type}")
@@ -336,7 +324,11 @@ class InstanceChecker(object):
                     raise CheckFailedException(f"Duplicated dmrole {dmrole}")
                 checked_roles.append(child.get("dmrole"))
                 
-                if InstanceChecker._check_attribute(child, vodml_instance) is False:
+                # ivao:Quantity are complex types that can be serialized as ATTRIBUTE.
+                # This is an exception
+                if( child.get("dmtype") not in ivoa_types 
+                    and InstanceChecker._check_attribute(child, vodml_instance) is False
+                    ):
                     message = (f'cannot find attribute with dmrole={dmrole} '
                                f'dmtype={child.get("dmtype")} in complex type {dmtype}')
                     raise CheckFailedException(message)
@@ -373,6 +365,12 @@ class InstanceChecker(object):
                 else :
                     print(f'VALID: collection with dmrole={dmrole} '
                           f'in complex type {dmtype}')
+            elif child.tag == "REFERENCE":
+                dmrole = child.get("dmrole")
+                if dmrole in checked_roles:
+                    raise CheckFailedException(f"Duplicated dmrole {dmrole}")
+                print(f'SKIPPED: Reference to instance with dmrole={dmrole}')
+
             else:
                 raise CheckFailedException(f'unsupported tag {child.tag}')
         return True

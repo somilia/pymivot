@@ -242,13 +242,10 @@ class Builder:
             for tags in list(ele):  
                 if tags.tag == "vodml-id" and tags.text == vodmlid:
                     print("  found in objecttype")
-                    print("111111")
 
                     if extend is False and abstract_att is not None and abstract_att.lower() == "true":
-                        print("2222222")
                         self.get_concrete_type_by_ref(vodmlid, role, aggregate, extend)                    
                     else:
-                        print("44444444")
                         self.build_object(ele, role, False, aggregate)
                     return
 
@@ -260,10 +257,8 @@ class Builder:
                     print("  found in datatype")  
                     print(extend)                  
                     if extend is False and abstract_att is not None and abstract_att.lower() == "true":
-                        print("8888888888888")
                         self.get_concrete_type_by_ref(vodmlid, role, aggregate, extend)                    
                     else:
-                        print("99999999999")
                         self.build_object(ele, role, False, aggregate)
                     return
                         
@@ -307,7 +302,6 @@ class Builder:
         #filename = vodmlid.replace(":", ".") + ".xml"
         #filename = filename.replace(".Point.", ".LonLatPoint.")
         #ilename = filename.replace(".TimeStamp.", ".MJD.")
-        print("zzzzzzzzzz")
         self.write_out(f'<INSTANCE dmrole="{role}" dmtype="{vodmlid}"/>')
 
         #if self.include_file(filename) is False:
@@ -338,7 +332,8 @@ class Builder:
             return
         else:
             self.write_out(f"<!-- Put here a concrete INSTANCE of {abstract_vodmlid} or left blank -->")
-        
+            self.write_out(f"<INSTANCE dmrole='{role}' dmtype='{self.model_name}:{abstract_vodmlid}'/>")
+      
     def write_out(self, string):
         if self.output is None:
             print(string)

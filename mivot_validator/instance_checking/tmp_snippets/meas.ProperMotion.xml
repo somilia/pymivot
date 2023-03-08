@@ -1,5 +1,5 @@
-<INSTANCE dmrole="" dmtype="meas:Position">
-   <!-- Provides a complete description of a measured positional instant." -->
+<INSTANCE dmrole="" dmtype="meas:ProperMotion">
+   <!-- Proper motion represented as the velocity in Longitude and Latitude directions of a spherical coordinate space.  The associated SpaceFrame provides the details regarding the nature of the coordinate space (eg: Equatorial, Galactic, etc)." -->
    <ATTRIBUTE dmrole="meas:Measure.ucd" dmtype="ivoa:string" ref="@@@@@" value=""/>
    <INSTANCE dmrole="meas:Measure.error" dmtype="meas:Error">
       <!-- The Error class uses the Uncertainty types to describe measurement errors from various sources." -->
@@ -8,5 +8,6 @@
       <!-- Put here a concrete INSTANCE of Uncertainty or left blank -->
       <INSTANCE dmrole="meas:Error.sysError" dmtype="meas:Uncertainty"/>
    </INSTANCE>
-   <INSTANCE dmrole="meas:Position.coord" dmtype="coords:Point"/>
+   <INSTANCE dmrole="meas:ProperMotion.coord" dmtype="coords:Point"/>
+   <ATTRIBUTE dmrole="meas:ProperMotion.cosLat_applied" dmtype="ivoa:boolean" unit="" ref="@@@@@" value=""/>
 </INSTANCE>
