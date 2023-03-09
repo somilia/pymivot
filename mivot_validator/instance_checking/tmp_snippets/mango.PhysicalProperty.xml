@@ -46,6 +46,6 @@ This class is used to specify the type of the measure as well as its role." -->
    </COLLECTION>
    <!-- Science ready data with the instrument signature removed (ObsCore). -->
    <!-- Enumeration datatype: supported values are Raw Instrumental Calibrated  -->
-   <ATTRIBUTE dmrole="mango:PhysicalProperty.calibrationLevel" dmtype="CalibrationLevel" value="OneOf Raw Instrumental Calibrated "/>
+   <ATTRIBUTE dmrole="mango:PhysicalProperty.calibrationLevel" dmtype="mango:CalibrationLevel" value="OneOf Raw Instrumental Calibrated "/>
    <INSTANCE dmrole="mango:PhysicalProperty.measure" dmtype="meas:Measure"/>
 </INSTANCE>

@@ -1,0 +1,58 @@
+<!-- Photometric Calibration -->
+<INSTANCE dmtype="Phot:PhotCal" dmid="_cal_GAIA2_G">
+  <ATTRIBUTE dmrole="Phot:PhotCal.identifier" dmtype="ivoa:string" value="GAIA/GAIA2.G/Vega" />
+  <!-- Magnitude System -->
+  <INSTANCE dmtype="Phot:MagnitudeSystem" dmrole="Phot:PhotCal.magnitudeSystem">
+    <ATTRIBUTE dmrole="Phot:MagnitudeSystem.type" dmtype="Phot:TypeOfMagSystem" value="Vega" />
+    <ATTRIBUTE dmrole="Phot:MagnitudeSystem.referenceSpectrum" dmtype="ivoa:anyURI"
+      value="http://svo2.cab.inta-csic.es/theory/fps/morefiles/vega.dat" />
+  </INSTANCE>
+
+  <!-- Zero Point -->
+  <INSTANCE dmtype="Phot:PogsonZeropoint" dmrole="Phot:PhotCal.zeroPoint">
+    <ATTRIBUTE dmrole="Phot:ZeroPoint.type" dmtype="ivoa:integer" value="Pogson" />
+    <ATTRIBUTE dmrole="Phot:ZeroPoint.referenceMagnitudeValue" dmtype="ivoa:real" value="0" />
+
+    <INSTANCE dmtype="Phot:Flux" dmrole="Phot:ZeroPoint.flux">
+      <ATTRIBUTE dmrole="Phot:Flux.ucd" dmtype="Phot:UCD" value="phot.flux;meta.modelled" />
+      <ATTRIBUTE dmrole="Phot:Flux.unitexpression" dmtype="ivoa:Unit" value="Jy" />
+      <ATTRIBUTE dmrole="Phot:Flux.value" dmtype="ivoa:real" value="3296.201" />
+    </INSTANCE>
+  </INSTANCE>
+  
+  <!-- Filter -->
+  <INSTANCE  dmid="_filter_GAIA2_G" dmtype="Phot:PhotometryFilter" dmrole="Phot:PhotCal.photometryFilter">
+    <ATTRIBUTE dmrole="Phot:PhotometryFilter.fpsIdentifier" dmtype="ivoa:string" value="ivo://svo/fps" />
+    <ATTRIBUTE dmrole="Phot:PhotometryFilter.identifier" dmtype="ivoa:string" value="GAIA/GAIA2.G" />
+    <ATTRIBUTE dmrole="Phot:PhotometryFilter.name" dmtype="ivoa:string" value="GAIA G filter, DR2" />
+    <ATTRIBUTE dmrole="Phot:PhotometryFilter.description" dmtype="ivoa:string" value="GAIA G filter, DR2" />
+    <ATTRIBUTE dmrole="Phot:PhotometryFilter.bandName" dmtype="ivoa:string" value="" />
+
+    <!-- Spectral Location -->
+    <INSTANCE dmtype="Phot:SpectralLocation" dmrole="Phot:PhotometryFilter.spectralLocation">
+      <ATTRIBUTE dmrole="Phot:SpectralLocation.ucd" dmtype="Phot:UCD" value="em.wl.effective" />
+      <ATTRIBUTE dmrole="Phot:SpectralLocation.unitexpression" dmtype="ivoa:Unit" value="Angstrom" />
+      <ATTRIBUTE dmrole="Phot:SpectralLocation.value" dmtype="ivoa:real" value="6230.0" />
+    </INSTANCE>
+
+    <!-- Band width -->
+    <INSTANCE dmtype="Phot:Bandwidth" dmrole="Phot:PhotometryFilter.bandwidth">
+      <ATTRIBUTE dmrole="Phot:Bandwidth.ucd" dmtype="Phot:UCD" value="instr.bandwidth;stat.fwhm" />
+      <ATTRIBUTE dmrole="Phot:Bandwidth.unitexpression" dmtype="ivoa:Unit" value="Angstrom" />
+      <ATTRIBUTE dmrole="Phot:Bandwidth.extent" dmtype="ivoa:real" value="4182.964383547" />
+      <ATTRIBUTE dmrole="Phot:Bandwidth.start" dmtype="ivoa:real" value="3306.6039005948" />
+      <ATTRIBUTE dmrole="Phot:Bandwidth.stop" dmtype="ivoa:real" value="10450.650159395" />
+    </INSTANCE>
+
+    <!-- Transmision Curve -->
+    <INSTANCE dmrole="Phot:PhotometryFilter.transmissionCurve" dmtype="Phot:TransmissionCurve">
+      <INSTANCE dmtype="Phot:Access" dmrole="Phot:TransmissionCurve.access">
+        <ATTRIBUTE dmrole="Phot:Access.reference" dmtype="ivoa:anyURI"
+          value="http://svo2.cab.inta-csic.es/theory/fps/fps.php?PhotCalID=GAIA/GAIA2.G/Vega" />
+        <ATTRIBUTE dmrole="Phot:Access.size" dmtype="ivoa:integer" value="-1" />
+        <ATTRIBUTE dmrole="Phot:Access.format" dmtype="ivoa:string" value="VOTable" />
+      </INSTANCE>
+    </INSTANCE>
+  </INSTANCE>
+
+</INSTANCE>

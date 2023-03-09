@@ -84,6 +84,13 @@ class InstanceChecker(object):
             file_path = os.path.join(tmp_data_path, filename)
             if filename.endswith(".xml") and os.path.isfile(file_path):
                 os.unlink(file_path)
+                
+    @staticmethod
+    def _get_vodmlid(self, vodmlid, model_name):
+        if ":" in  vodmlid:
+            return f"{vodmlid}"
+        else:
+            return f"{model_name}:{vodmlid}"
 
     @staticmethod
     def _get_model_location(model):
@@ -289,7 +296,6 @@ class InstanceChecker(object):
                 raise CheckFailedException(f"Object type {enclosing_vodml_instance.getroot().get('dmtype')} "
                                            f"has no component with dmrole={actual_role} and dmtype={actual_type} "
                                            f"type should be {vodml_type}")
-
         raise CheckFailedException(f"dmrole {actual_role} not found in object type {enclosing_vodml_instance.getroot().get('dmtype')}")
             
     @staticmethod

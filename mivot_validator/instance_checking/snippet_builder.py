@@ -21,7 +21,7 @@ class Constraints:
         self.role = None
         self.model_name = model_name
         self.constraints = {}
-
+    
     def add_constraint(self, ele):
         refs = ele.xpath(".//datatype/vodml-ref")
         if len(refs) == 0:
@@ -204,11 +204,8 @@ class Builder:
                 dmrole = f"{self.model_name}:{vodml_id}"
             elif tags.tag == "datatype" :   
                 for ref in tags.getchildren():
-                    vodmlref = ref.text 
-                    if ":" in  vodmlref:
-                        dmtype = f"{vodmlref}"
-                    else:
-                        dmtype = f"{self.model_name}:{vodmlref}"
+                    vodmlref = ref.text
+                    dmtype = self.get_vodmlid(vodmlref)
                     if vodmlref.startswith("ivoa:") is False:
                         self.get_object_by_ref(vodmlref.replace(self.model_name + ":", ""), dmrole, True)
                         return
@@ -273,11 +270,7 @@ class Builder:
             if found is True:
                 if description:
                     self.write_out(description)
-                if ":" in  vodmlid:
-                    dmtype = f"{vodmlid}"
-                else:
-                    dmtype = f"{self.model_name}:{vodmlid}"
-
+                dmtype = self.get_vodmlid(vodmlid)
                 self.write_out(f'<ATTRIBUTE dmrole="{role}" dmtype="{dmtype}" ref="@@@@@" value=""/>')
                 return
             
@@ -297,7 +290,8 @@ class Builder:
                 if description:
                     self.write_out(description)
                 self.write_out(f'<!-- Enumeration datatype: supported values are {val_str} -->')
-                self.write_out(f'<ATTRIBUTE dmrole="{role}" dmtype="{vodmlid}" value="OneOf {val_str}"/>')
+                dmtype = self.get_vodmlid(vodmlid)
+                self.write_out(f'<ATTRIBUTE dmrole="{role}" dmtype="{dmtype}" value="OneOf {val_str}"/>')
                 return
         #filename = vodmlid.replace(":", ".") + ".xml"
         #filename = filename.replace(".Point.", ".LonLatPoint.")
@@ -344,6 +338,14 @@ class Builder:
     def is_abstract(self, ele):
         print(f' is that abstract {ele.get("abstract")} ?')
         return ele.get("abstract") is not None
+    
+    def get_vodmlid(self, vodmlid):
+        if ":" in  vodmlid:
+            return f"{vodmlid}"
+        else:
+            return f"{self.model_name}:{vodmlid}"
+
+
     
 if __name__ == '__main__':
     builder = Builder(
