@@ -1,15 +1,82 @@
 {
-    "coords:Coordinate": ["coords:BinnedCoordinate", "coords:PhysicalCoordinate", "coords:Point", "coords:TimeStamp", "coords:PolCoordinate", "coords:PixelIndex", "coords:CartesianPoint", "coords:LonLatPoint", "coords:GenericPoint", "coords:TimeOffset", "coords:TimeInstant", "coords:PolState"],
-    "coords:BinnedCoordinate": ["coords:PixelIndex"],
-    "coords:Point": ["coords:CartesianPoint", "coords:LonLatPoint", "coords:GenericPoint"],
-    "coords:TimeStamp": ["coords:TimeOffset", "coords:TimeInstant", "coords:JD", "coords:MJD", "coords:ISOTime"],
-    "coords:TimeInstant": ["coords:JD", "coords:MJD", "coords:ISOTime"],
-    "coords:PolCoordinate": ["coords:PolState"],
-    "coords:RefLocation": ["coords:StdRefLocation", "coords:CustomRefLocation"],
-    "coords:Axis": ["coords:ContinuousAxis", "coords:BinnedAxis", "coords:DiscreteSetAxis"],
-    "coords:CoordFrame": ["coords:GenericFrame", "coords:SpaceFrame", "coords:TimeFrame"],
-    "coords:CoordSys": ["coords:AstroCoordSystem", "coords:PixelCoordSystem", "coords:PhysicalCoordSys", "coords:GenericSys", "coords:SpaceSys", "coords:TimeSys"],
-    "coords:CoordSpace": ["coords:PixelSpace", "coords:PhysicalCoordSpace", "coords:GenericCoordSpace", "coords:SphericalCoordSpace", "coords:CartesianCoordSpace"],
-    "coords:PhysicalCoordSys": ["coords:GenericSys", "coords:SpaceSys", "coords:TimeSys"],
-    "coords:PhysicalCoordSpace": ["coords:GenericCoordSpace", "coords:SphericalCoordSpace", "coords:CartesianCoordSpace"]
+  "coords:Coordinate": [
+    "coords:BinnedCoordinate",
+    "coords:PhysicalCoordinate",
+    "coords:Point",
+    "coords:TimeStamp",
+    "coords:PolCoordinate",
+    "coords:PixelIndex",
+    "coords:CartesianPoint",
+    "coords:LonLatPoint",
+    "coords:GenericPoint",
+    "coords:TimeOffset",
+    "coords:TimeInstant",
+    "coords:PolState"
+  ],
+  "coords:BinnedCoordinate": [
+    "coords:PixelIndex"
+  ],
+  "coords:Point": [
+    "coords:CartesianPoint",
+    "coords:LonLatPoint",
+    "coords:GenericPoint"
+  ],
+  "coords:TimeStamp": [
+    "coords:TimeOffset",
+    "coords:TimeInstant",
+    "coords:JD",
+    "coords:MJD",
+    "coords:ISOTime"
+  ],
+  "coords:TimeInstant": [
+    "coords:JD",
+    "coords:MJD",
+    "coords:ISOTime"
+  ],
+  "coords:PolCoordinate": [
+    "coords:PolState"
+  ],
+  "coords:RefLocation": [
+    "coords:StdRefLocation",
+    "coords:CustomRefLocation"
+  ],
+  "coords:Axis": [
+    "coords:ContinuousAxis",
+    "coords:BinnedAxis",
+    "coords:DiscreteSetAxis"
+  ],
+  "coords:CoordFrame": [
+    "coords:GenericFrame",
+    "coords:SpaceFrame",
+    "coords:TimeFrame"
+  ],
+  "coords:CoordSys": [
+    "coords:AstroCoordSystem",
+    "coords:PixelCoordSystem",
+    "coords:PhysicalCoordSys",
+    "coords:GenericSys",
+    "coords:SpaceSys",
+    "coords:TimeSys"
+  ],
+  "coords:CoordSpace": [
+    "coords:PixelSpace",
+    "coords:PhysicalCoordSpace",
+    "coords:GenericCoordSpace",
+    "coords:SphericalCoordSpace",
+    "coords:CartesianCoordSpace"
+  ],
+  "coords:PhysicalCoordSys": [
+    "coords:GenericSys",
+    "coords:SpaceSys",
+    "coords:TimeSys"
+  ],
+  "coords:PhysicalCoordSpace": [
+    "coords:GenericCoordSpace",
+    "coords:SphericalCoordSpace",
+    "coords:CartesianCoordSpace"
+  ],
+  "ivoa:Quantity": [
+    "ivoa:RealQuantity",
+    "ivoa:IntQuantity"
+  ]
 }
