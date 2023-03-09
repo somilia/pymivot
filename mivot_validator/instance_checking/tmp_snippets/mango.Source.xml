@@ -1,0 +1,57 @@
+<INSTANCE dmrole="" dmtype="mango:Source">
+   <!-- Root class of the model. MANGO instance are meant of be Source instances.
+A source has an identifier and two docks: one for the parameters and one for the associated data." -->
+   <ATTRIBUTE dmrole="mango:Source.identifier" dmtype="ivoa:string" ref="@@@@@" value=""/>
+   <COLLECTION dmrole="mango:Source.associatedDataDock">
+      <!-- Put here a concrete INSTANCE of AssociatedData or left blank -->
+      <INSTANCE dmrole="" dmtype="mango:AssociatedData"/>
+   </COLLECTION>
+   <COLLECTION dmrole="mango:Source.propertyDock">
+      <INSTANCE dmrole="" dmtype="mango:Property">
+         <!-- Reference to a particular measure of the Source.
+This class is used to specify the type of the measure as well as its role." -->
+         <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
+            <!-- 
+          TODO : Missing description : please, update your UML model asap.
+        " -->
+            <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" ref="@@@@@" value=""/>
+            <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" ref="@@@@@" value=""/>
+         </INSTANCE>
+         <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" ref="@@@@@" value=""/>
+         <INSTANCE dmrole="mango:Property.measure" dmtype="meas:Measure"/>
+         <INSTANCE dmrole="mango:Property.coverage" dmtype="mango:Coverage">
+            <!-- 
+          TODO : Missing description : please, update your UML model asap.
+        " -->
+            <ATTRIBUTE dmrole="mango:Coverage.emin" dmtype="ivoa:real" unit="" ref="@@@@@" value=""/>
+            <ATTRIBUTE dmrole="mango:Coverage.emax" dmtype="ivoa:real" unit="" ref="@@@@@" value=""/>
+            <ATTRIBUTE dmrole="mango:Coverage.tmin" dmtype="ivoa:real" unit="" ref="@@@@@" value=""/>
+            <ATTRIBUTE dmrole="mango:Coverage.tmax" dmtype="ivoa:real" unit="" ref="@@@@@" value=""/>
+         </INSTANCE>
+         <COLLECTION dmrole="mango:Property.associatedProperties">
+            <INSTANCE dmrole="mango:Property.associatedProperties" dmtype="mango:Property">
+               <!-- Reference to a particular measure of the Source.
+This class is used to specify the type of the measure as well as its role." -->
+               <INSTANCE dmrole="mango:Property.semantic" dmtype="mango:VocabularyTerm">
+                  <!-- 
+          TODO : Missing description : please, update your UML model asap.
+        " -->
+                  <ATTRIBUTE dmrole="mango:VocabularyTerm.uri" dmtype="ivoa:string" ref="@@@@@" value=""/>
+                  <ATTRIBUTE dmrole="mango:VocabularyTerm.label" dmtype="ivoa:string" ref="@@@@@" value=""/>
+               </INSTANCE>
+               <ATTRIBUTE dmrole="mango:Property.description" dmtype="ivoa:string" ref="@@@@@" value=""/>
+               <INSTANCE dmrole="mango:Property.measure" dmtype="meas:Measure"/>
+               <INSTANCE dmrole="mango:Property.coverage" dmtype="mango:Coverage">
+                  <!-- 
+          TODO : Missing description : please, update your UML model asap.
+        " -->
+                  <ATTRIBUTE dmrole="mango:Coverage.emin" dmtype="ivoa:real" unit="" ref="@@@@@" value=""/>
+                  <ATTRIBUTE dmrole="mango:Coverage.emax" dmtype="ivoa:real" unit="" ref="@@@@@" value=""/>
+                  <ATTRIBUTE dmrole="mango:Coverage.tmin" dmtype="ivoa:real" unit="" ref="@@@@@" value=""/>
+                  <ATTRIBUTE dmrole="mango:Coverage.tmax" dmtype="ivoa:real" unit="" ref="@@@@@" value=""/>
+               </INSTANCE>
+            </INSTANCE>
+         </COLLECTION>
+      </INSTANCE>
+   </COLLECTION>
+</INSTANCE>

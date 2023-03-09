@@ -1,4 +1,26 @@
 {
-    "meas:Uncertainty": ["meas:Symmetrical", "meas:Asymmetrical1D", "meas:Asymmetrical2D", "meas:Asymmetrical3D", "meas:Bounds1D", "meas:Bounds2D", "meas:Bounds3D", "meas:Ellipse", "meas:Ellipsoid"],
-    "meas:Measure": ["meas:GenericMeasure", "meas:Position", "meas:Time", "meas:Polarization", "meas:Velocity", "meas:ProperMotion"]
+  "meas:Measure": [
+    "mango:extmeas.PhotometricMeasure",
+    "meas:GenericMeasure",
+    "meas:Position",
+    "meas:Time",
+    "meas:Polarization",
+    "meas:Velocity",
+    "meas:ProperMotion"
+  ],
+  "meas:Uncertainty": [
+    "meas:Symmetrical",
+    "meas:Asymmetrical1D",
+    "meas:Asymmetrical2D",
+    "meas:Asymmetrical3D",
+    "meas:Bounds1D",
+    "meas:Bounds2D",
+    "meas:Bounds3D",
+    "meas:Ellipse",
+    "meas:Ellipsoid"
+  ],
+  "ivoa:Quantity": [
+    "ivoa:RealQuantity",
+    "ivoa:IntQuantity"
+  ]
 }

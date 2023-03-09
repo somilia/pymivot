@@ -30,8 +30,8 @@ def main():
         
     # Connect the model viewer to the first table of the first resource    
     for resource in votable.resources:
-        if len(votable.resources) != 1 :
-            print("Resources with more than one table are not supported yet")
+        if len(resource.tables) != 1 :
+            print(f"Resources with more than one table are not supported yet: {len(resource.tables)} tables found")
             sys.exit(1)
         # The model viewer is a module able to provide a model view on data
         mviewer = ModelViewer(resource, votable_path=votable_path)
