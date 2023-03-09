@@ -125,13 +125,13 @@ mivot-instance-validate <VOTABLE path>
 ```
 
 The validation process follows these steps
-- INPUT: a VOTable annotated with the supported modes. 
-  - The annotation must have a valid TEMPLATES 
-  - The current implementation works only with VOTables havinf one table.
+- INPUT: a VOTable annotated with the supported models. 
+  - The annotation must have at least one valid TEMPLATES 
+  - The current implementation works only with VOTables having one table.
 - Building of a model view of the first data row (`mivot-validator/mivot_validator/instance_checking/xml_interpreter/model_viewer.py`).
 - All top level INSTANCEs of the model view will be checked one by one.
-- The XML block corresponding to the instance to validate are extracted as etree objects
-- Get the `dmtype`on the instance to validate
+- The XML block corresponding to the instance to validate is extracted as etree objects
+- Get the `dmtype` on the instance to validate
 - build a XML snippets for that class from the VODML file (`mivot-validator/mivot_validator/instance_checking/snippet_builder.py`)
 - These snippets are stored in `mivot-validator/mivot_validator/instance_checking/tmp_snippets` (&ast;)
 - The validator checks any component of the mapped instance against the snippet.
@@ -141,7 +141,7 @@ The validation process follows these steps
   - if the component is an INSTANCE, both dmtypes and roles are checked and the validation loop is run on its components
 
 The validator only checks the model elements that are mapped. It does not care about missing attributes or any other missing class components.
-MIVOT does has no requirement on the model elements taht must be mapped.
+MIVOT does not have requirements on the model elements that must be mapped.
 
 (&ast;) It is to be noted that those snippets can be used to build annotations. If you feed the validator with an empty INSTANCE with the searched dmtype:
 ```
