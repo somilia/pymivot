@@ -134,8 +134,20 @@ The validation process follows these steps
 - Get the `dmtype`on the instance to validate
 - build a XML snippets for that class from the VODML file (`mivot-validator/mivot_validator/instance_checking/snippet_builder.py`)
 - These snippets are stored in `mivot-validator/mivot_validator/instance_checking/tmp_snippets` (&ast;)
+- The validator checks any component of the mapped instance against the snippet.
+  - if the component is an ATTRIBUTE, both dmtypes and roles are checked
+  - if the component is an COLLECTION, dmrole as well as items dmtypes are checked
+  - if the component is an REFERENCE, dmrole is checked
+  - if the component is an INSTANCE, both dmtypes and roles are checked and the validation loop is run on its components
 
-() it is to be noted that those snippets can be used 
+The validator only checks the model elements that are mapped. It does not care about missing attributes or any other missing class components.
+MIVOT does has no requirement on the model elements taht must be mapped.
+
+(&ast;) It is to be noted that those snippets can be used to build annotations. If you feed the validator with an empty INSTANCE with the searched dmtype:
+```
+<INSTANCE dmtype="model:MyFavouriteType"\>
+```
+you will get  an XML snippet named `model.MyFavouriteType.xml`
 
 #### Types and Roles Checking (obsoleted)
 
