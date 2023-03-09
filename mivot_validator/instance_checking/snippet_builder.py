@@ -346,6 +346,23 @@ class Builder:
             return f"{vodmlid}"
         else:
             return f"{self.model_name}:{vodmlid}"
+<<<<<<< HEAD
+=======
+
+
+    
+if __name__ == '__main__':
+    builder = Builder(
+        "coords",
+        "SpaceSys",
+        os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            "Coords-v1.0.vo-dml.xml"
+            ),
+            os.path.dirname(os.path.realpath(__file__))
+        )
+    builder.build()
+>>>>>>> branch 'feature/mango' of git@github.com:ivoa/mivot-validator.git
 
 
     
