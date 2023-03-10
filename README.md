@@ -128,16 +128,16 @@ The validation process follows these steps
 - INPUT: a VOTable annotated with the supported models. 
   - The annotation must have at least one valid TEMPLATES 
   - The current implementation works only with VOTables having one table.
-- Building of a model view of the first data row (`mivot-validator/mivot_validator/instance_checking/xml_interpreter/model_viewer.py`).
-- All top level INSTANCEs of the model view will be checked one by one.
-- The XML block corresponding to the instance to validate is extracted as etree objects
+- Build a model view of the first data row (`mivot-validator/mivot_validator/instance_checking/xml_interpreter/model_viewer.py`).
+- All top level INSTANCEs of that model view will be checked one by one.
+- The XML blocks corresponding to these instances are extracted as etree objects
 - Get the `dmtype` on the instance to validate
-- build a XML snippets for that class from the VODML file (`mivot-validator/mivot_validator/instance_checking/snippet_builder.py`)
+- build an XML snippets for that class from the VODML file (`mivot-validator/mivot_validator/instance_checking/snippet_builder.py`)
 - These snippets are stored in `mivot-validator/mivot_validator/instance_checking/tmp_snippets` (&ast;)
 - The validator checks any component of the mapped instance against the snippet.
   - if the component is an ATTRIBUTE, both dmtypes and roles are checked
-  - if the component is an COLLECTION, dmrole as well as items dmtypes are checked
-  - if the component is an REFERENCE, dmrole is checked
+  - if the component is a COLLECTION, dmrole as well as items dmtypes are checked
+  - if the component is a REFERENCE, dmrole is checked
   - if the component is an INSTANCE, both dmtypes and roles are checked and the validation loop is run on its components
 
 The validator only checks the model elements that are mapped. It does not care about missing attributes or any other missing class components.
@@ -147,7 +147,7 @@ MIVOT does not have requirements on the model elements that must be mapped.
 ```
 <INSTANCE dmtype="model:MyFavouriteType"\>
 ```
-you will get  an XML snippet named `model.MyFavouriteType.xml`
+you get an XML snippet named `model.MyFavouriteType.xml` that can be copied and tuned into your VOTable
 
 #### Types and Roles Checking (obsoleted)
 
