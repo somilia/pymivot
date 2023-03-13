@@ -6,7 +6,8 @@
     "meas:Time",
     "meas:Polarization",
     "meas:Velocity",
-    "meas:ProperMotion"
+    "meas:ProperMotion",
+    "mango:extmeas.PhotometricMeasure"
   ],
   "meas:Uncertainty": [
     "meas:Symmetrical",

@@ -1,0 +1,8 @@
+<INSTANCE dmrole="" dmtype="mango:extmeas.PhotometricMeasure">
+   <!-- 
+          TODO : Missing description : please, update your UML model asap.
+        " -->
+   <INSTANCE dmrole="meas:Measure" dmtype="meas:Measure"/>
+   <ATTRIBUTE dmrole="mango:extmeas.PhotometricMeasure.value" dmtype="ivoa:RealQuantity" unit="" ref="@@@@@" value=""/>
+   <INSTANCE dmrole="mango:extmeas.PhotometricMeasure.photCal" dmtype="Phot:PhotCal"/>
+</INSTANCE>

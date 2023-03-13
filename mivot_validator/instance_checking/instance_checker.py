@@ -187,7 +187,11 @@ class InstanceChecker(object):
         # ivoa model is not parsed yet....
         if "ivoa:Quantity" not in InstanceChecker.inheritence_tree:
             InstanceChecker.inheritence_tree["ivoa:Quantity"] = ivoa_types
+        # Cross model inheritance not supported yet  
+        if "meas:Measure" in InstanceChecker.inheritence_tree:
+            InstanceChecker.inheritence_tree["meas:Measure"].append("mango:extmeas.PhotometricMeasure")
         return
+
 
     @staticmethod
     def _check_attribute(attribute_etree, vodml_instance):
