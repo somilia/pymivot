@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<INSTANCE dmrole="" dmtype="Phot:PhotCal">
+<ATTRIBUTE dmrole="Phot:PhotCal.identifier" dmtype="ivoa:string" value="2MASS/2MASS.H/Vega"/>
+<INSTANCE dmrole="Phot:PhotCal.zeroPoint" dmtype="Phot:ZeroPoint">
+<ATTRIBUTE dmrole="Phot:ZeroPoint.type" dmtype="ivoa:integer" value="0"/>
+<ATTRIBUTE dmrole="Phot:ZeroPoint.referenceMagnitudeValue" dmtype="ivoa:real" value="0"/>
+<ATTRIBUTE dmrole="Phot:ZeroPoint.referenceMagnitudeError" dmtype="ivoa:real" value="0"/>
+<!-- only for  dmtype="Phot:ASinZeroPoint  can be dropped -->
+<!-- ATTRIBUTE dmrole="Phot:ZeroPoint.softeningParameter" dmtype="ivoa:real" value=""/  -->
+<INSTANCE dmrole="Phot:ZeroPoint.flux" dmtype="Phot:Flux">
+<ATTRIBUTE dmrole="Phot:Flux.ucd" dmtype="Phot:UCD" value="phot.flux.density"/>
+<ATTRIBUTE dmrole="Phot:Flux.unitexpression" dmtype="ivoa:Unit" value="Jy"/>
+<ATTRIBUTE dmrole="Phot:Flux.value" dmtype="ivoa:real" value="1024"/>
+<ATTRIBUTE dmrole="Phot:Flux.error" dmtype="ivoa:real" value="0"/>
+</INSTANCE>
+</INSTANCE>
+<INSTANCE dmrole="Phot:PhotCal.magnitudeSystem" dmtype="Phot:MagnitudeSystem">
+<ATTRIBUTE dmrole="Phot:MagnitudeSystem.type" dmtype="Phot:TypeOfMagSystem" value="Vega"/>
+<ATTRIBUTE dmrole="Phot:MagnitudeSystem.referenceSpectrum" dmtype="ivoa:anyURI" value="http://svo2.cab.inta-csic.es/theory/fps/morefiles/vega.dat"/>
+</INSTANCE>
+<!-- replace Phot:photometryFilter with Phot:PhotometryFilter -->
+<!-- INSTANCE dmrole="Phot:PhotCal.photometryFilter" dmtype="Phot:photometryFilter" -->
+<INSTANCE dmrole="Phot:PhotCal.photometryFilter" dmtype="Phot:PhotometryFilter">
+<!--  -->
+<ATTRIBUTE dmrole="Phot:PhotometryFilter.fpsIdentifier" dmtype="ivoa:string" value="ivo://svo/fps"/>
+<ATTRIBUTE dmrole="Phot:PhotometryFilter.identifier" dmtype="ivoa:string" value="2MASS/2MASS.H"/>
+<ATTRIBUTE dmrole="Phot:PhotometryFilter.name" dmtype="ivoa:string" value="2MASS.H"/>
+<ATTRIBUTE dmrole="Phot:PhotometryFilter.description" dmtype="ivoa:string" value="2MASS H"/>
+<ATTRIBUTE dmrole="Phot:PhotometryFilter.bandName" dmtype="ivoa:string" value="H"/>
+<!-- replace Phot:PhotCal.PhotometryFilter.bandwidth with Phot:PhotometryFilter.bandwidth -->
+<!-- INSTANCE dmrole="Phot:PhotCal.photometryFilter.bandwidth" dmtype="Phot:Bandwidth" -->
+<INSTANCE dmrole="Phot:PhotometryFilter.bandwidth" dmtype="Phot:Bandwidth">
+<!--  -->
+<ATTRIBUTE dmrole="Phot:Bandwidth.ucd" dmtype="Phot:UCD" value="instr.bandwidth"/>
+<ATTRIBUTE dmrole="Phot:Bandwidth.unitexpression" dmtype="ivoa:Unit" value=""/>
+<ATTRIBUTE dmrole="Phot:Bandwidth.extent" dmtype="ivoa:real" value="2509.4034987068"/>
+<ATTRIBUTE dmrole="Phot:Bandwidth.start" dmtype="ivoa:real" value="14447.826089036"/>
+<ATTRIBUTE dmrole="Phot:Bandwidth.stop" dmtype="ivoa:real" value="14447.826089036"/>
+</INSTANCE>
+<INSTANCE dmrole="Phot:PhotometryFilter.transmissionCurve" dmtype="Phot:TransmissionCurve">
+<INSTANCE dmrole="Phot:TransmissionCurve.access" dmtype="Phot:Access">
+<ATTRIBUTE dmrole="Phot:Access.reference" dmtype="ivoa:anyURI" value="http://svo2.cab.inta-csic.es/theory/fps/fps.php?ID=2MASS/2MASS.H"/>
+<ATTRIBUTE dmrole="Phot:Access.size" dmtype="ivoa:integer" value="1"/>
+<ATTRIBUTE dmrole="Phot:Access.format" dmtype="ivoa:string" value="application/x-votable+xml"/>
+</INSTANCE>
+</INSTANCE>
+<INSTANCE dmrole="Phot:PhotometryFilter.spectralLocation" dmtype="Phot:SpectralLocation">
+<ATTRIBUTE dmrole="Phot:SpectralLocation.ucd" dmtype="Phot:UCD" value="em.wl"/>
+<ATTRIBUTE dmrole="Phot:SpectralLocation.unitexpression" dmtype="ivoa:Unit" value="Angstrom"/>
+<ATTRIBUTE dmrole="Phot:SpectralLocation.value" dmtype="ivoa:real" value="16620"/>
+</INSTANCE>
+</INSTANCE>
+</INSTANCE>

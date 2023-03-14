@@ -49,6 +49,7 @@ class TestInstCheck(unittest.TestCase):
         files = os.listdir(mapping_sample)
         for sample_file in files:
             if sample_file.startswith("instcheck_") and "_ok_" in sample_file:
+                print(f"testing {sample_file}")
                 file_path = os.path.join(mapping_sample, sample_file)
                 instance = XmlUtils.xmltree_from_file(file_path)
                 status = InstanceChecker.check_instance_validity(instance.getroot())
