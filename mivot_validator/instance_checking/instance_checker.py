@@ -190,7 +190,6 @@ class InstanceChecker(object):
         # Cross model inheritance not supported yet  
         if "meas:Measure" in InstanceChecker.inheritence_tree:
             InstanceChecker.inheritence_tree["meas:Measure"].append("mango:extmeas.PhotometricMeasure")
-        return
 
 
     @staticmethod
