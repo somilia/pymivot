@@ -7,6 +7,7 @@ import os
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.xml_interpreter.exceptions import MappingException
 
+# no longer used
 DEFAULT_CONCRETE_CLASSES = {}
 
 class Constraints:
@@ -51,9 +52,16 @@ class Constraints:
     
 class Builder:
     """
-    Build a xml view of the class class_name.
+    Build a MIVOT view of the class model_name:class_name of the model
+    serialized in the provided VOMDL file
     """
     def __init__(self, model_name, class_name, vodml_path, output_dir):
+        """
+        :model_name: name of the model to be processed (could be retrieved 
+                     in the vodml
+        :class_name: name of the class (VOMDLID)  to be mapped
+        :vodml_path: full path of the VODML file
+        """
         self.model_name = model_name
         self.vodml = XmlUtils.xmltree_from_file(vodml_path)
         self.output_dir = output_dir
@@ -63,7 +71,11 @@ class Builder:
         self.class_name = class_name
         self.resolved_references = []
         
-    def build(self):         
+    def build(self):
+        """
+        Build one snippet for the dataType/objectType found in the VODML block 
+        and matching the searched class
+        """         
         for ele in self.vodml.xpath(f'.//dataType'):
             for tags in ele.getchildren  (): 
                 if tags.tag == "vodml-id" and  tags.text == self.class_name :
@@ -80,6 +92,15 @@ class Builder:
         raise MappingException(f"Complex type {self.class_name} not found")
             
     def build_object(self, ele, role, root, aggregate):
+        """
+        Build a MIVOT instance from a VOMDL element 
+        :ele: VODML representation of the class to be mapped
+        :role: VODML role to be affected to the built instance
+        :root: If true the INSTANCE is not a component of an enclosing object. The snippet file must be initialized
+        :aggregate: If False, all componentsfound out in the VODML element are added to the enclosing instance 
+                    (in that case of inheritance reconstruction) . Otherwise, those components are 
+                    enclosed in an INSTANCE (composition case)
+        """
         print(f"build object with role={role} within the class {self.class_name}")
         for tags in list(ele): 
             if tags.tag == "constraint":
@@ -123,6 +144,10 @@ class Builder:
             XmlUtils.xmltree_to_file(XmlUtils.xmltree_from_file(self.outputname), self.outputname)
           
     def addReference(self, ele):
+        """
+        insert in the current snippet the VOMDL element matching the VODML reference element
+        :ele: VODML  element of the reference
+        """
         print("== Add reference")
         vodmlid = None
         for tags in ele.getchildren():        
@@ -158,6 +183,10 @@ class Builder:
                                self.model_name + ":" + vodmlid, True)
             
     def addComposition(self, ele):
+        """
+        insert in the current snippet the VOMDL element matching the VODML composition element
+        :ele: VODML  element of the composition
+        """
         print("== Add composition")
         vodmlid = None
         for tags in ele.getchildren():        
@@ -175,6 +204,8 @@ class Builder:
         if const_type is not None:
             reftype = const_type
 
+        # MIVOT counterparts of compositions are INSTANCE when cardinality = 1
+        # and COLLECTIONS otherwise
         if max_occurs != "1":
 
             self.write_out(f'<COLLECTION dmrole="{(self.model_name + ":" + vodmlid)}" >')
@@ -186,7 +217,10 @@ class Builder:
                                self.model_name + ":" + vodmlid, True)
             
     def addExtend(self, ele):
-    
+        """
+        add to the current snippet the super class components
+        :ele: EXTEND VODML element
+        """   
         print("== add extend")
         for tags in ele.getchildren  (): 
             if tags.tag == "vodml-ref":
@@ -196,11 +230,23 @@ class Builder:
         const_type = self.constraints.get_contraint(reftype) 
         if const_type is not None in self.constraints.constraints:
             reftype = const_type
-
-        self.get_object_by_ref(reftype.replace(self.model_name + ":", ""), reftype, False, extend=True)
+        print(f"ref type {reftype}")
+        
+        #
+        # Not very nice path , but as long as we do not handle cros-model inheritance links
+        # we need it
+        if self.model_name != "meas" and reftype == "meas:Measure":
+            self.write_out(f'<ATTRIBUTE dmrole="meas:Measure.ucd" dmtype="ivoa:string" value="phot.mag;em.opt;stat.mean" />')
+        else:
+            self.get_object_by_ref(reftype.replace(self.model_name + ":", ""), reftype, False, extend=True)
                 
     def addAttribute(self, ele):
-        for tags in ele.getchildren  ():         # root is the ElementTree object
+        """
+        add one attribute to the current snippet (can a complex data type or not)
+        if the multiplicity is one:one attribute is added, a COLLECTION otherwise
+        :ele: ATTRIBUTE VODML element
+        """   
+        for tags in ele.getchildren  ():
             if tags.tag == "vodml-id":
                 vodml_id = tags.text
                 dmrole = f"{self.model_name}:{vodml_id}"
@@ -235,6 +281,8 @@ class Builder:
             self.write_out("</COLLECTION>")
     
     def get_object_by_ref(self, vodmlid, role, aggregate, extend=False):
+        """
+        """
         print(f"search object with vodmlid={vodmlid}")
         for ele in self.vodml.xpath(f'.//objectType'):
             abstract_att = ele.get("abstract")
@@ -303,20 +351,11 @@ class Builder:
         #if self.include_file(filename) is False:
         #   raise Exception(f"Type {vodmlid} not found. File {filename} may be missing")
         #
-    def include_file(self, filename):
-        if os.path.exists(filename):
-            print(f"include file {filename}")
-            lines = []
-            with open(filename) as include_file:
-                lines = include_file.readlines()
-            for line in lines:
-                self.write_out(line)
-            return True
-    
-        print(f"Cannot find file {filename}")
-        return False
 
     def get_concrete_type_by_ref(self, abstract_vodmlid, role, aggregate, extend):
+        """
+        """
+        print(f"search concrete object of vodmlid={abstract_vodmlid}")
         if role.endswith("coordSpace"):
             self.write_out("<!-- the axis representation (coords:PhysicalCoordSys.coordSpace) is not serialized here -->")
         elif abstract_vodmlid in DEFAULT_CONCRETE_CLASSES:
@@ -330,39 +369,46 @@ class Builder:
             self.write_out(f"<!-- Put here a concrete INSTANCE of {abstract_vodmlid} or left blank -->")
             self.write_out(f"<INSTANCE dmrole='{role}' dmtype='{self.model_name}:{abstract_vodmlid}'/>")
       
+    def is_abstract(self, ele):
+        """
+        Tells whether the datatype ele is abstract or not
+        """
+        print(f' is that abstract {ele.get("abstract")} ?')
+        return ele.get("abstract") is not None
+    
+    def get_vodmlid(self, vodmlid):
+        """
+        returns the full qualified VODMLid
+        """
+        if ":" in  vodmlid:
+            return f"{vodmlid}"
+        else:
+            return f"{self.model_name}:{vodmlid}"
     def write_out(self, string):
+        """
+        Write out the element given as string into the current snippet
+        """
         if self.output is None:
             print(string)
         else:
             self.output.write(string) 
             self.output.write("\n") 
-
-    def is_abstract(self, ele):
-        print(f' is that abstract {ele.get("abstract")} ?')
-        return ele.get("abstract") is not None
+            
+    def include_file(self, filename):
+        """
+        Snippet aggregation: no longer used
+        """
+        if os.path.exists(filename):
+            print(f"include file {filename}")
+            lines = []
+            with open(filename) as include_file:
+                lines = include_file.readlines()
+            for line in lines:
+                self.write_out(line)
+            return True
     
-    def get_vodmlid(self, vodmlid):
-        if ":" in  vodmlid:
-            return f"{vodmlid}"
-        else:
-            return f"{self.model_name}:{vodmlid}"
-<<<<<<< HEAD
-=======
-
-
-    
-if __name__ == '__main__':
-    builder = Builder(
-        "coords",
-        "SpaceSys",
-        os.path.join(
-            os.path.dirname(os.path.realpath(__file__)),
-            "Coords-v1.0.vo-dml.xml"
-            ),
-            os.path.dirname(os.path.realpath(__file__))
-        )
-    builder.build()
->>>>>>> branch 'feature/mango' of git@github.com:ivoa/mivot-validator.git
+        print(f"Cannot find file {filename}")
+        return False
 
 
     

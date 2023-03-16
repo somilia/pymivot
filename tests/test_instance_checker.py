@@ -36,8 +36,10 @@ class TestInstCheck(unittest.TestCase):
                              DictUtils.read_dict_from_file(
                                  os.path.join(mapping_sample, "instcheck_inherit_meas.json"))
                              )
+        InstanceChecker.inheritence_tree = {}
         vodml_filepath = os.path.join(vodml_sample, "Coords-v1.0.vo-dml.xml")
         InstanceChecker._build_inheritence_graph(vodml_filepath)
+        DictUtils.print_pretty_json(InstanceChecker.inheritence_tree)
         self.assertDictEqual(InstanceChecker.inheritence_tree,
                              DictUtils.read_dict_from_file(
                                  os.path.join(mapping_sample, "instcheck_inherit_coords.json"))
@@ -47,6 +49,8 @@ class TestInstCheck(unittest.TestCase):
         files = os.listdir(mapping_sample)
         for sample_file in files:
             if sample_file.startswith("instcheck_") and "_ok_" in sample_file:
+                print(f"testing {sample_file}")
+                InstanceChecker._clean_tmpdata_dir()
                 file_path = os.path.join(mapping_sample, sample_file)
                 instance = XmlUtils.xmltree_from_file(file_path)
                 status = InstanceChecker.check_instance_validity(instance.getroot())

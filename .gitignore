@@ -58,5 +58,6 @@ badges/
 tests/data_tests/
 Pipfile
 
+**/tmp_snippets/*
 mivot_validator/instance_checking/tmp_snippets/*
 !mivot_validator/instance_checking/tmp_snippets/.gitkeep 
