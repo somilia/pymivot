@@ -112,7 +112,7 @@ Path: /VOTABLE/RESOURCE/RESOURCE[1]/default:VODML/default:GLOBALS
 
 ```
 
-### Experimental features
+### Advanced Features
 
 
 #### Model Hierarchy Checking
