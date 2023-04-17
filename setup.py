@@ -17,7 +17,7 @@ setup(
     author='Laurent Michel',
     author_email='laurent.michel@astro.unistra.fr',
     packages=find_packages(),
-    install_requires=['xmlschema', 'etree'],
+    install_requires=['xmlschema', 'lxml'],
     version='2.0',
     license='MIT',
     description='Validator for model annotations in VOTable',
