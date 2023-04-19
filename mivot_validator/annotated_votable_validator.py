@@ -5,7 +5,7 @@ Created on 2022/07/01
 '''
 import os
 from mivot_validator.xml_validator import XMLValidator
-from . import logger
+from mivot_validator import logger
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 

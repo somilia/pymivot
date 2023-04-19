@@ -15,7 +15,7 @@ def main():
     """
     if len(sys.argv) != 2 :
         print("USAGE: mivot-instance-validate [path]")
-        print("   Validate the mapped instances against the VODML definitoins")
+        print("   Validate the mapped instances against the VODML definitions")
         print("   path: path to the mapped VOTable to be checked")
         print("   exit status: 0 in case of success, 1 otherwise")
         sys.exit(1)
@@ -45,7 +45,7 @@ def main():
         InstanceChecker._clean_tmpdata_dir()
         for instance in model_view.xpath(".//INSTANCE"):
             print(f'CHECKING: instance {instance.get("dmtype")}')
-            InstanceChecker.check_instance_validity(instance)
-
+            InstanceChecker.check_instance_validity(instance)  
+    
 if __name__ == '__main__':
     main()

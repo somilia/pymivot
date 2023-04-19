@@ -4,7 +4,7 @@ Created on Jan 11, 2021
 @author: laurentmichel
 '''
 
-from mivot_validator.instance_checking.translator.vocabulary import Ele
+from mivot_validator.instance_checking.xml_interpreter.vocabulary import Ele
 
 class JsonTools(object):
     '''

@@ -4,7 +4,7 @@ Created on 23 Jun 2022
 @author: laurentmichel
 '''
 import sys
-from .annotated_votable_validator import AnnotatedVOTableValidator
+from mivot_validator.annotated_votable_validator import AnnotatedVOTableValidator
 
 def main():
     """

@@ -4,7 +4,7 @@ Created on 23 Jun 2022
 @author: laurentmichel
 '''
 import sys
-from .dmtypes_and_role_checker import DmTypesAndRolesChecker
+from mivot_validator.dmtypes_and_role_checker import DmTypesAndRolesChecker
 
 def main():
     """
