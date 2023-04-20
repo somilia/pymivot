@@ -6,7 +6,7 @@ entry_points = {
         "mivot-validate = mivot_validator.launchers.votable_launcher:main",
         "mivot-mapping-validate = mivot_validator.launchers.mivot_launcher:main",
         "types-and-roles-validate = mivot_validator.launchers.typesandroles_launcher:main",
-        "mivot-instance-validate = mivot_validator.launchers.instance_checking_launcher.py:main",
+        "mivot-instance-validate = mivot_validator.launchers.instance_checking_launcher:main",
         "mivot-snippet-gen = mivot_validator.launchers.snippet_launcher:main"
         ]
     }
