@@ -29,8 +29,8 @@ def main():
     snippet = ExtendedBuilder(vodml_path=path, output_dir=sys.argv[2])
     if snippet.build():
         print("\n===============================================")
-        print(f"Snippet generated in {sys.argv[2]} as "
-              f"{os.path.basename(sys.argv[1]).split('.')[0].split('_')[0].split('-')[0].lower()}.xml")
+        print(f"Snippet generated in {sys.argv[2]} in the folder : "
+              f"{os.path.basename(sys.argv[1]).split('.')[0].split('_')[0].split('-')[0].lower()}")
         print("===============================================\n")
 
         if os.path.isdir("tmp_vodml"):
