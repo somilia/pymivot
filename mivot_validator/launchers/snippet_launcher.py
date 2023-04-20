@@ -39,8 +39,6 @@ def main():
         sys.exit(0)
 
 
-
-
 def check_args(args):
     """
     Check if the path is a file or an url and download the file if needed
@@ -56,6 +54,7 @@ def check_args(args):
         urlretrieve(args, local_vodml_path)
 
     return local_vodml_path
+
 
 if __name__ == '__main__':
     main()

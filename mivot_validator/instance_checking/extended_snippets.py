@@ -33,21 +33,16 @@ class ExtendedBuilder(Builder):
         self.write_out('<TEMPLATES>')
 
         for ele in self.vodml.xpath(f'.//dataType'):
-            if ele.get("abstract") != "true":
-                for tags in ele.getchildren():
-                    self.class_name = tags.text
-
-                    if tags.tag == "vodml-id":
-                        print(f"build datatype {tags.text}")
-                        self.build_object(ele, "", True, True)
+            for tags in ele.getchildren():
+                self.class_name = tags.text
+                if tags.tag == "vodml-id" and ele.get("abstract") != "true":
+                    print(f"build datatype {tags.text}")
+                    self.build_object(ele, "", True, True)
 
         for ele in self.vodml.xpath(f'.//objectType'):
-            if ele.get("abstract") != "true":
-                for tags in ele.getchildren():
-                    if tags.tag == "dataType" and tags.get("abstract") == "true":
-                        break
-                    if tags.get("abstract") != "true" and tags.tag == "vodml-id":
-                        self.build_object(ele, "", True, True)
+            for tags in ele.getchildren():
+                if tags.tag == "vodml-id" and ele.get("abstract") != "true":
+                    self.build_object(ele, "", True, True)
 
         self.write_out('</TEMPLATES>')
         self.output.close()
