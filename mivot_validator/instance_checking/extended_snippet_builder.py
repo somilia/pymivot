@@ -7,16 +7,13 @@ import os
 
 from mivot_validator.instance_checking.snippet_builder import Builder
 from mivot_validator.utils.xml_utils import XmlUtils
-from mivot_validator.instance_checking.model_logic import model_detector
 
 
 class ExtendedBuilder(Builder):
-    def __init__(self, vodml_path, output_dir):
+    def __init__(self, vodml_path, output_dir=os.getcwd() + "/../tmp_snippets/"):
         # Get the model name from the VODML file/link name
-        self.abst = None
-        model_name = os.path.basename(vodml_path).split('.')[0].split('_')[0].split('-')[0].lower()
-        self.abst_dict = model_detector(model_name)
-        super().__init__(model_name, "", vodml_path, output_dir)
+        self.model_name = os.path.basename(vodml_path).split('.')[0].split('_')[0].split('-')[0].lower()
+        super().__init__(self.model_name, "", vodml_path, output_dir)
 
     def build(self):
         """
@@ -30,14 +27,7 @@ class ExtendedBuilder(Builder):
                 self.class_name = tags.text
                 if tags.tag != "vodml-id":
                     continue
-                if self.abst_dict is None:
-                    self.build_object(ele, "", True, True)
-                else:
-                    for key, value in self.abst_dict.items():
-                        if key == self.class_name:
-                            for abst in value:
-                                self.abst = abst
-                                self.build_object(ele, "", True, True)
+                self.build_object(ele, "", True, True)
 
         return True
 
@@ -60,11 +50,7 @@ class ExtendedBuilder(Builder):
             print(f"   TAG {tags.tag}")
             if tags.tag == "vodml-id":
                 if root is True:
-
-                    if self.abst is not None:
-                        output_dir = self.output_dir + self.model_name + "/" + self.abst + "/"
-                    else:
-                        output_dir = self.output_dir + self.model_name + "/"
+                    output_dir = self.output_dir + self.model_name + "/"
 
                     if not os.path.exists(output_dir):
                         os.makedirs(output_dir)
@@ -73,6 +59,8 @@ class ExtendedBuilder(Builder):
                         output_dir,
                         self.model_name + "." + tags.text + ".xml"
                     )
+
+                    print(self.outputname)
 
                     print(f"opening {self.outputname}")
                     self.output = open(self.outputname, "w")
@@ -98,7 +86,7 @@ class ExtendedBuilder(Builder):
                 if aggregate is True:
                     self.write_out(f'<!-- {tags.text}" -->')
             elif tags.tag == "multiplicity":
-                max_occurs = int(tags.xpath(".//maxOccurs")[0].text)
+                int(tags.xpath(".//maxOccurs")[0].text)
 
         if aggregate is True:
             self.write_out("</INSTANCE>")
@@ -106,17 +94,3 @@ class ExtendedBuilder(Builder):
         if root is True:
             self.output.close()
             XmlUtils.xmltree_to_file(XmlUtils.xmltree_from_file(self.outputname), self.outputname)
-
-    def get_concrete_type_by_ref(self, abstract_vodmlid, role, aggregate, extend):
-        """
-        """
-        print(f"search concrete object of vodmlid={abstract_vodmlid}")
-        if role.endswith("coordSpace"):
-            self.write_out("<!-- the axis representation "
-                           "(coords:PhysicalCoordSys.coordSpace) is not serialized here -->")
-        elif self.abst is not None:
-            self.write_out(f"<INSTANCE dmrole='{role}' dmtype='{self.model_name}:{self.abst}'/>")
-        else:
-            self.write_out(f"<!-- Put here a concrete INSTANCE of {abstract_vodmlid} or left blank -->")
-            self.write_out(f"<INSTANCE dmrole='{role}' dmtype='{self.model_name}:{abstract_vodmlid}'/>")
-

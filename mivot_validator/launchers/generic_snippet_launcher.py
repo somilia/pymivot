@@ -9,27 +9,26 @@ import sys
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
-from mivot_validator.instance_checking.extended_snippets import ExtendedBuilder
+from mivot_validator.instance_checking.extended_snippet_builder import ExtendedBuilder
 
 
 def main():
     """
     Package launcher (script)
     """
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         print("USAGE: mivot-snippet-gen [path] [output_dir]")
         print("   Create MIVOT snippets from VODML files")
-        print("   path: either a simple file, a directory or an url")
-        print("   output_dir: directory where the snippets will be generated")
+        print("   path: either a simple file or an url")
         print("   exit status: 0 in case of success, 1 otherwise")
         sys.exit(1)
 
     path = check_args(sys.argv[1])
 
-    snippet = ExtendedBuilder(vodml_path=path, output_dir=sys.argv[2])
+    snippet = ExtendedBuilder(vodml_path=path)
     if snippet.build():
         print("\n===============================================")
-        print(f"Snippet generated in {sys.argv[2]} in the folder : "
+        print(f"Snippets generated in {os.path.abspath(os.getcwd() + '/../tmp_snippets/')} \nin the folder : "
               f"{os.path.basename(sys.argv[1]).split('.')[0].split('_')[0].split('-')[0].lower()}")
         print("===============================================\n")
 
