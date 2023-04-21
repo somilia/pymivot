@@ -42,6 +42,16 @@ Validate an XML file containing just a MAPPING block
 ```bash
  mivot-mapping-validate  <XML path>
 ```
+
+Create a list of  generic code snippets from a model file
+
+```bash
+ mivot-snippet-generic <XML path>
+```
+>*Note* :
+> - the `XML path` can be a local file or a link to a file on the web.
+> - the output will be stored in mivot_validator/instance_checking/tmp_snippets folder.
+
 ## Examples taken out the unit test suite
 ### Check the VOTable tagged as valid
 
