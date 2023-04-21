@@ -1,0 +1,82 @@
+{
+  "meas": {
+    "Position": {
+      "Asymmetrical2D": {
+        "Point": ""
+      },
+      "Symmetrical": {
+        "Point": ""
+      },
+      "Bounds2D": {
+        "Point": ""
+      },
+      "Ellipse": {
+        "Point": ""
+      }
+    },
+    "Velocity": {
+      "Asymmetrical2D": {
+        "Point": ""
+      },
+      "Symmetrical": {
+        "Point": ""
+      },
+      "Bounds2D": {
+        "Point": ""
+      },
+      "Ellipse": {
+        "Point": ""
+      }
+    },
+    "Time": {
+      "Asymmetrical1D": {
+        "TimeStamp": ""
+      },
+      "Symmetrical": {
+        "TimeStamp": ""
+      },
+      "Bounds1D": {
+        "TimeStamp": ""
+      }
+    },
+    "Polarization": {
+      "Asymmetrical1D": {
+        "PolCoordinate": ""
+      },
+      "Symmetrical": {
+        "PolCoordinate": ""
+      },
+      "Bounds1D": {
+        "PolCoordinate": ""
+      }
+    },
+    "ProperMotion": {
+      "Asymmetrical2D": {
+        "Point": ""
+      },
+      "Symmetrical": {
+        "Point": ""
+      },
+      "Bounds2D": {
+        "Point": ""
+      },
+      "Ellipse": {
+        "Point": ""
+      }
+    },
+    "GenericMeasure": {
+      "Asymmetrical1D": {
+        "PhysicalCoordinate": ""
+      },
+      "Symmetrical": {
+        "PhysicalCoordinate": ""
+      },
+      "Bounds1D": {
+        "PhysicalCoordinate": ""
+      }
+    },
+    "Error": {
+      "Uncertainty": ""
+    }
+  }
+}
