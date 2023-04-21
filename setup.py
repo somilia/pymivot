@@ -7,10 +7,9 @@ entry_points = {
         "mivot-mapping-validate = mivot_validator.launchers.mivot_launcher:main",
         "types-and-roles-validate = mivot_validator.launchers.typesandroles_launcher:main",
         "mivot-instance-validate = mivot_validator.launchers.instance_checking_launcher:main",
-        "mivot-snippet-gen = mivot_validator.launchers.snippet_launcher:main"
-        ]
-    }
-
+        "mivot-snippet-generic = mivot_validator.launchers.generic_snippet_launcher:main"
+    ]
+}
 
 setup(
     name='mivot-validator',
@@ -31,6 +30,5 @@ setup(
         "Natural Language :: English",
         "Programming Language :: Python :: >=3.6",
     ],
-    entry_points = entry_points
+    entry_points=entry_points
 )
-
