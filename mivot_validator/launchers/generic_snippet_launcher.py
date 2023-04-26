@@ -17,7 +17,7 @@ def main():
     Package launcher (script)
     """
     if len(sys.argv) != 2:
-        print("USAGE: mivot-snippet-gen [path] [output_dir]")
+        print("USAGE: mivot-snippet-gen [path]")
         print("   Create MIVOT snippets from VODML files")
         print("   path: either a simple file or an url")
         print("   exit status: 0 in case of success, 1 otherwise")
