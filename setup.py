@@ -7,7 +7,8 @@ entry_points = {
         "mivot-mapping-validate = mivot_validator.launchers.mivot_launcher:main",
         "types-and-roles-validate = mivot_validator.launchers.typesandroles_launcher:main",
         "mivot-instance-validate = mivot_validator.launchers.instance_checking_launcher:main",
-        "mivot-snippet-generic = mivot_validator.launchers.generic_snippet_launcher:main"
+        "mivot-snippet-generic = mivot_validator.launchers.generic_snippet_launcher:main",
+        "mivot-snippet-concrete = mivot_validator.launchers.concrete_snippet_launcher:main"
     ]
 }
 
@@ -18,6 +19,7 @@ setup(
     author_email='laurent.michel@astro.unistra.fr',
     packages=find_packages(),
     install_requires=['xmlschema', 'lxml'],
+    include_package_data=True,
     version='2.0',
     license='MIT',
     description='Validator for model annotations in VOTable',
