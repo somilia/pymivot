@@ -1,82 +1,350 @@
 {
-  "meas": {
-    "Position": {
-      "Asymmetrical2D": {
-        "Point": ""
-      },
-      "Symmetrical": {
-        "Point": ""
-      },
-      "Bounds2D": {
-        "Point": ""
-      },
-      "Ellipse": {
-        "Point": ""
+  "abstract": [
+    "meas:Uncertainty",
+    "meas:Measure",
+    "coords:Coordinate",
+    "coords:Point",
+    "coords:TimeStamp",
+    "coords:TimeInstant",
+    "coords:RefLocation",
+    "coords:CoordSpace",
+    "coords:Axis",
+    "coords:CoordFrame",
+    "coords:CoordSys",
+    "coords:PhysicalCoordSys",
+    "coords:PhysicalCoordSpace",
+    "mango:AssociatedData",
+    "mango:Property",
+    "mango:exterrors.MultiParamError",
+    "mango:exterrors.MultParamErro2D"
+  ],
+  "mango:AssociatedData": [
+    "mango:AssociatedMangoInstance",
+    "mango:WebEndpoint"
+  ],
+  "mango:AssociatedMangoInstance": {
+    "meas:Measure": [
+      "meas:Position",
+      "meas:Velocity",
+      "meas:Time",
+      "meas:Polarization",
+      "meas:ProperMotion",
+      "meas:GenericMeasure"
+    ],
+    "mango:AssociatedData": [
+      "mango:WebEndpoint"
+    ]
+  },
+  "mango:BitField": {
+    "meas:Measure": [
+      "meas:Position",
+      "meas:Velocity",
+      "meas:Time",
+      "meas:Polarization",
+      "meas:ProperMotion",
+      "meas:GenericMeasure"
+    ]
+  },
+  "mango:Color": {
+    "meas:Measure": [
+      "meas:Position",
+      "meas:Velocity",
+      "meas:Time",
+      "meas:Polarization",
+      "meas:ProperMotion",
+      "meas:GenericMeasure"
+    ]
+  },
+  "mango:ComputedProperty": {
+    "meas:Measure": [
+      "meas:Position",
+      "meas:Velocity",
+      "meas:Time",
+      "meas:Polarization",
+      "meas:ProperMotion",
+      "meas:GenericMeasure"
+    ],
+    "mango:Property": [
+      "mango:Status",
+      "mango:Label",
+      "mango:Shape"
+    ]
+  },
+  "mango:Label": {
+    "meas:Measure": [
+      "meas:Position",
+      "meas:Velocity",
+      "meas:Time",
+      "meas:Polarization",
+      "meas:ProperMotion",
+      "meas:GenericMeasure"
+    ]
+  },
+  "mango:PhysicalProperty": {
+    "meas:Measure": [
+      "meas:Position",
+      "meas:Velocity",
+      "meas:Time",
+      "meas:Polarization",
+      "meas:ProperMotion",
+      "meas:GenericMeasure"
+    ],
+    "mango:Property": [
+      "mango:Status",
+      "mango:Label",
+      "mango:Shape"
+    ]
+  },
+  "mango:Property": [
+    "mango:Status",
+    "mango:Label",
+    "mango:Shape",
+    "mango:ComputedProperty",
+    "mango:PhysicalProperty"
+  ],
+  "mango:Shape": {
+    "meas:Measure": [
+      "meas:Position",
+      "meas:Velocity",
+      "meas:Time",
+      "meas:Polarization",
+      "meas:ProperMotion",
+      "meas:GenericMeasure"
+    ]
+  },
+  "mango:Source": {
+    "meas:Measure": [
+      "meas:Position",
+      "meas:Velocity",
+      "meas:Time",
+      "meas:Polarization",
+      "meas:ProperMotion",
+      "meas:GenericMeasure"
+    ],
+    "mango:AssociatedData": [
+      "mango:AssociatedMangoInstance",
+      "mango:WebEndpoint"
+    ],
+    "mango:Property": [
+    "mango:Status",
+    "mango:Label",
+    "mango:Shape",
+    "mango:ComputedProperty",
+    "mango:PhysicalProperty"
+  ]
+  },
+  "mango:Status": {
+    "meas:Measure": [
+      "meas:Position",
+      "meas:Velocity",
+      "meas:Time",
+      "meas:Polarization",
+      "meas:ProperMotion",
+      "meas:GenericMeasure"
+    ]
+  },
+  "mango:exterrors.DiagMatrix2x2": {
+    "meas:Uncertainty": [
+      "meas:Asymmetrical2D",
+      "meas:Symmetrical",
+      "meas:Bounds2D",
+      "meas:Ellipse"
+    ]
+  },
+  "mango:exterrors.MultiParamError1D": {
+      "meas:Uncertainty": [
+        "meas:Asymmetrical2D",
+        "meas:Symmetrical",
+        "meas:Bounds2D",
+        "meas:Ellipse"
+      ]
+  },
+  "mango:exterrors.MultiParamError": [
+    "mango:exterrors.MultParamErro2D",
+    "mango:exterrors.MultiParamError1D"
+  ],
+  "mango:exterrors.MultiParamErro2D": [
+    "mango:exterrors.CorrMatrix2x2",
+    "exterrors.DiagMatrix2x2",
+    "exterrors.Ellipse"
+  ],
+  "meas:Measure": {
+    "meas:Position": {
+      "meas:Uncertainty": [
+        "meas:Asymmetrical2D",
+        "meas:Symmetrical",
+        "meas:Bounds2D",
+        "meas:Ellipse"
+      ],
+      "coords:Point": {
+        "coords:LonLatPoint": {
+          "coords:RefLocation": [
+            "coords:StdRefLocation"
+          ]
+        },
+        "coords:CartesianPoint": {
+          "coords:RefLocation": [
+            "coords:StdRefLocation"
+          ]
+        }
       }
     },
-    "Velocity": {
-      "Asymmetrical2D": {
-        "Point": ""
-      },
-      "Symmetrical": {
-        "Point": ""
-      },
-      "Bounds2D": {
-        "Point": ""
-      },
-      "Ellipse": {
-        "Point": ""
+    "meas:Velocity": {
+      "meas:Uncertainty": [
+        "meas:Asymmetrical2D",
+        "meas:Symmetrical",
+        "meas:Bounds2D",
+        "meas:Ellipse"
+      ],
+      "coords:Point": {
+        "coords:LonLatPoint": {
+          "coords:StdRefLocation": [
+            "coords:StdRefLocation"
+          ]
+        }
       }
     },
-    "Time": {
-      "Asymmetrical1D": {
-        "TimeStamp": ""
-      },
-      "Symmetrical": {
-        "TimeStamp": ""
-      },
-      "Bounds1D": {
-        "TimeStamp": ""
+    "meas:Time": {
+      "meas:Uncertainty": [
+        "meas:Asymmetrical1D",
+        "meas:Symmetrical",
+        "meas:Bounds1D"
+      ],
+      "coords:TimeStamp": {
+        "coords:JD": {
+          "coords:JD": {
+            "coords:RefLocation": [
+              "coords:StdRefLocation"
+            ]
+          }
+        },
+        "coords:MJD": {
+          "coords:MJD": {
+            "coords:RefLocation": [
+              "coords:StdRefLocation"
+          ]
+          }
+        },
+        "coords:ISOTime": {
+          "coords:RefLocation": [
+            "coords:StdRefLocation"
+          ]
+        },
+        "coords:TimeOffset": {
+          "coords:RefLocation": [
+            "coords:StdRefLocation"
+          ],
+          "coords:TimeInstant": [
+                "coords:JD",
+                "coords:MJD",
+                "coords:ISOTime"
+          ]
+        }
       }
     },
-    "Polarization": {
-      "Asymmetrical1D": {
-        "PolCoordinate": ""
-      },
-      "Symmetrical": {
-        "PolCoordinate": ""
-      },
-      "Bounds1D": {
-        "PolCoordinate": ""
+    "meas:Polarization": {
+      "meas:Uncertainty": [
+        "meas:Asymmetrical1D",
+        "meas:Symmetrical",
+        "meas:Bounds1D"
+      ],
+      "coords:PolCoordinate": [
+        "coords:PolCoordinate"
+      ]
+    },
+    "meas:ProperMotion": {
+      "meas:Uncertainty": [
+        "meas:Asymmetrical2D",
+        "meas:Symmetrical",
+        "meas:Bounds2D",
+        "meas:Ellipse"
+      ],
+      "coords:Point": {
+        "coords:LonLatPoint": {
+          "coords:RefLocation": [
+            "coords:StdRefLocation"
+          ]
+        },
+        "coords:CartesianPoint": {
+          "coords:RefLocation": [
+            "coords:StdRefLocation"
+          ]
+        }
       }
     },
-    "ProperMotion": {
-      "Asymmetrical2D": {
-        "Point": ""
-      },
-      "Symmetrical": {
-        "Point": ""
-      },
-      "Bounds2D": {
-        "Point": ""
-      },
-      "Ellipse": {
-        "Point": ""
-      }
-    },
-    "GenericMeasure": {
-      "Asymmetrical1D": {
-        "PhysicalCoordinate": ""
-      },
-      "Symmetrical": {
-        "PhysicalCoordinate": ""
-      },
-      "Bounds1D": {
-        "PhysicalCoordinate": ""
-      }
-    },
-    "Error": {
-      "Uncertainty": ""
+    "meas:GenericMeasure": {
+      "meas:Uncertainty": [
+        "meas:Asymmetrical1D",
+        "meas:Symmetrical",
+        "meas:Bounds1D"
+      ],
+      "coords:Coordinate": [
+        "coords:PhysicalCoordinate"
+      ]
     }
+  },
+  "coords:Point": {
+        "coords:LonLatPoint": {
+          "coords:RefLocation": [
+            "coords:StdRefLocation"
+          ]
+        },
+        "coords:CartesianPoint": {
+          "coords:RefLocation": [
+            "coords:StdRefLocation"
+          ]
+        }
+      },
+  "coords:TimeStamp": {
+        "coords:JD": {
+          "coords:JD": {
+            "coords:RefLocation": [
+              "coords:StdRefLocation"
+            ]
+          }
+        },
+        "coords:MJD": {
+          "coords:MJD": {
+            "coords:RefLocation": [
+              "coords:StdRefLocation"
+          ]
+          }
+        },
+        "coords:ISOTime": {
+          "coords:RefLocation": [
+            "coords:StdRefLocation"
+          ]
+        },
+        "coords:TimeOffset": {
+          "coords:RefLocation": [
+            "coords:StdRefLocation"
+          ],
+          "coords:TimeInstant": [
+                "coords:JD",
+                "coords:MJD",
+                "coords:ISOTime"
+          ]
+        }
+      },
+  "coords:TimeInstant": [
+    "coords:JD",
+    "coords:MJD",
+    "coords:ISOTime"
+  ],
+  "coords:JD" : {
+    "coords:RefLocation": [
+      "coords:StdRefLocation"
+    ]
+  },
+  "coords:MJD" : {
+    "coords:RefLocation": [
+        "coords:StdRefLocation"
+    ]
+  },
+  "coords:ISOTime" : {
+    "coords:RefLocation": [
+        "coords:StdRefLocation"
+    ]
+
   }
 }
