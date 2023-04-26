@@ -1,0 +1,2 @@
+recursive-include mivot_validator *.xml
+recursive-include mivot_validator *.json
