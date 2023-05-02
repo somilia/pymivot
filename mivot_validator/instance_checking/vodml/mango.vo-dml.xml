@@ -268,7 +268,7 @@ As long as the vocabulary is not set, the possible values of this attribute are 
     </composition>
   </objectType>
 
-  <objectType>
+  <objectType abstract="True">
     <vodml-id>Property</vodml-id>
     <name>Property</name>
     <description>Reference to a particular measure of the Source.
@@ -303,19 +303,7 @@ As long as the vocabulary is not set, the possible values of this attribute are 
         <maxOccurs>1</maxOccurs>
       </multiplicity>
     </attribute>
-    
-    <composition>
-      <vodml-id>Property.measure</vodml-id>
-      <name>measure</name>
-      <description>Composition link pointing to the meas:Measure instance</description>
-      <datatype>
-        <vodml-ref>meas:Measure</vodml-ref>
-      </datatype>
-      <multiplicity>
-        <minOccurs>1</minOccurs>
-        <maxOccurs>1</maxOccurs>
-      </multiplicity>
-    </composition>
+
     <composition>
       <vodml-id>Property.coverage</vodml-id>
       <name>coverage</name>

@@ -1,6 +1,10 @@
 """
 Created on 21 Apr 2023
 
+use the snippet_builder to build a concrete MIVOT view of
+the class model_name:class_name of the model
+serialized in provided generic MIVOT snippet
+
 @author: julien abid
 """
 
@@ -67,6 +71,7 @@ class ConcreteBuilder:
 
         parent_key = None
         open_count = 0
+        property_count = 0
         f = open(self.build_file, "r")
         for line in f:
             if not line.__contains__("left blank"):
@@ -84,14 +89,38 @@ class ConcreteBuilder:
                     self.dmrole = self.getDmRole(line)
                     self.dmroles.append(self.dmrole)
                     print(f"{bcolors.OKCYAN}{bcolors.UNDERLINE}List of possible concrete classes for "
-                          f"{bcolors.BOLD}{self.getDmType(line)} in {bcolors.BOLD}{parent_key} :{bcolors.ENDC}")
-                    choice = self.populateChoices(list(self.search(self.data, parent_key, self.getDmType(line))))
-                    file = self.getInstance(choice.split(":")[0], choice.split(":")[1])
-                    if file is not None:
-                        self.buffer = self.buffer.replace(line, "")
-                        self.build_file = file
-                        self.build()
-                        self.build_file = self.xml_file
+                          f"{bcolors.BOLD}{self.getDmType(line)} in {bcolors.BOLD}{parent_key},"
+                          f" with dmrole {self.dmrole}: {bcolors.ENDC}")
+                    if property_count == 0:
+                        choice = self.populateChoices(
+                            list(self.search(self.data, parent_key, self.getDmType(line)))
+                        )
+                        file = None
+                        if choice != "None":
+                            file = self.getInstance(choice.split(":")[0], choice.split(":")[1])
+                        if file is not None:
+                            if self.getDmType(line) == "mango:Property":
+                                property_count += 1
+                            self.buffer = self.buffer.replace(line, "")
+                            self.build_file = file
+                            self.build()
+                            self.build_file = self.xml_file
+                    if property_count > 0:
+                        property_dock = True
+                        while property_dock:
+                            property_dock = self.askForProperty(parent_key)
+                            if property_dock:
+                                property_count += 1
+                                choice = self.populateChoices(
+                                    ["mango:Status", "mango:Label", "mango:Shape",
+                                     "mango:ComputedProperty", "mango:PhysicalProperty", "None"]
+                                )
+                                if choice != "None":
+                                    file = self.getInstance(choice.split(":")[0], choice.split(":")[1])
+                                    if file is not None:
+                                        self.build_file = file
+                                        self.build()
+                                        self.build_file = self.xml_file
 
         f.close()
 
@@ -99,7 +128,6 @@ class ConcreteBuilder:
         """
         Write the concrete MIVOT snippet in the output directory
         """
-        #if output_name doesn't end with .xml, add it
         if not self.output_name.endswith(".xml"):
             self.output_name += ".xml"
         output_file = os.path.join(self.output_dir, os.path.basename(self.output_name))
@@ -114,6 +142,41 @@ class ConcreteBuilder:
         print(f"{bcolors.OKGREEN}Concrete MIVOT snippet for {bcolors.BOLD}{os.path.basename(self.xml_file)} stored in "
               f"{bcolors.BOLD}{output_file}{bcolors.ENDC}")
 
+    def askForProperty(self, parent_key):
+        print(f"{bcolors.OKCYAN} Do you want to add another Property in this collection"
+              f" for {parent_key}? (y/n){bcolors.ENDC}")
+        choice = input()
+        if choice == "y":
+            return True
+        elif choice == "n":
+            return False
+        else:
+            print(f"{bcolors.WARNING}Please enter a valid choice{bcolors.ENDC}")
+            self.askForProperty(parent_key)
+
+    @staticmethod
+    def removeInstance(xml_file, dmtype):
+        """
+        Remove the instance of a class containing given dmtype and all its children
+        """
+        f = open(xml_file, "r")
+        buffer = ""
+        counter = 0
+        is_dmtype = False
+        for line in f:
+            if counter == 0:
+                buffer += line
+            if line.__contains__(f'dmtype="{dmtype}"'):
+                is_dmtype = True
+            if line.__contains__("<INSTANCE") and not line.__contains__("/>") and is_dmtype:
+                counter += 1
+            if line.__contains__("</INSTANCE"):
+                counter -= 1
+
+        f.close()
+        f = open(xml_file, "w")
+        f.write(buffer)
+        f.close()
     def insertDmRoles(self, file, dmroles):
         """
         Insert the dmroles in the concrete MIVOT snippet
@@ -180,6 +243,13 @@ class ConcreteBuilder:
                     temp_dir, os.path.basename("https://ivoa.net/xml/VODML/IVOA-v1.vo-dml.xml"))
                 urlretrieve("https://ivoa.net/xml/VODML/IVOA-v1.vo-dml.xml", local_vodml_path)
         elif model_name == "Phot":
+            if urlparse("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml").scheme:
+                temp_dir = "tmp_vodml"
+                os.makedirs(temp_dir, exist_ok=True)
+                local_vodml_path = os.path.join(
+                    temp_dir, os.path.basename("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml"))
+                urlretrieve("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml", local_vodml_path)
+        elif model_name == "instfov":
             if urlparse("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml").scheme:
                 temp_dir = "tmp_vodml"
                 os.makedirs(temp_dir, exist_ok=True)
@@ -258,15 +328,20 @@ class ConcreteBuilder:
         """
         Make an input with choices from the list
         """
+        clean_elements = []
+        for element in elements:
+            if element not in clean_elements:
+                clean_elements.append(element)
+
         print(f"{bcolors.OKBLUE}Please choose from the list above : {bcolors.ENDC}")
 
-        for i in range(len(elements)):
-            print(f"{bcolors.GRAY}{str(i)} : {elements[i]}{bcolors.ENDC}")
+        for i in range(len(clean_elements)):
+            print(f"{bcolors.GRAY}{str(i)} : {clean_elements[i]}{bcolors.ENDC}")
 
         choice = input("Your choice : ")
 
         if choice.isdigit() and int(choice) < len(elements):
-            return elements[int(choice)]
+            return clean_elements[int(choice)]
         else:
             print(f"{bcolors.WARNING}Wrong choice, please try again.{bcolors.ENDC}")
             return self.populateChoices(elements)

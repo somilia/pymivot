@@ -1,6 +1,9 @@
 """
 Created on 19 Apr 2023
 
+use a modified version of the snippet builder to generate snippets for all the objectTypes
+of a VODML model
+
 @author: julien abid
 """
 import os
@@ -11,7 +14,6 @@ from mivot_validator.utils.xml_utils import XmlUtils
 
 class ExtendedBuilder(Builder):
     def __init__(self, vodml_path, output_dir=os.getcwd() + "/../tmp_snippets/"):
-        # Get the model name from the VODML file/link name
         self.model_name = os.path.basename(vodml_path).split('.')[0].split('_')[0].split('-')[0].lower()
         super().__init__(self.model_name, "", vodml_path, output_dir)
 

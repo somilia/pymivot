@@ -9,7 +9,7 @@ import sys
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
-from mivot_validator.instance_checking.extended_snippet_builder import ExtendedBuilder
+from mivot_validator.instance_checking.generic_snippet_builder import ExtendedBuilder
 
 
 def main():

@@ -67,7 +67,10 @@
     "mango:Property": [
       "mango:Status",
       "mango:Label",
-      "mango:Shape"
+      "mango:Shape",
+      "mango:ComputedProperty",
+      "mango:PhysicalProperty",
+      "None"
     ]
   },
   "mango:Label": {
@@ -78,6 +81,14 @@
       "meas:Polarization",
       "meas:ProperMotion",
       "meas:GenericMeasure"
+    ],
+    "mango:Property": [
+      "mango:Status",
+      "mango:Label",
+      "mango:Shape",
+      "mango:ComputedProperty",
+      "mango:PhysicalProperty",
+      "None"
     ]
   },
   "mango:PhysicalProperty": {
@@ -92,7 +103,10 @@
     "mango:Property": [
       "mango:Status",
       "mango:Label",
-      "mango:Shape"
+      "mango:Shape",
+      "mango:ComputedProperty",
+      "mango:PhysicalProperty",
+      "None"
     ]
   },
   "mango:Property": [
@@ -100,7 +114,8 @@
     "mango:Label",
     "mango:Shape",
     "mango:ComputedProperty",
-    "mango:PhysicalProperty"
+    "mango:PhysicalProperty",
+    "None"
   ],
   "mango:Shape": {
     "meas:Measure": [
@@ -110,6 +125,14 @@
       "meas:Polarization",
       "meas:ProperMotion",
       "meas:GenericMeasure"
+    ],
+    "mango:Property": [
+      "mango:Status",
+      "mango:Label",
+      "mango:Shape",
+      "mango:ComputedProperty",
+      "mango:PhysicalProperty",
+      "None"
     ]
   },
   "mango:Source": {
@@ -141,6 +164,14 @@
       "meas:Polarization",
       "meas:ProperMotion",
       "meas:GenericMeasure"
+    ],
+    "mango:Property": [
+      "mango:Status",
+      "mango:Label",
+      "mango:Shape",
+      "mango:ComputedProperty",
+      "mango:PhysicalProperty",
+      "None"
     ]
   },
   "mango:exterrors.DiagMatrix2x2": {
