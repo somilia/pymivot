@@ -33,7 +33,15 @@
     ],
     "mango:AssociatedData": [
       "mango:WebEndpoint"
-    ]
+    ],
+    "mango:Property": [
+    "mango:Status",
+    "mango:Label",
+    "mango:Shape",
+    "mango:ComputedProperty",
+    "mango:PhysicalProperty",
+    "None"
+  ]
   },
   "mango:BitField": {
     "meas:Measure": [

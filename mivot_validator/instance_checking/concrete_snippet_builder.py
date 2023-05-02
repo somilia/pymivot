@@ -10,6 +10,7 @@ serialized in provided generic MIVOT snippet
 
 import json
 import os
+import ssl
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
@@ -121,6 +122,7 @@ class ConcreteBuilder:
                                         self.build_file = file
                                         self.build()
                                         self.build_file = self.xml_file
+                        property_count -= 1
 
         f.close()
 
@@ -220,6 +222,9 @@ class ConcreteBuilder:
         :return: the model XML
         """
         local_vodml_path = None
+
+        ssl._create_default_https_context = ssl._create_unverified_context
+
         if model_name == "meas":
             if urlparse("https://ivoa.net/xml/VODML/Meas-v1.0.vo-dml.xml").scheme:
                 temp_dir = "tmp_vodml"
@@ -256,12 +261,13 @@ class ConcreteBuilder:
                 local_vodml_path = os.path.join(
                     temp_dir, os.path.basename("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml"))
                 urlretrieve("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml", local_vodml_path)
-
-
         elif model_name == "mango":
             local_vodml_path = "../vodml/mango.vo-dml.xml"
 
-        return os.path.abspath(local_vodml_path)
+        if local_vodml_path is not None:
+            return os.path.abspath(local_vodml_path)
+
+        return None
 
     def getInstance(self, model_name, class_name):
         """
