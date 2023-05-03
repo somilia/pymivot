@@ -385,5 +385,10 @@
         "coords:StdRefLocation"
     ]
 
+  },
+  "coords:TimeFrame": {
+    "coords:RefLocation": [
+      "coords:StdRefLocation"
+    ]
   }
 }

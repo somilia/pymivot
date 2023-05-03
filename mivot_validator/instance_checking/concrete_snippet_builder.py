@@ -89,9 +89,10 @@ class ConcreteBuilder:
                 if self.getDmType(line) in self.abstract_classes:
                     self.dmrole = self.getDmRole(line)
                     self.dmroles.append(self.dmrole)
-                    print(f"{bcolors.OKCYAN}{bcolors.UNDERLINE}List of possible concrete classes for "
-                          f"{bcolors.BOLD}{self.getDmType(line)} in {bcolors.BOLD}{parent_key},"
-                          f" with dmrole {self.dmrole}: {bcolors.ENDC}")
+                    print(f"{bcolors.OKCYAN}{bcolors.UNDERLINE}List of possible concrete classes :{bcolors.ENDC}")
+                    print(f"{bcolors.OKCYAN}DMTYPE: {bcolors.BOLD}{self.getDmType(line)}{bcolors.ENDC}")
+                    print(f"{bcolors.OKCYAN}CONTEXT: {bcolors.BOLD}{parent_key}{bcolors.ENDC}")
+                    print(f"{bcolors.OKCYAN}DMROLE: {bcolors.BOLD}{self.dmrole}{bcolors.ENDC}")
                     if property_count == 0:
                         choice = self.populateChoices(
                             list(self.search(self.data, parent_key, self.getDmType(line)))
@@ -130,12 +131,14 @@ class ConcreteBuilder:
         """
         Write the concrete MIVOT snippet in the output directory
         """
+
         if not self.output_name.endswith(".xml"):
             self.output_name += ".xml"
         output_file = os.path.join(self.output_dir, os.path.basename(self.output_name))
         result = etree.fromstring(self.buffer)
         XmlUtils.xmltree_to_file(result, output_file)
 
+        self.clean(output_file)
         self.insertDmRoles(output_file, self.dmroles)
 
         if os.path.exists("../tmp_snippets/temp"):
@@ -179,6 +182,50 @@ class ConcreteBuilder:
         f = open(xml_file, "w")
         f.write(buffer)
         f.close()
+
+    @staticmethod
+    def clean(xml_file):
+        """
+        Remove all collections with no concrete instances
+        """
+        buffer = ""
+        counter = []
+        i = 0
+        to_remove = False
+        temp = []
+
+        f = open(xml_file, "r")
+        for line in f:
+            if line.__contains__("<COLLECTION"):
+                temp.append(i)
+            elif line.__contains__('dmtype="mango:Property"'):
+                to_remove = True
+                temp.append(i)
+            elif line.__contains__("</COLLECTION"):
+                if to_remove:
+                    to_remove = False
+                    temp.append(i)
+                    counter.extend(temp)
+                else:
+                    temp.clear()
+            else:
+                temp.clear()
+            i += 1
+        f.close()
+
+        i = 0
+        f = open(xml_file, "r")
+        for line in f:
+            if i not in counter:
+                buffer += line
+            i += 1
+        f.close()
+
+        f = open(xml_file, "w")
+        f.write(buffer)
+        f.close()
+
+
     def insertDmRoles(self, file, dmroles):
         """
         Insert the dmroles in the concrete MIVOT snippet
@@ -339,7 +386,7 @@ class ConcreteBuilder:
             if element not in clean_elements:
                 clean_elements.append(element)
 
-        print(f"{bcolors.OKBLUE}Please choose from the list above : {bcolors.ENDC}")
+        print(f"{bcolors.OKBLUE}Please choose from the list below : {bcolors.ENDC}")
 
         for i in range(len(clean_elements)):
             print(f"{bcolors.GRAY}{str(i)} : {clean_elements[i]}{bcolors.ENDC}")
