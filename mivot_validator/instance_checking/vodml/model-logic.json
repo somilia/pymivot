@@ -35,13 +35,13 @@
       "mango:WebEndpoint"
     ],
     "mango:Property": [
-    "mango:Status",
-    "mango:Label",
-    "mango:Shape",
-    "mango:ComputedProperty",
-    "mango:PhysicalProperty",
-    "None"
-  ]
+      "mango:Status",
+      "mango:Label",
+      "mango:Shape",
+      "mango:ComputedProperty",
+      "mango:PhysicalProperty",
+      "None"
+    ]
   },
   "mango:BitField": {
     "meas:Measure": [
@@ -157,12 +157,12 @@
       "mango:WebEndpoint"
     ],
     "mango:Property": [
-    "mango:Status",
-    "mango:Label",
-    "mango:Shape",
-    "mango:ComputedProperty",
-    "mango:PhysicalProperty"
-  ]
+      "mango:Status",
+      "mango:Label",
+      "mango:Shape",
+      "mango:ComputedProperty",
+      "mango:PhysicalProperty"
+    ]
   },
   "mango:Status": {
     "meas:Measure": [
@@ -191,12 +191,12 @@
     ]
   },
   "mango:exterrors.MultiParamError1D": {
-      "meas:Uncertainty": [
-        "meas:Asymmetrical2D",
-        "meas:Symmetrical",
-        "meas:Bounds2D",
-        "meas:Ellipse"
-      ]
+    "meas:Uncertainty": [
+      "meas:Asymmetrical2D",
+      "meas:Symmetrical",
+      "meas:Bounds2D",
+      "meas:Ellipse"
+    ]
   },
   "mango:exterrors.MultiParamError": [
     "mango:exterrors.MultParamErro2D",
@@ -215,18 +215,10 @@
         "meas:Bounds2D",
         "meas:Ellipse"
       ],
-      "coords:Point": {
-        "coords:LonLatPoint": {
-          "coords:RefLocation": [
-            "coords:StdRefLocation"
-          ]
-        },
-        "coords:CartesianPoint": {
-          "coords:RefLocation": [
-            "coords:StdRefLocation"
-          ]
-        }
-      }
+      "coords:Point": [
+        "coords:LonLatPoint",
+        "coords:CartesianPoint"
+      ]
     },
     "meas:Velocity": {
       "meas:Uncertainty": [
@@ -235,13 +227,10 @@
         "meas:Bounds2D",
         "meas:Ellipse"
       ],
-      "coords:Point": {
-        "coords:LonLatPoint": {
-          "coords:StdRefLocation": [
-            "coords:StdRefLocation"
-          ]
-        }
-      }
+      "coords:Point": [
+        "coords:LonLatPoint",
+        "coords:CartesianPoint"
+      ]
     },
     "meas:Time": {
       "meas:Uncertainty": [
@@ -253,30 +242,34 @@
         "coords:JD": {
           "coords:JD": {
             "coords:RefLocation": [
-              "coords:StdRefLocation"
+              "coords:StdRefLocation",
+              "coords:CustomRefLocation"
             ]
           }
         },
         "coords:MJD": {
           "coords:MJD": {
             "coords:RefLocation": [
-              "coords:StdRefLocation"
-          ]
+              "coords:StdRefLocation",
+              "coords:CustomRefLocation"
+            ]
           }
         },
         "coords:ISOTime": {
           "coords:RefLocation": [
-            "coords:StdRefLocation"
+            "coords:StdRefLocation",
+            "coords:CustomRefLocation"
           ]
         },
         "coords:TimeOffset": {
           "coords:RefLocation": [
-            "coords:StdRefLocation"
+            "coords:StdRefLocation",
+            "coords:CustomRefLocation"
           ],
           "coords:TimeInstant": [
-                "coords:JD",
-                "coords:MJD",
-                "coords:ISOTime"
+            "coords:JD",
+            "coords:MJD",
+            "coords:ISOTime"
           ]
         }
       }
@@ -298,18 +291,10 @@
         "meas:Bounds2D",
         "meas:Ellipse"
       ],
-      "coords:Point": {
-        "coords:LonLatPoint": {
-          "coords:RefLocation": [
-            "coords:StdRefLocation"
-          ]
-        },
-        "coords:CartesianPoint": {
-          "coords:RefLocation": [
-            "coords:StdRefLocation"
-          ]
-        }
-      }
+      "coords:Point": [
+        "coords:LonLatPoint",
+        "coords:CartesianPoint"
+      ]
     },
     "meas:GenericMeasure": {
       "meas:Uncertainty": [
@@ -322,73 +307,100 @@
       ]
     }
   },
-  "coords:Point": {
-        "coords:LonLatPoint": {
-          "coords:RefLocation": [
-            "coords:StdRefLocation"
-          ]
-        },
-        "coords:CartesianPoint": {
-          "coords:RefLocation": [
-            "coords:StdRefLocation"
-          ]
-        }
-      },
+  "coords:Point": [
+    "coords:LonLatPoint",
+    "coords:CartesianPoint"
+  ],
   "coords:TimeStamp": {
-        "coords:JD": {
-          "coords:JD": {
-            "coords:RefLocation": [
-              "coords:StdRefLocation"
-            ]
-          }
-        },
-        "coords:MJD": {
-          "coords:MJD": {
-            "coords:RefLocation": [
-              "coords:StdRefLocation"
-          ]
-          }
-        },
-        "coords:ISOTime": {
-          "coords:RefLocation": [
-            "coords:StdRefLocation"
-          ]
-        },
-        "coords:TimeOffset": {
-          "coords:RefLocation": [
-            "coords:StdRefLocation"
-          ],
-          "coords:TimeInstant": [
-                "coords:JD",
-                "coords:MJD",
-                "coords:ISOTime"
-          ]
-        }
-      },
+    "coords:JD": {
+      "coords:JD": {
+        "coords:RefLocation": [
+          "coords:StdRefLocation",
+          "coords:CustomRefLocation"
+        ]
+      }
+    },
+    "coords:MJD": {
+      "coords:MJD": {
+        "coords:RefLocation": [
+          "coords:StdRefLocation",
+          "coords:CustomRefLocation"
+        ]
+      }
+    },
+    "coords:ISOTime": {
+      "coords:RefLocation": [
+        "coords:StdRefLocation",
+        "coords:CustomRefLocation"
+      ]
+    },
+    "coords:TimeOffset": {
+      "coords:RefLocation": [
+        "coords:StdRefLocation",
+        "coords:CustomRefLocation"
+      ],
+      "coords:TimeInstant": [
+        "coords:JD",
+        "coords:MJD",
+        "coords:ISOTime"
+      ]
+    }
+  },
   "coords:TimeInstant": [
     "coords:JD",
     "coords:MJD",
     "coords:ISOTime"
   ],
-  "coords:JD" : {
+  "coords:JD": {
     "coords:RefLocation": [
-      "coords:StdRefLocation"
+      "coords:StdRefLocation",
+      "coords:CustomRefLocation"
     ]
   },
-  "coords:MJD" : {
+  "coords:MJD": {
     "coords:RefLocation": [
-        "coords:StdRefLocation"
+      "coords:StdRefLocation",
+      "coords:CustomRefLocation"
     ]
   },
-  "coords:ISOTime" : {
+  "coords:ISOTime": {
     "coords:RefLocation": [
-        "coords:StdRefLocation"
+      "coords:StdRefLocation",
+      "coords:CustomRefLocation"
     ]
-
   },
   "coords:TimeFrame": {
     "coords:RefLocation": [
-      "coords:StdRefLocation"
+      "coords:StdRefLocation",
+      "coords:CustomRefLocation"
+    ]
+  },
+  "coords:SpaceFrame": {
+    "coords:RefLocation": {
+      "coords:StdRefLocation":[],
+      "coords:CustomRefLocation": {
+        "coords:Point": [
+          "coords:LonLatPoint",
+          "coords:CartesianPoint"
+        ]
+      }
+    }
+  },
+  "coords:LonLatPoint":{
+    "coords:RefLocation": {
+      "coords:StdRefLocation":[],
+      "coords:CustomRefLocation": {
+        "coords:Point": [
+          "coords:LonLatPoint",
+          "coords:CartesianPoint"
+        ]
+      }
+    }
+  },
+  "coords:CustomRefLocation": {
+    "coords:Point": [
+      "coords:LonLatPoint",
+      "coords:CartesianPoint"
     ]
   }
 }
