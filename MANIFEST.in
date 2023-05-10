@@ -1,2 +1,3 @@
 recursive-include mivot_validator *.xml
 recursive-include mivot_validator *.json
+recursive-include mivot_validator/tmp_snippets
