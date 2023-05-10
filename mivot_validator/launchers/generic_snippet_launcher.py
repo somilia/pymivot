@@ -1,6 +1,8 @@
 """
 Created on 19 Apr 2023
 
+script launcher for the generic snippet generator package
+
 @author: julien abid
 """
 import os
@@ -9,7 +11,7 @@ import sys
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
-from mivot_validator.instance_checking.generic_snippet_builder import ExtendedBuilder
+from mivot_validator.instance_checking.generic_snippet_builder import GenericBuilder
 
 
 def main():
@@ -25,7 +27,7 @@ def main():
 
     path = check_args(sys.argv[1])
 
-    snippet = ExtendedBuilder(vodml_path=path)
+    snippet = GenericBuilder(vodml_path=path)
     if snippet.build():
         print("\n===============================================")
         print(f"Snippets generated in {os.path.abspath(os.getcwd() + '/../tmp_snippets/')} \nin the folder : "
@@ -36,7 +38,6 @@ def main():
             os.system("rm -rf tmp_vodml")
 
         sys.exit(0)
-
 
 def check_args(args):
     """
