@@ -15,8 +15,8 @@ def main():
     """
     Package launcher (script)
     """
-    if 4 > len(sys.argv) > 5:
-        print("USAGE: mivot-snippet-gen [class_name] [output_dir] [output_name] <classes_list>")
+    if len(sys.argv) < 4 or len(sys.argv) > 5:
+        print("USAGE: mivot-snippet-concrete [class_name] [output_dir] [output_name] <classes_list>")
         print("   Create MIVOT snippets from VODML files")
         print("   :class_name: either a absolute file path to any MIVOT mapping class or just a class name as model:Class")
         print("   :output_dir: path to the choosen output directory")

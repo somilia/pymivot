@@ -402,5 +402,16 @@
       "coords:LonLatPoint",
       "coords:CartesianPoint"
     ]
+  },
+  "coords:TimeSys": {
+    "coords:RefLocation": {
+      "coords:StdRefLocation":[],
+      "coords:CustomRefLocation": {
+        "coords:Point": [
+          "coords:LonLatPoint",
+          "coords:CartesianPoint"
+        ]
+      }
+    }
   }
 }

@@ -19,9 +19,9 @@ def main():
     Package launcher (script)
     """
     if len(sys.argv) != 2:
-        print("USAGE: mivot-snippet-gen [path]")
+        print("USAGE: mivot-snippet-generic [path]")
         print("   Create MIVOT snippets from VODML files")
-        print("   path: either a simple file or an url")
+        print("   path: either a simple file to any VODML-Model or an url")
         print("   exit status: 0 in case of success, 1 otherwise")
         sys.exit(1)
 
