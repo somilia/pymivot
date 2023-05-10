@@ -12,7 +12,7 @@ from mivot_validator.instance_checking.snippet_builder import Builder
 from mivot_validator.utils.xml_utils import XmlUtils
 
 
-class ExtendedBuilder(Builder):
+class GenericBuilder(Builder):
     def __init__(self, vodml_path, output_dir=os.getcwd() + "/../tmp_snippets/"):
         self.model_name = os.path.basename(vodml_path).split('.')[0].split('_')[0].split('-')[0].lower()
         super().__init__(self.model_name, "", vodml_path, output_dir)

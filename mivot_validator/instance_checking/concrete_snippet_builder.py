@@ -40,7 +40,7 @@ class ConcreteBuilder:
     serialized in provided generic MIVOT snippet
     """
 
-    def __init__(self, xml_file, output_dir, output_name):
+    def __init__(self, xml_file, output_dir, output_name, concrete_list=None):
         """
         :xml_file: path to the generic MIVOT
         :output_dir: path to the output directory
@@ -62,6 +62,7 @@ class ConcreteBuilder:
         self.build_file = self.xml_file
         self.dmrole = None
         self.dmroles = []
+        self.concrete_list = concrete_list
 
     def build(self):
         if not os.path.exists("../tmp_snippets/temp"):
@@ -123,6 +124,8 @@ class ConcreteBuilder:
                                         self.build_file = file
                                         self.build()
                                         self.build_file = self.xml_file
+                                else:
+                                    self.dmroles[self.dmroles.index("mango:Property:associatedProperty")].pop()
                         property_count -= 1
 
         f.close()
@@ -302,12 +305,7 @@ class ConcreteBuilder:
                     temp_dir, os.path.basename("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml"))
                 urlretrieve("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml", local_vodml_path)
         elif model_name == "instfov":
-            if urlparse("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml").scheme:
-                temp_dir = "tmp_vodml"
-                os.makedirs(temp_dir, exist_ok=True)
-                local_vodml_path = os.path.join(
-                    temp_dir, os.path.basename("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml"))
-                urlretrieve("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml", local_vodml_path)
+            local_vodml_path = "../vodml/instfov.vo-dml.xml"
         elif model_name == "mango":
             local_vodml_path = "../vodml/mango.vo-dml.xml"
 
@@ -386,15 +384,21 @@ class ConcreteBuilder:
             if element not in clean_elements:
                 clean_elements.append(element)
 
-        print(f"{bcolors.OKBLUE}Please choose from the list below : {bcolors.ENDC}")
-
-        for i in range(len(clean_elements)):
-            print(f"{bcolors.GRAY}{str(i)} : {clean_elements[i]}{bcolors.ENDC}")
-
-        choice = input("Your choice : ")
-
-        if choice.isdigit() and int(choice) < len(elements):
-            return clean_elements[int(choice)]
+        if self.concrete_list is not None and self.concrete_list[0] in clean_elements:
+            res = self.concrete_list[0]
+            self.concrete_list = self.concrete_list[1:]
+            return res
         else:
-            print(f"{bcolors.WARNING}Wrong choice, please try again.{bcolors.ENDC}")
-            return self.populateChoices(elements)
+            print(f"{bcolors.OKBLUE}Please choose from the list below : {bcolors.ENDC}")
+
+            for i in range(len(clean_elements)):
+                print(f"{bcolors.GRAY}{str(i)} : {clean_elements[i]}{bcolors.ENDC}")
+
+            choice = input("Your choice : ")
+
+            if choice.isdigit() and int(choice) < len(elements):
+                return clean_elements[int(choice)]
+            else:
+                print(f"{bcolors.WARNING}Wrong choice, please try again.{bcolors.ENDC}")
+                return self.populateChoices(elements)
+
