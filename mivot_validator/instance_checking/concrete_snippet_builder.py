@@ -89,7 +89,10 @@ class ConcreteBuilder:
                     parent_key = self.getDmType(line)
                 if self.getDmType(line) in self.abstract_classes:
                     self.dmrole = self.getDmRole(line)
-                    self.dmroles.append(self.dmrole)
+                    if self.dmrole == "mango:Property.associatedProperties":
+                        self.dmroles.append('')
+                    else:
+                        self.dmroles.append(self.dmrole)
                     print(f"{bcolors.OKCYAN}{bcolors.UNDERLINE}List of possible concrete classes :{bcolors.ENDC}")
                     print(f"{bcolors.OKCYAN}DMTYPE: {bcolors.BOLD}{self.getDmType(line)}{bcolors.ENDC}")
                     print(f"{bcolors.OKCYAN}CONTEXT: {bcolors.BOLD}{parent_key}{bcolors.ENDC}")
@@ -142,6 +145,7 @@ class ConcreteBuilder:
         XmlUtils.xmltree_to_file(result, output_file)
 
         self.clean(output_file)
+        print(f"{bcolors.OKGREEN} dmroles: {self.dmroles} {bcolors.ENDC}")
         self.insertDmRoles(output_file, self.dmroles)
 
         if os.path.exists("../tmp_snippets/temp"):
@@ -227,7 +231,6 @@ class ConcreteBuilder:
         f = open(xml_file, "w")
         f.write(buffer)
         f.close()
-
 
     def insertDmRoles(self, file, dmroles):
         """
@@ -401,4 +404,3 @@ class ConcreteBuilder:
             else:
                 print(f"{bcolors.WARNING}Wrong choice, please try again.{bcolors.ENDC}")
                 return self.populateChoices(elements)
-
