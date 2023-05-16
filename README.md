@@ -46,7 +46,7 @@ Validate an XML file containing just a MAPPING block
 Create a list of  generic code snippets from a model file
 
 ```bash
- mivot-snippet-generic <XML path>
+ mivot-snippet-model <XML path>
 ```
 >*Note* :
 > - the `XML path` can be a local file or a link to a file on the web.
