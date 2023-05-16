@@ -22,6 +22,15 @@ class ModelBuilder(Builder):
         Build one snippet for all the dataType/objectType which are not abstract,
         found in the VODML model
         """
+        for ele in self.vodml.xpath(f'.//dataType'):
+            if ele.get("abstract") == "true":
+                continue
+            for tags in ele.getchildren():
+                self.class_name = tags.text
+                if tags.tag != "vodml-id":
+                    continue
+                self.build_object(ele, "", True, True)
+
         for ele in self.vodml.xpath(f'.//objectType'):
             if ele.get("abstract") == "true":
                 continue
