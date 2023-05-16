@@ -8,7 +8,7 @@ import unittest
 import os
 
 from mivot_validator.utils.xml_utils import XmlUtils
-from mivot_validator.instance_checking.generic_snippet_builder import GenericBuilder
+from mivot_validator.instance_checking.model_snippets_builder import ModelBuilder
 
 OUTPUT = os.getcwd() + "/../tmp_snippets/coords"
 MODEL = os.getcwd() + "/../vodml/Coords-v1.0.vo-dml.xml"
@@ -47,7 +47,7 @@ class Test(unittest.TestCase):
         Check that files are generated in the given directory
         '''
         # Given
-        snippets = GenericBuilder(MODEL)
+        snippets = ModelBuilder(MODEL)
 
         # When
         snippets.build()
@@ -61,7 +61,7 @@ class Test(unittest.TestCase):
         are the object types of the model
         '''
         # Given
-        snippets = GenericBuilder(MODEL)
+        snippets = ModelBuilder(MODEL)
         object_types = getObjectTypes(XmlUtils.xmltree_from_file(MODEL))
 
         # When

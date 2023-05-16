@@ -10,8 +10,8 @@ import filecmp
 from time import sleep
 
 from unittest.mock import patch
-from mivot_validator.launchers.concrete_snippet_launcher import check_args
-from mivot_validator.instance_checking.concrete_snippet_builder import ConcreteBuilder
+from mivot_validator.launchers.instance_snippet_launcher import check_args
+from mivot_validator.instance_checking.instance_snippet_builder import InstanceBuilder
 
 OUTPUT = os.getcwd() + "/../tmp_snippets/"
 CLASS_NAME = check_args("meas:Position", 0)
@@ -48,7 +48,7 @@ class Test(unittest.TestCase):
         Check that files are generated in the given directory with the right name
         '''
         # Given
-        snippet = ConcreteBuilder(CLASS_NAME, OUTPUT, FILE_NAME, CLASSES_LIST)
+        snippet = InstanceBuilder(CLASS_NAME, OUTPUT, FILE_NAME, CLASSES_LIST)
 
         # When
         snippet.build()
@@ -62,7 +62,7 @@ class Test(unittest.TestCase):
         Check that file generated in the given directory have the same content as the test data
         '''
         # Given
-        snippet = ConcreteBuilder(CLASS_NAME, OUTPUT, FILE_NAME, CLASSES_LIST)
+        snippet = InstanceBuilder(CLASS_NAME, OUTPUT, FILE_NAME, CLASSES_LIST)
 
         # When
         snippet.build()

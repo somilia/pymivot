@@ -1,7 +1,7 @@
 """
 Created on 19 Apr 2023
 
-script launcher for the generic snippet generator package
+script launcher for the model snippets generator package
 
 @author: julien abid
 """
@@ -11,7 +11,7 @@ import sys
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
-from mivot_validator.instance_checking.generic_snippet_builder import GenericBuilder
+from mivot_validator.instance_checking.model_snippets_builder import ModelBuilder
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
     Package launcher (script)
     """
     if len(sys.argv) != 2:
-        print("USAGE: mivot-snippet-generic [path]")
+        print("USAGE: mivot-snippet-model [path]")
         print("   Create MIVOT snippets from VODML files")
         print("   path: either a simple file to any VODML-Model or an url")
         print("   exit status: 0 in case of success, 1 otherwise")
@@ -27,7 +27,7 @@ def main():
 
     path = check_args(sys.argv[1])
 
-    snippet = GenericBuilder(vodml_path=path)
+    snippet = ModelBuilder(vodml_path=path)
     if snippet.build():
         print("\n===============================================")
         print(f"Snippets generated in {os.path.abspath(os.getcwd() + '/../tmp_snippets/')} \nin the folder : "

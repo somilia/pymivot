@@ -1,14 +1,14 @@
 """
 Created on 21 Apr 2023
 
-launcher script for the concrete snippet generator package
+launcher script for the instance snippet generator package
 
 @author: julien abid
 """
 import os.path
 import sys
 import time
-from mivot_validator.instance_checking.concrete_snippet_builder import ConcreteBuilder
+from mivot_validator.instance_checking.instance_snippet_builder import InstanceBuilder
 from mivot_validator.instance_checking.snippet_builder import Builder
 
 def main():
@@ -16,7 +16,7 @@ def main():
     Package launcher (script)
     """
     if len(sys.argv) < 4 or len(sys.argv) > 5:
-        print("USAGE: mivot-snippet-concrete [class_name] [output_dir] [output_name] <classes_list>")
+        print("USAGE: mivot-snippet-instance [class_name] [output_dir] [output_name] <classes_list>")
         print("   Create MIVOT snippets from VODML files")
         print("   :class_name: either a absolute file path to any MIVOT mapping class or just a class name as model:Class")
         print("   :output_dir: path to the choosen output directory")
@@ -35,7 +35,7 @@ def main():
 
     time.sleep(1)
 
-    snippet = ConcreteBuilder(xml_file=os.path.abspath(xml_path),
+    snippet = InstanceBuilder(xml_file=os.path.abspath(xml_path),
                               output_dir=os.path.abspath(sys.argv[2]),
                               output_name=sys.argv[3],
                               concrete_list=classes_list)
@@ -53,7 +53,7 @@ def check_args(args, type):
             print("Invalid format for class name")
             sys.exit(1)
         generic = Builder(args.split(":")[0], args.split(":")[1],
-                          ConcreteBuilder.getModelXMLFromName(args.split(":")[0]),
+                          InstanceBuilder.getModelXMLFromName(args.split(":")[0]),
                           os.path.abspath("../tmp_snippets/"))
         generic.build()
         return generic.outputname

@@ -34,7 +34,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
-class ConcreteBuilder:
+class InstanceBuilder:
     """
     Build a concrete MIVOT view of the class model_name:class_name of the model
     serialized in provided generic MIVOT snippet

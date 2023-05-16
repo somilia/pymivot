@@ -7,8 +7,8 @@ entry_points = {
         "mivot-mapping-validate = mivot_validator.launchers.mivot_launcher:main",
         "types-and-roles-validate = mivot_validator.launchers.typesandroles_launcher:main",
         "mivot-instance-validate = mivot_validator.launchers.instance_checking_launcher:main",
-        "mivot-snippet-generic = mivot_validator.launchers.generic_snippet_launcher:main",
-        "mivot-snippet-concrete = mivot_validator.launchers.concrete_snippet_launcher:main"
+        "mivot-snippet-model = mivot_validator.launchers.model_snippets_launcher:main",
+        "mivot-snippet-instance = mivot_validator.launchers.instance_snippet_launcher:main"
     ]
 }
 
