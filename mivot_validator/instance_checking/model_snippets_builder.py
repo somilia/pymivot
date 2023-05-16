@@ -105,3 +105,4 @@ class ModelBuilder(Builder):
         if root is True:
             self.output.close()
             XmlUtils.xmltree_to_file(XmlUtils.xmltree_from_file(self.outputname), self.outputname)
+

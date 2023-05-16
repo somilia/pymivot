@@ -11,6 +11,8 @@ import time
 from mivot_validator.instance_checking.instance_snippet_builder import InstanceBuilder
 from mivot_validator.instance_checking.snippet_builder import Builder
 
+constraints = None
+
 def main():
     """
     Package launcher (script)
@@ -38,7 +40,8 @@ def main():
     snippet = InstanceBuilder(xml_file=os.path.abspath(xml_path),
                               output_dir=os.path.abspath(sys.argv[2]),
                               output_name=sys.argv[3],
-                              concrete_list=classes_list)
+                              constraints=constraints,
+                              concrete_list=classes_list,)
     snippet.build()
     snippet.outputResult()
 
@@ -56,6 +59,7 @@ def check_args(args, type):
                           InstanceBuilder.getModelXMLFromName(args.split(":")[0]),
                           os.path.abspath("../tmp_snippets/"))
         generic.build()
+        constraints = generic.constraints
         return generic.outputname
     elif type == 1:
         if not args.__contains__('[') and args.__contains__(']'):

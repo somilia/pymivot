@@ -191,6 +191,8 @@ class InstanceChecker(object):
         if "meas:Measure" in InstanceChecker.inheritence_tree:
             InstanceChecker.inheritence_tree["meas:Measure"].append("mango:extmeas.PhotometricMeasure")
 
+        return graph
+
 
     @staticmethod
     def _check_attribute(attribute_etree, vodml_instance):

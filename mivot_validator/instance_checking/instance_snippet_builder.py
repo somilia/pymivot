@@ -18,6 +18,7 @@ from lxml import etree
 
 from mivot_validator.instance_checking.snippet_builder import Builder
 from mivot_validator.utils.xml_utils import XmlUtils
+from mivot_validator.instance_checking.instance_checker import InstanceChecker
 
 
 class bcolors:
@@ -29,6 +30,7 @@ class bcolors:
     OKCYAN = '\033[96m'
     OKGREEN = '\033[92m'
     WARNING = '\033[93m'
+    RED = '\033[31m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
@@ -40,12 +42,11 @@ class InstanceBuilder:
     serialized in provided generic MIVOT snippet
     """
 
-    def __init__(self, xml_file, output_dir, output_name, concrete_list=None):
+    def __init__(self, xml_file, output_dir, output_name, constraints, concrete_list=None):
         """
         :xml_file: path to the generic MIVOT
         :output_dir: path to the output directory
         :model_xml: path to the model xml file
-        :data: json data of the model
         :abstract_classes: list of abstract classes
         :buffer: temporary content of the output file
         :build_file: actual path of the file being built (recursively)
@@ -56,13 +57,23 @@ class InstanceBuilder:
         self.output_dir = output_dir
         self.model_xml = self.getModelXMLFromName(self.getModelName(self.xml_file))
         self.output_name = output_name
-        self.data = json.load(open(os.path.abspath("../vodml/model-logic.json"), "r"))
-        self.abstract_classes = self.data["abstract"]
         self.buffer = ""
         self.build_file = self.xml_file
         self.dmrole = None
         self.dmroles = []
         self.concrete_list = concrete_list
+        self.inheritance_graph = {
+            **InstanceChecker._build_inheritence_graph(
+                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/mango.vo-dml.xml"),
+            **InstanceChecker._build_inheritence_graph(
+                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Phot-v1.1.vodml.xml"),
+            **InstanceChecker._build_inheritence_graph(
+                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Coords-v1.0.vo-dml.xml"),
+            **InstanceChecker._build_inheritence_graph(
+                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Meas-v1.vo-dml.xml")
+        }
+        self.abstract_classes = list(self.inheritance_graph.keys())
+        self.constraints = constraints
 
     def build(self):
         if not os.path.exists("../tmp_snippets/temp"):
@@ -98,9 +109,10 @@ class InstanceBuilder:
                     print(f"{bcolors.OKCYAN}CONTEXT: {bcolors.BOLD}{parent_key}{bcolors.ENDC}")
                     print(f"{bcolors.OKCYAN}DMROLE: {bcolors.BOLD}{self.dmrole}{bcolors.ENDC}")
                     if property_count == 0:
-                        choice = self.populateChoices(
-                            list(self.search(self.data, parent_key, self.getDmType(line)))
-                        )
+                        # choice = self.populateChoices(
+                        #     list(self.search(self.data, parent_key, self.getDmType(line)))
+                        # )
+                        choice = self.populateChoices(self.inheritance_graph[self.getDmType(line)], parent_key)
                         file = None
                         if choice != "None":
                             file = self.getInstance(choice.split(":")[0], choice.split(":")[1])
@@ -117,10 +129,7 @@ class InstanceBuilder:
                             property_dock = self.askForProperty(parent_key)
                             if property_dock:
                                 property_count += 1
-                                choice = self.populateChoices(
-                                    ["mango:Status", "mango:Label", "mango:Shape",
-                                     "mango:ComputedProperty", "mango:PhysicalProperty", "None"]
-                                )
+                                choice = self.populateChoices(self.inheritance_graph[self.getDmType(line)], parent_key)
                                 if choice != "None":
                                     file = self.getInstance(choice.split(":")[0], choice.split(":")[1])
                                     if file is not None:
@@ -145,7 +154,6 @@ class InstanceBuilder:
         XmlUtils.xmltree_to_file(result, output_file)
 
         self.clean(output_file)
-        print(f"{bcolors.OKGREEN} dmroles: {self.dmroles} {bcolors.ENDC}")
         self.insertDmRoles(output_file, self.dmroles)
 
         if os.path.exists("../tmp_snippets/temp"):
@@ -324,6 +332,7 @@ class InstanceBuilder:
         """
         builder = Builder(model_name, class_name, self.getModelXMLFromName(model_name), "../tmp_snippets/temp")
         builder.build()
+        self.constraints = builder.constraints.constraints
 
         return builder.outputname
 
@@ -378,7 +387,7 @@ class InstanceBuilder:
             for item in data:
                 yield from self.search(item, parent_key, key)
 
-    def populateChoices(self, elements):
+    def populateChoices(self, elements, parent_key):
         """
         Make an input with choices from the list
         """
@@ -392,6 +401,9 @@ class InstanceBuilder:
             self.concrete_list = self.concrete_list[1:]
             return res
         else:
+            if parent_key in ["mango:Status", "mango:Label", "mango:Shape", "mango:ComputedProperty", "mango:PhysicalProperty", "mango:BitField", "mango:Color"]:
+                clean_elements.append("None")
+
             print(f"{bcolors.OKBLUE}Please choose from the list below : {bcolors.ENDC}")
 
             for i in range(len(clean_elements)):
@@ -399,8 +411,8 @@ class InstanceBuilder:
 
             choice = input("Your choice : ")
 
-            if choice.isdigit() and int(choice) < len(elements):
+            if choice.isdigit() and int(choice) < len(clean_elements):
                 return clean_elements[int(choice)]
             else:
                 print(f"{bcolors.WARNING}Wrong choice, please try again.{bcolors.ENDC}")
-                return self.populateChoices(elements)
+                return self.populateChoices(elements, parent_key)
