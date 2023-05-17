@@ -1,17 +1,16 @@
-'''
+"""
 Created on 1 dec. 2021
 
 @author: laurentmichel
-'''
+"""
+
 
 class TableIterator(object):
-    '''
+    """
     Simple wrapper iterating over table rows
-    '''
+    """
 
-    def __init__(self,
-                 name,
-                 data_table):
+    def __init__(self, name, data_table):
         """
         Constructor
         :param name: table name : not really used
@@ -25,10 +24,10 @@ class TableIterator(object):
         self.row_filter = None
 
     def _get_next_row(self):
-        '''
+        """
         Returns the next Numpy row or None.
-        The end of table exception usually returned by Numpy is trapped 
-        '''
+        The end of table exception usually returned by Numpy is trapped
+        """
         # The iterator is set at the first iteration
         if self.iter == None:
             self.iter = iter(self.data_table)
@@ -37,8 +36,10 @@ class TableIterator(object):
             while True:
                 row = next(self.iter)
                 if row is not None:
-                    if (self.row_filter is None or 
-                        self.row_filter.row_match(row) == True):
+                    if (
+                        self.row_filter is None
+                        or self.row_filter.row_match(row) == True
+                    ):
                         self.last_row = row
                         return row
                 else:
@@ -51,5 +52,3 @@ class TableIterator(object):
         Set the pointer on the table top, destroys the iterator actually
         """
         self.iter = None
-        
- 

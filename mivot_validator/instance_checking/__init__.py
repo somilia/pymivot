@@ -2,7 +2,7 @@ import sys, os
 from mivot_validator.utils.logger_setup import LoggerSetup
 from mivot_validator.utils.file_utils import FileUtils
 
-data_dir =  FileUtils.get_datadir()
+data_dir = FileUtils.get_datadir()
 project_dir = FileUtils.get_projectdir()
 schema_dir = FileUtils.get_schemadir()
 schema_path = os.path.join(schema_dir, "merged-syntax.xsd")

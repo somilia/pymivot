@@ -25,15 +25,16 @@ class bcolors:
     """
     Color codes for terminal output
     """
-    GRAY = '\033[37m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    RED = '\033[31m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+
+    GRAY = "\033[37m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    RED = "\033[31m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
 
 class InstanceBuilder:
@@ -42,7 +43,9 @@ class InstanceBuilder:
     serialized in provided generic MIVOT snippet
     """
 
-    def __init__(self, xml_file, output_dir, output_name, constraints, concrete_list=None):
+    def __init__(
+        self, xml_file, output_dir, output_name, constraints, concrete_list=None
+    ):
         """
         :xml_file: path to the generic MIVOT
         :output_dir: path to the output directory
@@ -64,13 +67,17 @@ class InstanceBuilder:
         self.concrete_list = concrete_list
         self.inheritance_graph = {
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/mango.vo-dml.xml"),
+                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/mango.vo-dml.xml"
+            ),
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Phot-v1.1.vodml.xml"),
+                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Phot-v1.1.vodml.xml"
+            ),
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Coords-v1.0.vo-dml.xml"),
+                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Coords-v1.0.vo-dml.xml"
+            ),
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Meas-v1.vo-dml.xml")
+                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Meas-v1.vo-dml.xml"
+            ),
         }
         self.abstract_classes = list(self.inheritance_graph.keys())
         self.constraints = constraints
@@ -101,21 +108,33 @@ class InstanceBuilder:
                 if self.getDmType(line) in self.abstract_classes:
                     self.dmrole = self.getDmRole(line)
                     if self.dmrole == "mango:Property.associatedProperties":
-                        self.dmroles.append('')
+                        self.dmroles.append("")
                     else:
                         self.dmroles.append(self.dmrole)
-                    print(f"{bcolors.OKCYAN}{bcolors.UNDERLINE}List of possible concrete classes :{bcolors.ENDC}")
-                    print(f"{bcolors.OKCYAN}DMTYPE: {bcolors.BOLD}{self.getDmType(line)}{bcolors.ENDC}")
-                    print(f"{bcolors.OKCYAN}CONTEXT: {bcolors.BOLD}{parent_key}{bcolors.ENDC}")
-                    print(f"{bcolors.OKCYAN}DMROLE: {bcolors.BOLD}{self.dmrole}{bcolors.ENDC}")
+                    print(
+                        f"{bcolors.OKCYAN}{bcolors.UNDERLINE}List of possible concrete classes :{bcolors.ENDC}"
+                    )
+                    print(
+                        f"{bcolors.OKCYAN}DMTYPE: {bcolors.BOLD}{self.getDmType(line)}{bcolors.ENDC}"
+                    )
+                    print(
+                        f"{bcolors.OKCYAN}CONTEXT: {bcolors.BOLD}{parent_key}{bcolors.ENDC}"
+                    )
+                    print(
+                        f"{bcolors.OKCYAN}DMROLE: {bcolors.BOLD}{self.dmrole}{bcolors.ENDC}"
+                    )
                     if property_count == 0:
                         # choice = self.populateChoices(
                         #     list(self.search(self.data, parent_key, self.getDmType(line)))
                         # )
-                        choice = self.populateChoices(self.inheritance_graph[self.getDmType(line)], parent_key)
+                        choice = self.populateChoices(
+                            self.inheritance_graph[self.getDmType(line)], parent_key
+                        )
                         file = None
                         if choice != "None":
-                            file = self.getInstance(choice.split(":")[0], choice.split(":")[1])
+                            file = self.getInstance(
+                                choice.split(":")[0], choice.split(":")[1]
+                            )
                         if file is not None:
                             if self.getDmType(line) == "mango:Property":
                                 property_count += 1
@@ -129,15 +148,24 @@ class InstanceBuilder:
                             property_dock = self.askForProperty(parent_key)
                             if property_dock:
                                 property_count += 1
-                                choice = self.populateChoices(self.inheritance_graph[self.getDmType(line)], parent_key)
+                                choice = self.populateChoices(
+                                    self.inheritance_graph[self.getDmType(line)],
+                                    parent_key,
+                                )
                                 if choice != "None":
-                                    file = self.getInstance(choice.split(":")[0], choice.split(":")[1])
+                                    file = self.getInstance(
+                                        choice.split(":")[0], choice.split(":")[1]
+                                    )
                                     if file is not None:
                                         self.build_file = file
                                         self.build()
                                         self.build_file = self.xml_file
                                 else:
-                                    self.dmroles[self.dmroles.index("mango:Property:associatedProperty")].pop()
+                                    self.dmroles[
+                                        self.dmroles.index(
+                                            "mango:Property:associatedProperty"
+                                        )
+                                    ].pop()
                         property_count -= 1
 
         f.close()
@@ -159,12 +187,16 @@ class InstanceBuilder:
         if os.path.exists("../tmp_snippets/temp"):
             os.system("rm -rf ../tmp_snippets/temp")
 
-        print(f"{bcolors.OKGREEN}Concrete MIVOT snippet for {bcolors.BOLD}{os.path.basename(self.xml_file)} stored in "
-              f"{bcolors.BOLD}{output_file}{bcolors.ENDC}")
+        print(
+            f"{bcolors.OKGREEN}Concrete MIVOT snippet for {bcolors.BOLD}{os.path.basename(self.xml_file)} stored in "
+            f"{bcolors.BOLD}{output_file}{bcolors.ENDC}"
+        )
 
     def askForProperty(self, parent_key):
-        print(f"{bcolors.OKCYAN} Do you want to add another Property in this collection"
-              f" for {parent_key}? (y/n){bcolors.ENDC}")
+        print(
+            f"{bcolors.OKCYAN} Do you want to add another Property in this collection"
+            f" for {parent_key}? (y/n){bcolors.ENDC}"
+        )
         choice = input()
         if choice == "y":
             return True
@@ -188,7 +220,11 @@ class InstanceBuilder:
                 buffer += line
             if line.__contains__(f'dmtype="{dmtype}"'):
                 is_dmtype = True
-            if line.__contains__("<INSTANCE") and not line.__contains__("/>") and is_dmtype:
+            if (
+                line.__contains__("<INSTANCE")
+                and not line.__contains__("/>")
+                and is_dmtype
+            ):
                 counter += 1
             if line.__contains__("</INSTANCE"):
                 counter -= 1
@@ -267,14 +303,16 @@ class InstanceBuilder:
         Get the model name from the MIVOT snippet name
         :return: the model name
         """
-        return os.path.basename(xml_file).split('.')[0].split('_')[0].split('-')[0].lower()
+        return (
+            os.path.basename(xml_file).split(".")[0].split("_")[0].split("-")[0].lower()
+        )
 
     def getClassName(self, xml_file):
         """
         Get the class name from the MIVOT snippet name
         :return: the class name
         """
-        return os.path.basename(xml_file).split('.')[1].split('_')[0]
+        return os.path.basename(xml_file).split(".")[1].split("_")[0]
 
     @staticmethod
     def getModelXMLFromName(model_name):
@@ -291,30 +329,49 @@ class InstanceBuilder:
                 temp_dir = "tmp_vodml"
                 os.makedirs(temp_dir, exist_ok=True)
                 local_vodml_path = os.path.join(
-                    temp_dir, os.path.basename("https://ivoa.net/xml/VODML/Meas-v1.0.vo-dml.xml"))
-                urlretrieve("https://ivoa.net/xml/VODML/Meas-v1.0.vo-dml.xml", local_vodml_path)
+                    temp_dir,
+                    os.path.basename("https://ivoa.net/xml/VODML/Meas-v1.0.vo-dml.xml"),
+                )
+                urlretrieve(
+                    "https://ivoa.net/xml/VODML/Meas-v1.0.vo-dml.xml", local_vodml_path
+                )
 
         elif model_name == "coords":
             if urlparse("https://ivoa.net/xml/VODML/Coords-v1.0.vo-dml.xml").scheme:
                 temp_dir = "tmp_vodml"
                 os.makedirs(temp_dir, exist_ok=True)
                 local_vodml_path = os.path.join(
-                    temp_dir, os.path.basename("https://ivoa.net/xml/VODML/Coords-v1.0.vo-dml.xml"))
-                urlretrieve("https://ivoa.net/xml/VODML/Coords-v1.0.vo-dml.xml", local_vodml_path)
+                    temp_dir,
+                    os.path.basename(
+                        "https://ivoa.net/xml/VODML/Coords-v1.0.vo-dml.xml"
+                    ),
+                )
+                urlretrieve(
+                    "https://ivoa.net/xml/VODML/Coords-v1.0.vo-dml.xml",
+                    local_vodml_path,
+                )
         elif model_name == "ivoa":
             if urlparse("https://ivoa.net/xml/VODML/IVOA-v1.vo-dml.xml").scheme:
                 temp_dir = "tmp_vodml"
                 os.makedirs(temp_dir, exist_ok=True)
                 local_vodml_path = os.path.join(
-                    temp_dir, os.path.basename("https://ivoa.net/xml/VODML/IVOA-v1.vo-dml.xml"))
-                urlretrieve("https://ivoa.net/xml/VODML/IVOA-v1.vo-dml.xml", local_vodml_path)
+                    temp_dir,
+                    os.path.basename("https://ivoa.net/xml/VODML/IVOA-v1.vo-dml.xml"),
+                )
+                urlretrieve(
+                    "https://ivoa.net/xml/VODML/IVOA-v1.vo-dml.xml", local_vodml_path
+                )
         elif model_name == "Phot":
             if urlparse("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml").scheme:
                 temp_dir = "tmp_vodml"
                 os.makedirs(temp_dir, exist_ok=True)
                 local_vodml_path = os.path.join(
-                    temp_dir, os.path.basename("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml"))
-                urlretrieve("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml", local_vodml_path)
+                    temp_dir,
+                    os.path.basename("https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml"),
+                )
+                urlretrieve(
+                    "https://ivoa.net/xml/VODML/Phot-v1.1.vodml.xml", local_vodml_path
+                )
         elif model_name == "instfov":
             local_vodml_path = "../vodml/instfov.vo-dml.xml"
         elif model_name == "mango":
@@ -330,7 +387,12 @@ class InstanceBuilder:
         Get the instance of the class class_name of the model model_name
         :return: the instance path
         """
-        builder = Builder(model_name, class_name, self.getModelXMLFromName(model_name), "../tmp_snippets/temp")
+        builder = Builder(
+            model_name,
+            class_name,
+            self.getModelXMLFromName(model_name),
+            "../tmp_snippets/temp",
+        )
         builder.build()
         self.constraints = builder.constraints.constraints
 
@@ -401,7 +463,15 @@ class InstanceBuilder:
             self.concrete_list = self.concrete_list[1:]
             return res
         else:
-            if parent_key in ["mango:Status", "mango:Label", "mango:Shape", "mango:ComputedProperty", "mango:PhysicalProperty", "mango:BitField", "mango:Color"]:
+            if parent_key in [
+                "mango:Status",
+                "mango:Label",
+                "mango:Shape",
+                "mango:ComputedProperty",
+                "mango:PhysicalProperty",
+                "mango:BitField",
+                "mango:Color",
+            ]:
                 clean_elements.append("None")
 
             print(f"{bcolors.OKBLUE}Please choose from the list below : {bcolors.ENDC}")

@@ -1,8 +1,8 @@
-'''
+"""
 Created on 21 Feb 2023
 
 @author: laurentmichel
-'''
+"""
 import os
 import shutil
 import urllib.request
@@ -10,47 +10,50 @@ import urllib.request
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.snippet_builder import Builder
 
-tmp_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "tmp_snippets")
-vodml_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "vodml")
+tmp_data_path = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "tmp_snippets"
+)
+vodml_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "vodml")
 
 # types to be ignored for now
 inheritence_tree = {}
 ivoa_types = ["ivoa:RealQuantity", "ivoa:IntQuantity"]
+
+
 class CheckFailedException(Exception):
     pass
 
+
 class InstanceChecker(object):
-    '''
+    """
     API operating the validation of mapped instances against the VODML definition
     - all ATTRIBUTE/COLLECTION/INSTANCE children of the mapped instance must be
       referenced in the VODML with the same dmrole and the same dmtype.
     - The dmtype checking takes into account the inheritance
     - The mapped instances must not necessary host all the components declared in the VODML
     - All the components hosted by the mapped instances must be compliant with the VODML
-    
-    The VODML files are stored locally for the moment
-    '''
 
-    inheritence_tree = {"meas:Measure":["mango:extmeas.PhotometricMeasure"]}
+    The VODML files are stored locally for the moment
+    """
+
+    inheritence_tree = {"meas:Measure": ["mango:extmeas.PhotometricMeasure"]}
 
     @staticmethod
     def _get_vodml_class_tree(model, dmtype):
         """
-        Extract from the VODML file the object to be checked 
+        Extract from the VODML file the object to be checked
         Store first on disk a VODML representation of the searched object type
         and then works with that XML snippet
-        
+
         Only Meas/Coords/PhotDM are supported yet
-        
+
         parameters
         ----------
         model: string
-            model short name as defined by the VODML 
+            model short name as defined by the VODML
         dmtype: string
             type of the model component to be checked
-            
+
         return
         ------
         The etree serialisation of the XML snippet
@@ -60,22 +63,21 @@ class InstanceChecker(object):
 
         if os.path.exists(filepath) is False:
             print(f"-> build snippet for class {model}:{dmtype}")
-            
+
             vodml_filename = InstanceChecker._get_model_location(model)
             builder = Builder(
                 model,
-                dmtype,                
-                #"Property",
-
+                dmtype,
+                # "Property",
                 vodml_filename,
-                tmp_data_path
+                tmp_data_path,
             )
             # build the XML snippet and store it on disk
             builder.build()
             InstanceChecker._build_inheritence_graph(vodml_filename)
         else:
             print(f"-> snippet for class {dmtype} already in the cache")
-            
+
         return XmlUtils.xmltree_from_file(filepath)
 
     @staticmethod
@@ -84,10 +86,10 @@ class InstanceChecker(object):
             file_path = os.path.join(tmp_data_path, filename)
             if filename.endswith(".xml") and os.path.isfile(file_path):
                 os.unlink(file_path)
-                
+
     @staticmethod
     def _get_vodmlid(self, vodmlid, model_name):
-        if ":" in  vodmlid:
+        if ":" in vodmlid:
             return f"{vodmlid}"
         else:
             return f"{model_name}:{vodmlid}"
@@ -109,19 +111,18 @@ class InstanceChecker(object):
             vodml_filename = "mango.vo-dml.xml"
         else:
             raise CheckFailedException(f"Model {model} not supported yet")
-        
+
         output_path = os.path.join(tmp_data_path, vodml_filename)
         if os.path.exists(output_path) is False:
             url = f"https://ivoa.net/xml/VODML/{vodml_filename}"
             print(f"-> downloading {url}")
-            try :
-                urllib.request.urlretrieve(url,output_path) 
-            except: 
+            try:
+                urllib.request.urlretrieve(url, output_path)
+            except:
                 print(f"-> download failed, try to copy from  {vodml_path}")
-                shutil.copy(os.path.join(vodml_path, vodml_filename),
-                            tmp_data_path) 
-        return output_path     
-        
+                shutil.copy(os.path.join(vodml_path, vodml_filename), tmp_data_path)
+        return output_path
+
     @staticmethod
     def _build_inheritence_graph(vodml_filepath):
         """
@@ -131,16 +132,16 @@ class InstanceChecker(object):
         """
         vodml_tree = XmlUtils.xmltree_from_file(vodml_filepath)
         graph = {}
-        for ele in vodml_tree.xpath(f'./name'):
+        for ele in vodml_tree.xpath(f"./name"):
             model_name = ele.text
         print(f"   Build inheritence tree for model {model_name}")
-            
+
         # Build a map superclass : [sublcasses]
         # No distinctions between objecttypeand datatypes
-        # MIVOT does not make any difference 
+        # MIVOT does not make any difference
         # the vodml)id are unique within the scope of the whole model
-        for ele in vodml_tree.xpath(f'./dataType'):
-            for tags in ele.getchildren  (): 
+        for ele in vodml_tree.xpath(f"./dataType"):
+            for tags in ele.getchildren():
                 if tags.tag == "vodml-id":
                     sub_class = model_name + ":" + tags.text
                 for ext in ele.xpath("./extends/vodml-ref"):
@@ -149,9 +150,9 @@ class InstanceChecker(object):
                         graph[super_class] = []
                     if sub_class not in graph[super_class]:
                         graph[super_class].append(sub_class)
-                        
-        for ele in vodml_tree.xpath(f'./objectType'):
-            for tags in ele.getchildren  (): 
+
+        for ele in vodml_tree.xpath(f"./objectType"):
+            for tags in ele.getchildren():
                 if tags.tag == "vodml-id":
                     sub_class = model_name + ":" + tags.text
                 for ext in ele.xpath("./extends/vodml-ref"):
@@ -162,9 +163,9 @@ class InstanceChecker(object):
                         graph[super_class].append(sub_class)
         #
         # We have inheritance with multiple levels (A->B->C)
-        # In such a case we must consider (in term of validation) that C extends A as well 
+        # In such a case we must consider (in term of validation) that C extends A as well
         # This the purpose of the code below.
-        # {A: [B, C, D]  C:[X, Y]} --> {A: [B, C, D, X, Y],  C:[X, Y]}  
+        # {A: [B, C, D]  C:[X, Y]} --> {A: [B, C, D, X, Y],  C:[X, Y]}
         deep_tree = {}
         for superclass, subclasses in graph.items():
             for subclass in subclasses:
@@ -173,32 +174,35 @@ class InstanceChecker(object):
                         deep_tree[superclass] = []
                     for sc in graph[subclass]:
                         if sc not in deep_tree[superclass]:
-                            deep_tree[superclass].append(sc)  
+                            deep_tree[superclass].append(sc)
 
         for key in deep_tree:
-            for val in  deep_tree[key]:
+            for val in deep_tree[key]:
                 if val not in graph[key]:
-                    graph[key].append(val)  
+                    graph[key].append(val)
         for key in graph:
             if key not in InstanceChecker.inheritence_tree:
                 InstanceChecker.inheritence_tree[key] = graph[key]
-            else :
-                InstanceChecker.inheritence_tree[key] = InstanceChecker.inheritence_tree[key] + graph[key]
+            else:
+                InstanceChecker.inheritence_tree[key] = (
+                    InstanceChecker.inheritence_tree[key] + graph[key]
+                )
         # ivoa model is not parsed yet....
         if "ivoa:Quantity" not in InstanceChecker.inheritence_tree:
             InstanceChecker.inheritence_tree["ivoa:Quantity"] = ivoa_types
-        # Cross model inheritance not supported yet  
+        # Cross model inheritance not supported yet
         if "meas:Measure" in InstanceChecker.inheritence_tree:
-            InstanceChecker.inheritence_tree["meas:Measure"].append("mango:extmeas.PhotometricMeasure")
+            InstanceChecker.inheritence_tree["meas:Measure"].append(
+                "mango:extmeas.PhotometricMeasure"
+            )
 
         return graph
-
 
     @staticmethod
     def _check_attribute(attribute_etree, vodml_instance):
         """
         checks that the MIVOT representation of the attribute matches the model definition
-        
+
         parameters
         ----------
         attribute_etree: etree
@@ -210,17 +214,17 @@ class InstanceChecker(object):
             boolean
         """
         for child in vodml_instance.xpath("./ATTRIBUTE"):
-            if( child.get("dmrole") == attribute_etree.get("dmrole") and 
-                child.get("dmtype") == attribute_etree.get("dmtype")
-                ):
+            if child.get("dmrole") == attribute_etree.get("dmrole") and child.get(
+                "dmtype"
+            ) == attribute_etree.get("dmtype"):
                 return True
         return False
-    
+
     @staticmethod
     def _check_collection(collection_etree, vodml_instance):
         """
         checks that the MIVOT representation of the collection matches the model definition
-        
+
         parameters
         ----------
         collection_etree: etree
@@ -231,15 +235,17 @@ class InstanceChecker(object):
         ------
             a documented  exception in case of failure
         """
-    
+
         collection_role = collection_etree.get("dmrole")
-        
+
         # Checks that collection items have all the same type
         item_type = ""
         for item in collection_etree.xpath("./*"):
-            mivot_item_type = item.get("dmtype") 
-            if (item_type != "" and item_type != mivot_item_type):
-                raise CheckFailedException(f"Collection with dmrole={collection_role} has items with different dmtypes ")
+            mivot_item_type = item.get("dmtype")
+            if item_type != "" and item_type != mivot_item_type:
+                raise CheckFailedException(
+                    f"Collection with dmrole={collection_role} has items with different dmtypes "
+                )
             item_type = mivot_item_type
 
         # check that the mapped collection item have the type defined in the model
@@ -252,16 +258,23 @@ class InstanceChecker(object):
                 for vodml_item in vodml_child.xpath("./*"):
                     vodml_type = vodml_item.get("dmtype")
                     break
-                # Get the item type as used by mivot 
+                # Get the item type as used by mivot
                 for item in collection_etree.xpath("./*"):
                     mivot_item_type = item.get("dmtype")
-                    if (mivot_item_type not in ivoa_types and mivot_item_type != vodml_type and 
-                        (vodml_type not in InstanceChecker.inheritence_tree or 
-                        mivot_item_type not in InstanceChecker.inheritence_tree[vodml_type]
-                    )):
-                        raise CheckFailedException(f"Collection with dmrole={collection_role} "
-                                                   f"has items with prohibited types ({mivot_item_type}) "
-                                                   f"instead of expected {vodml_type} ")
+                    if (
+                        mivot_item_type not in ivoa_types
+                        and mivot_item_type != vodml_type
+                        and (
+                            vodml_type not in InstanceChecker.inheritence_tree
+                            or mivot_item_type
+                            not in InstanceChecker.inheritence_tree[vodml_type]
+                        )
+                    ):
+                        raise CheckFailedException(
+                            f"Collection with dmrole={collection_role} "
+                            f"has items with prohibited types ({mivot_item_type}) "
+                            f"instead of expected {vodml_type} "
+                        )
                     else:
                         for item in collection_etree.xpath("./*"):
                             if item.tag == "INSTANCE":
@@ -269,13 +282,15 @@ class InstanceChecker(object):
                         return
 
         if role_found is False:
-            raise CheckFailedException(f"No collection with dmrole {collection_role} in object type {vodml_instance.getroot().get('dmtype')}")
+            raise CheckFailedException(
+                f"No collection with dmrole {collection_role} in object type {vodml_instance.getroot().get('dmtype')}"
+            )
 
     @staticmethod
-    def _check_membership (actual_instance, enclosing_vodml_instance):   
+    def _check_membership(actual_instance, enclosing_vodml_instance):
         """
         Checks that the MIVOT component is a component of the VODML class
-        
+
         parameters
         ----------
         actual_instance: etree
@@ -296,22 +311,27 @@ class InstanceChecker(object):
                 # Sort of ad_hoc patch meanwhile ivoa DM is properly supported
                 if actual_type == "ivoa:RealQuantity" and vodml_type == "ivoa:Quantity":
                     return
-                if (vodml_type in InstanceChecker.inheritence_tree and 
-                    actual_type in InstanceChecker.inheritence_tree[vodml_type]
-                    ):
+                if (
+                    vodml_type in InstanceChecker.inheritence_tree
+                    and actual_type in InstanceChecker.inheritence_tree[vodml_type]
+                ):
                     print(f"-> found that {actual_type} inherits from {vodml_type}")
                     return
-                raise CheckFailedException(f"Object type {enclosing_vodml_instance.getroot().get('dmtype')} "
-                                           f"has no component with dmrole={actual_role} and dmtype={actual_type} "
-                                           f"type should be {vodml_type}")
-        raise CheckFailedException(f"dmrole {actual_role} not found in object type {enclosing_vodml_instance.getroot().get('dmtype')}")
-            
+                raise CheckFailedException(
+                    f"Object type {enclosing_vodml_instance.getroot().get('dmtype')} "
+                    f"has no component with dmrole={actual_role} and dmtype={actual_type} "
+                    f"type should be {vodml_type}"
+                )
+        raise CheckFailedException(
+            f"dmrole {actual_role} not found in object type {enclosing_vodml_instance.getroot().get('dmtype')}"
+        )
+
     @staticmethod
     def check_instance_validity(instance_etree):
         """
         Public method. The only one meant to be used from from outside
         Checks that instance_etree is compliant with the model it refers to
-        
+
         parameters
         ----------
         instance_etree: etree
@@ -328,64 +348,74 @@ class InstanceChecker(object):
             print("-> IVOA/ see later")
             return True
         vodml_instance = InstanceChecker._get_vodml_class_tree(eles[0], eles[1])
-        
+
         for child in instance_etree.xpath("./*"):
             if child.tag == "ATTRIBUTE":
                 InstanceChecker._check_membership(child, vodml_instance)
-                
+
                 dmrole = child.get("dmrole")
                 if dmrole in checked_roles:
                     raise CheckFailedException(f"Duplicated dmrole {dmrole}")
                 checked_roles.append(child.get("dmrole"))
-                
+
                 # ivao:Quantity are complex types that can be serialized as ATTRIBUTE.
                 # This is an exception
-                if( child.get("dmtype") not in ivoa_types 
+                if (
+                    child.get("dmtype") not in ivoa_types
                     and InstanceChecker._check_attribute(child, vodml_instance) is False
-                    ):
-                    message = (f'cannot find attribute with dmrole={dmrole} '
-                               f'dmtype={child.get("dmtype")} in complex type {dmtype}')
+                ):
+                    message = (
+                        f"cannot find attribute with dmrole={dmrole} "
+                        f'dmtype={child.get("dmtype")} in complex type {dmtype}'
+                    )
                     raise CheckFailedException(message)
-                else :
-                    print(f'VALID: attribute with dmrole={child.get("dmrole")} '
-                          f'dmtype={child.get("dmtype")} in complex type {dmtype}')
+                else:
+                    print(
+                        f'VALID: attribute with dmrole={child.get("dmrole")} '
+                        f'dmtype={child.get("dmtype")} in complex type {dmtype}'
+                    )
             elif child.tag == "INSTANCE":
-                
                 dmrole = child.get("dmrole")
                 if dmrole in checked_roles:
                     raise CheckFailedException(f"Duplicated dmrole {dmrole}")
                 checked_roles.append(child.get("dmrole"))
-                
+
                 if InstanceChecker.check_instance_validity(child) is False:
-                    message = (f'cannot find instance with dmrole={dmrole} '
-                               f'dmtype={child.get("dmtype")} in complex type {dmtype}')
+                    message = (
+                        f"cannot find instance with dmrole={dmrole} "
+                        f'dmtype={child.get("dmtype")} in complex type {dmtype}'
+                    )
                     raise CheckFailedException(message)
-                else :
+                else:
                     InstanceChecker._check_membership(child, vodml_instance)
-                    print(f'VALID: instance with dmrole={dmrole} '
-                          f'dmtype={child.get("dmtype")} in complex type {dmtype}')
+                    print(
+                        f"VALID: instance with dmrole={dmrole} "
+                        f'dmtype={child.get("dmtype")} in complex type {dmtype}'
+                    )
 
             elif child.tag == "COLLECTION":
-                
                 dmrole = child.get("dmrole")
                 if dmrole in checked_roles:
                     raise CheckFailedException(f"Duplicated dmrole {dmrole}")
                 checked_roles.append(child.get("dmrole"))
-                
+
                 if InstanceChecker._check_collection(child, vodml_instance) is False:
-                    message = (f'cannot find collection with dmrole={dmrole} '
-                               f'in complex type {dmtype}')
+                    message = (
+                        f"cannot find collection with dmrole={dmrole} "
+                        f"in complex type {dmtype}"
+                    )
                     raise CheckFailedException(message)
-                else :
-                    print(f'VALID: collection with dmrole={dmrole} '
-                          f'in complex type {dmtype}')
+                else:
+                    print(
+                        f"VALID: collection with dmrole={dmrole} "
+                        f"in complex type {dmtype}"
+                    )
             elif child.tag == "REFERENCE":
                 dmrole = child.get("dmrole")
                 if dmrole in checked_roles:
                     raise CheckFailedException(f"Duplicated dmrole {dmrole}")
-                print(f'SKIPPED: Reference to instance with dmrole={dmrole}')
+                print(f"SKIPPED: Reference to instance with dmrole={dmrole}")
 
             else:
-                raise CheckFailedException(f'unsupported tag {child.tag}')
+                raise CheckFailedException(f"unsupported tag {child.tag}")
         return True
-    

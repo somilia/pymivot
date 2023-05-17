@@ -14,7 +14,13 @@ from mivot_validator.utils.xml_utils import XmlUtils
 
 class ModelBuilder(Builder):
     def __init__(self, vodml_path, output_dir=os.getcwd() + "/../tmp_snippets/"):
-        self.model_name = os.path.basename(vodml_path).split('.')[0].split('_')[0].split('-')[0].lower()
+        self.model_name = (
+            os.path.basename(vodml_path)
+            .split(".")[0]
+            .split("_")[0]
+            .split("-")[0]
+            .lower()
+        )
         super().__init__(self.model_name, "", vodml_path, output_dir)
 
     def build(self):
@@ -22,7 +28,7 @@ class ModelBuilder(Builder):
         Build one snippet for all the dataType/objectType which are not abstract,
         found in the VODML model
         """
-        for ele in self.vodml.xpath(f'.//dataType'):
+        for ele in self.vodml.xpath(f".//dataType"):
             if ele.get("abstract") == "true":
                 continue
             for tags in ele.getchildren():
@@ -31,7 +37,7 @@ class ModelBuilder(Builder):
                     continue
                 self.build_object(ele, "", True, True)
 
-        for ele in self.vodml.xpath(f'.//objectType'):
+        for ele in self.vodml.xpath(f".//objectType"):
             if ele.get("abstract") == "true":
                 continue
             for tags in ele.getchildren():
@@ -67,8 +73,7 @@ class ModelBuilder(Builder):
                         os.makedirs(output_dir)
 
                     self.outputname = os.path.join(
-                        output_dir,
-                        self.model_name + "." + tags.text + ".xml"
+                        output_dir, self.model_name + "." + tags.text + ".xml"
                     )
 
                     print(self.outputname)
@@ -81,10 +86,13 @@ class ModelBuilder(Builder):
                     dmid = ""
                     if role == "coords:Coordinate.coordSys":
                         self.write_out(
-                            f'<!-- The Coordinate system can be pushed up to the GLOBALS and replaced here with '
-                            f'<REFERENCE dmref="SOME_REF" dmrole="{role}" />">-->')
+                            f"<!-- The Coordinate system can be pushed up to the GLOBALS and replaced here with "
+                            f'<REFERENCE dmref="SOME_REF" dmrole="{role}" />">-->'
+                        )
                         dmid = 'dmid="PUT_AN_ID_HERE"'
-                    self.write_out(f'<INSTANCE {dmid} dmrole="{role}" dmtype="{self.model_name}:{tags.text}">')
+                    self.write_out(
+                        f'<INSTANCE {dmid} dmrole="{role}" dmtype="{self.model_name}:{tags.text}">'
+                    )
             elif tags.tag == "extends":
                 self.addExtend(tags)
             elif tags.tag == "reference":
@@ -104,5 +112,6 @@ class ModelBuilder(Builder):
 
         if root is True:
             self.output.close()
-            XmlUtils.xmltree_to_file(XmlUtils.xmltree_from_file(self.outputname), self.outputname)
-
+            XmlUtils.xmltree_to_file(
+                XmlUtils.xmltree_from_file(self.outputname), self.outputname
+            )
