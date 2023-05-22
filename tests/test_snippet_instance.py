@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
 
         # When
         snippet.build()
-        snippet.outputResult()
+        snippet.output_result()
 
         # Then
         self.assertTrue(os.path.exists(OUTPUT + FILE_NAME + ".xml"))
@@ -66,7 +66,7 @@ class Test(unittest.TestCase):
 
         # When
         snippet.build()
-        snippet.outputResult()
+        snippet.output_result()
 
         # Then
         if os.path.exists(OUTPUT + FILE_NAME + ".xml"):

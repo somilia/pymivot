@@ -8,7 +8,6 @@ serialized in provided generic MIVOT snippet
 @author: julien abid
 """
 
-import json
 import os
 import ssl
 from urllib.parse import urlparse
@@ -21,7 +20,7 @@ from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.instance_checker import InstanceChecker
 
 
-class bcolors:
+class BColors:
     """
     Color codes for terminal output
     """
@@ -43,9 +42,7 @@ class InstanceBuilder:
     serialized in provided generic MIVOT snippet
     """
 
-    def __init__(
-        self, xml_file, output_dir, output_name, constraints, concrete_list=None
-    ):
+    def __init__(self, xml_file, output_dir, output_name, concrete_list=None):
         """
         :xml_file: path to the generic MIVOT
         :output_dir: path to the output directory
@@ -58,7 +55,6 @@ class InstanceBuilder:
         """
         self.xml_file = xml_file
         self.output_dir = output_dir
-        self.model_xml = self.getModelXMLFromName(self.getModelName(self.xml_file))
         self.output_name = output_name
         self.buffer = ""
         self.build_file = self.xml_file
@@ -68,22 +64,28 @@ class InstanceBuilder:
         self.concrete_list = concrete_list
         self.inheritance_graph = {
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/mango.vo-dml.xml"
+                "/home/jabid/mivot-validator/mivot_validator/"
+                "instance_checking/vodml/mango.vo-dml.xml"
             ),
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Phot-v1.1.vodml.xml"
+                "/home/jabid/mivot-validator/mivot_validator/"
+                "instance_checking/vodml/Phot-v1.1.vodml.xml"
             ),
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Coords-v1.0.vo-dml.xml"
+                "/home/jabid/mivot-validator/mivot_validator/"
+                "instance_checking/vodml/Coords-v1.0.vo-dml.xml"
             ),
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/instance_checking/vodml/Meas-v1.vo-dml.xml"
+                "/home/jabid/mivot-validator/mivot_validator/"
+                "instance_checking/vodml/Meas-v1.vo-dml.xml"
             ),
         }
         self.abstract_classes = list(self.inheritance_graph.keys())
-        self.constraints = constraints
 
     def build(self):
+        """
+        Build the concrete MIVOT snippet
+        """
         if not os.path.exists("../tmp_snippets/temp"):
             os.makedirs("../tmp_snippets/temp")
 
@@ -93,83 +95,85 @@ class InstanceBuilder:
         parent_key = None
         open_count = 0
         property_count = 0
-        f = open(self.build_file, "r")
-        for line in f:
-            if not line.__contains__("left blank"):
-                self.buffer += line
-            if line.__contains__("</INSTANCE"):
-                open_count -= 1
-                if open_count == 0:
-                    parent_key = None
-            if line.__contains__("<INSTANCE"):
-                if not line.__contains__("/>"):
-                    open_count += 1
-                if parent_key is None:
-                    parent_key = self.getDmType(line)
-                if self.getDmType(line) in self.abstract_classes:
-                    self.dmrole = self.getDmRole(line)
-                    self.dmtype = self.getDmType(line)
-                    if self.dmrole == "mango:Property.associatedProperties":
-                        self.dmroles.append("")
-                    else:
-                        self.dmroles.append(self.dmrole)
-                    print(
-                        f"{bcolors.OKCYAN}{bcolors.UNDERLINE}List of possible concrete classes :{bcolors.ENDC}"
-                    )
-                    print(
-                        f"{bcolors.OKCYAN}DMTYPE: {bcolors.BOLD}{self.getDmType(line)}{bcolors.ENDC}"
-                    )
-                    print(
-                        f"{bcolors.OKCYAN}CONTEXT: {bcolors.BOLD}{parent_key}{bcolors.ENDC}"
-                    )
-                    print(
-                        f"{bcolors.OKCYAN}DMROLE: {bcolors.BOLD}{self.dmrole}{bcolors.ENDC}"
-                    )
-                    if property_count == 0:
-                        choice = self.populateChoices(
-                            self.inheritance_graph[self.getDmType(line)], parent_key
+        with open(self.build_file, "r", encoding="utf-8") as file:
+            for line in file:
+                if "left blank" not in line:
+                    self.buffer += line
+                if "</INSTANCE" in line:
+                    open_count -= 1
+                    if open_count == 0:
+                        parent_key = None
+                if "<INSTANCE" in line:
+                    if not "/>" in line:
+                        open_count += 1
+                    if parent_key is None:
+                        parent_key = self.get_dm_type(line)
+                    if self.get_dm_type(line) in self.abstract_classes:
+                        self.dmrole = self.get_dm_role(line)
+                        self.dmtype = self.get_dm_type(line)
+                        if self.dmrole == "mango:Property.associatedProperties":
+                            self.dmroles.append("")
+                        else:
+                            self.dmroles.append(self.dmrole)
+                        print(
+                            f"{BColors.OKCYAN}{BColors.UNDERLINE}"
+                            f"List of possible concrete classes :{BColors.ENDC}"
                         )
-                        file = None
-                        if choice != "None":
-                            file = self.getInstance(
-                                choice.split(":")[0], choice.split(":")[1]
+                        print(
+                            f"{BColors.OKCYAN}DMTYPE: {BColors.BOLD}"
+                            f"{self.get_dm_type(line)}{BColors.ENDC}"
+                        )
+                        print(
+                            f"{BColors.OKCYAN}CONTEXT: {BColors.BOLD}"
+                            f"{parent_key}{BColors.ENDC}"
+                        )
+                        print(
+                            f"{BColors.OKCYAN}DMROLE: {BColors.BOLD}"
+                            f"{self.dmrole}{BColors.ENDC}"
+                        )
+                        if property_count == 0:
+                            choice = self.populate_choices(
+                                self.inheritance_graph[self.get_dm_type(line)], parent_key
                             )
-                        if file is not None:
-                            if self.getDmType(line) == "mango:Property":
-                                property_count += 1
-                            self.buffer = self.buffer.replace(line, "")
-                            self.build_file = file
-                            self.build()
-                            self.build_file = self.xml_file
-                    if property_count > 0:
-                        property_dock = True
-                        while property_dock:
-                            property_dock = self.askForProperty(parent_key)
-                            if property_dock:
-                                property_count += 1
-                                choice = self.populateChoices(
-                                    self.inheritance_graph[self.getDmType(line)],
-                                    parent_key,
+                            file = None
+                            if choice != "None":
+                                file = self.get_instance(
+                                    choice.split(":")[0], choice.split(":")[1]
                                 )
-                                if choice != "None":
-                                    file = self.getInstance(
-                                        choice.split(":")[0], choice.split(":")[1]
+                            if file is not None:
+                                if self.get_dm_type(line) == "mango:Property":
+                                    property_count += 1
+                                self.buffer = self.buffer.replace(line, "")
+                                self.build_file = file
+                                self.build()
+                                self.build_file = self.xml_file
+                        if property_count > 0:
+                            property_dock = True
+                            while property_dock:
+                                property_dock = self.ask_for_property(parent_key)
+                                if property_dock:
+                                    property_count += 1
+                                    choice = self.populate_choices(
+                                        self.inheritance_graph[self.get_dm_type(line)],
+                                        parent_key,
                                     )
-                                    if file is not None:
-                                        self.build_file = file
-                                        self.build()
-                                        self.build_file = self.xml_file
-                                else:
-                                    self.dmroles[
-                                        self.dmroles.index(
-                                            "mango:Property:associatedProperty"
+                                    if choice != "None":
+                                        file = self.get_instance(
+                                            choice.split(":")[0], choice.split(":")[1]
                                         )
-                                    ].pop()
-                        property_count -= 1
+                                        if file is not None:
+                                            self.build_file = file
+                                            self.build()
+                                            self.build_file = self.xml_file
+                                    else:
+                                        self.dmroles[
+                                            self.dmroles.index(
+                                                "mango:Property:associatedProperty"
+                                            )
+                                        ].pop()
+                            property_count -= 1
 
-        f.close()
-
-    def outputResult(self):
+    def output_result(self):
         """
         Write the concrete MIVOT snippet in the output directory
         """
@@ -181,57 +185,60 @@ class InstanceBuilder:
         XmlUtils.xmltree_to_file(result, output_file)
 
         self.clean(output_file)
-        self.insertDmRoles(output_file, self.dmroles)
+        self.insert_dm_roles(output_file, self.dmroles)
 
         if os.path.exists("../tmp_snippets/temp"):
             os.system("rm -rf ../tmp_snippets/temp")
 
         print(
-            f"{bcolors.OKGREEN}Concrete MIVOT snippet for {bcolors.BOLD}{os.path.basename(self.xml_file)} stored in "
-            f"{bcolors.BOLD}{output_file}{bcolors.ENDC}"
+            f"{BColors.OKGREEN}Concrete MIVOT snippet for "
+            f"{BColors.BOLD}{os.path.basename(self.xml_file)} stored in "
+            f"{BColors.BOLD}{output_file}{BColors.ENDC}"
         )
 
-    def askForProperty(self, parent_key):
+    def ask_for_property(self, parent_key):
+        """
+        Ask the user if he wants to add another property in the collection
+
+        :param parent_key: the context of the property
+        """
+        state = None
         print(
-            f"{bcolors.OKCYAN} Do you want to add another Property in this collection"
-            f" for {parent_key}? (y/n){bcolors.ENDC}"
+            f"{BColors.OKCYAN} Do you want to add another Property in this collection"
+            f" for {parent_key}? (y/n){BColors.ENDC}"
         )
         choice = input()
         if choice == "y":
-            return True
+            state = True
         elif choice == "n":
-            return False
+            state = False
         else:
-            print(f"{bcolors.WARNING}Please enter a valid choice{bcolors.ENDC}")
-            self.askForProperty(parent_key)
+            print(f"{BColors.WARNING}Please enter a valid choice{BColors.ENDC}")
+            self.ask_for_property(parent_key)
+
+        return state
 
     @staticmethod
-    def removeInstance(xml_file, dmtype):
+    def remove_instance(xml_file, dmtype):
         """
         Remove the instance of a class containing given dmtype and all its children
         """
-        f = open(xml_file, "r")
-        buffer = ""
-        counter = 0
-        is_dmtype = False
-        for line in f:
-            if counter == 0:
-                buffer += line
-            if line.__contains__(f'dmtype="{dmtype}"'):
-                is_dmtype = True
-            if (
-                line.__contains__("<INSTANCE")
-                and not line.__contains__("/>")
-                and is_dmtype
-            ):
-                counter += 1
-            if line.__contains__("</INSTANCE"):
-                counter -= 1
+        with open(xml_file, "r", encoding="utf-8") as file:
+            buffer = ""
+            counter = 0
+            is_dmtype = False
+            for line in file:
+                if counter == 0:
+                    buffer += line
+                if f'dmtype="{dmtype}"' in line:
+                    is_dmtype = True
+                if "<INSTANCE" in line and "/>" not in line and is_dmtype:
+                    counter += 1
+                if "</INSTANCE" in line:
+                    counter -= 1
 
-        f.close()
-        f = open(xml_file, "w")
-        f.write(buffer)
-        f.close()
+        with open(xml_file, "w", encoding="utf-8") as file:
+            file.write(buffer)
 
     @staticmethod
     def clean(xml_file):
@@ -240,88 +247,66 @@ class InstanceBuilder:
         """
         buffer = ""
         counter = []
-        i = 0
         to_remove = False
         temp = []
 
-        f = open(xml_file, "r")
-        for line in f:
-            if line.__contains__("<COLLECTION"):
-                temp.append(i)
-            elif line.__contains__('dmtype="mango:Property"'):
-                to_remove = True
-                temp.append(i)
-            elif line.__contains__("</COLLECTION"):
-                if to_remove:
-                    to_remove = False
+        with open(xml_file, "r", encoding="utf-8") as file:
+            i = 0
+            for line in file:
+                if "<COLLECTION" in line:
                     temp.append(i)
-                    counter.extend(temp)
+                elif 'dmtype="mango:Property"' in line:
+                    to_remove = True
+                    temp.append(i)
+                elif "</COLLECTION" in line:
+                    if to_remove:
+                        to_remove = False
+                        temp.append(i)
+                        counter.extend(temp)
+                    else:
+                        temp.clear()
                 else:
                     temp.clear()
-            else:
-                temp.clear()
-            i += 1
-        f.close()
+                i += 1
 
-        i = 0
-        f = open(xml_file, "r")
-        for line in f:
-            if i not in counter:
-                buffer += line
-            i += 1
-        f.close()
+        with open(xml_file, "r", encoding="utf-8") as file:
+            i = 0
+            for line in file:
+                if i not in counter:
+                    buffer += line
+                i += 1
 
-        f = open(xml_file, "w")
-        f.write(buffer)
-        f.close()
+        with open(xml_file, "w", encoding="utf-8") as file:
+            file.write(buffer)
 
-    def insertDmRoles(self, file, dmroles):
+    def insert_dm_roles(self, xml_file, dmroles):
         """
         Insert the dmroles in the concrete MIVOT snippet
         """
-        f = open(file, "r")
-        buffer = ""
+        with open(xml_file, "r", encoding="utf-8") as file:
+            buffer = ""
+            first = True
+            for line in file:
+                if 'dmrole=""' in line:
+                    if first:
+                        first = False
+                    elif not first:
+                        dmrole = dmroles.pop(0) if len(dmroles) > 0 else ""
+                        line = line.replace('dmrole=""', f'dmrole="{dmrole}"')
+                buffer += line
 
-        first = True
-        for line in f:
-            if line.__contains__('dmrole=""'):
-                if first:
-                    first = False
-                elif not first:
-                    dmrole = dmroles.pop(0) if len(dmroles) > 0 else ""
-                    line = line.replace('dmrole=""', f'dmrole="{dmrole}"')
-            buffer += line
-
-        f.close()
-        f = open(file, "w")
-        f.write(buffer)
-        f.close()
-
-    def getModelName(self, xml_file):
-        """
-        Get the model name from the MIVOT snippet name
-        :return: the model name
-        """
-        return (
-            os.path.basename(xml_file).split(".")[0].split("_")[0].split("-")[0].lower()
-        )
-
-    def getClassName(self, xml_file):
-        """
-        Get the class name from the MIVOT snippet name
-        :return: the class name
-        """
-        return os.path.basename(xml_file).split(".")[1].split("_")[0]
+        with open(xml_file, "w", encoding="utf-8") as file:
+            file.write(buffer)
 
     @staticmethod
-    def getModelXMLFromName(model_name):
+    def get_model_xml_from_name(model_name):
         """
         Get the model XML from the MIVOT snippet
         :return: the model XML
         """
         local_vodml_path = None
 
-        ssl._create_default_https_context = ssl._create_unverified_context
+        ssl.create_default_context().check_hostname = False
 
         if model_name == "meas":
             if urlparse("https://ivoa.net/xml/VODML/Meas-v1.0.vo-dml.xml").scheme:
@@ -381,7 +366,7 @@ class InstanceBuilder:
 
         return None
 
-    def getInstance(self, model_name, class_name):
+    def get_instance(self, model_name, class_name):
         """
         Get the instance of the class class_name of the model model_name
         :return: the instance path
@@ -389,66 +374,38 @@ class InstanceBuilder:
         builder = Builder(
             model_name,
             class_name,
-            self.getModelXMLFromName(model_name),
+            self.get_model_xml_from_name(model_name),
             "../tmp_snippets/temp",
         )
         builder.build()
-        self.constraints = builder.constraints.constraints
 
         return builder.outputname
 
     @staticmethod
-    def getStringFromFile(file):
-        """
-        Get the file content as a string
-        :return: the file content
-        """
-        return open(file, "r").read()
-
-    @staticmethod
-    def getDmRole(line):
+    def get_dm_role(line):
         """
         Get the dmrole from the line
         :return: the dmrole
         """
-        if line.__contains__("dmrole"):
+        dmrole = ""
+        if "dmrole" in line:
             dmrole = line.split("dmrole")[1].split('"')[1]
 
-            return dmrole
+        return dmrole
 
     @staticmethod
-    def getDmType(line):
+    def get_dm_type(line):
         """
         Get the dmtype from the line
         :return: the dmtype
         """
-        if line.__contains__("dmtype"):
+        dmtype = ""
+        if "dmtype" in line:
             dmtype = line.split("dmtype")[1].split('"')[1]
 
-            return dmtype
+        return dmtype
 
-    def search(self, data, parent_key, key):
-        """
-        Search for values associated with key who is a child of parent_key
-        :return: the values
-        """
-        if isinstance(data, dict):
-            for k, v in data.items():
-                if k == parent_key:
-                    if key in v:
-                        if isinstance(v[key], list):
-                            for item in v[key]:
-                                yield item
-                        else:
-                            for key in v[key]:
-                                yield key
-                else:
-                    yield from self.search(v, parent_key, key)
-        elif isinstance(data, list):
-            for item in data:
-                yield from self.search(item, parent_key, key)
-
-    def populateChoices(self, elements, parent_key):
+    def populate_choices(self, elements, parent_key):
         """
         Make an input with choices from the list
         """
@@ -458,10 +415,14 @@ class InstanceBuilder:
                 clean_elements.append(element)
 
         if len(self.concrete_list) > 0:
-            for d in self.concrete_list:
-                if self.dmrole == d["dmrole"] and self.dmtype == d["dmtype"] and self.dmtype == d["dmtype"]:
-                    self.concrete_list.pop(self.concrete_list.index(d))
-                    return d["class"]
+            for cc_dict in self.concrete_list:
+                if (
+                        self.dmrole == cc_dict["dmrole"]
+                        and self.dmtype == cc_dict["dmtype"]
+                        and self.dmtype == cc_dict["dmtype"]
+                ):
+                    self.concrete_list.pop(self.concrete_list.index(cc_dict))
+                    return cc_dict["class"]
         else:
             if parent_key in [
                 "mango:Status",
@@ -474,15 +435,14 @@ class InstanceBuilder:
             ]:
                 clean_elements.append("None")
 
-            print(f"{bcolors.OKBLUE}Please choose from the list below : {bcolors.ENDC}")
+            print(f"{BColors.OKBLUE}Please choose from the list below : {BColors.ENDC}")
 
-            for i in range(len(clean_elements)):
-                print(f"{bcolors.GRAY}{str(i)} : {clean_elements[i]}{bcolors.ENDC}")
+            for i, clean_element in enumerate(clean_elements):
+                print(f"{BColors.GRAY}{str(i)} : {clean_element}{BColors.ENDC}")
 
             choice = input("Your choice : ")
 
             if choice.isdigit() and int(choice) < len(clean_elements):
                 return clean_elements[int(choice)]
-            else:
-                print(f"{bcolors.WARNING}Wrong choice, please try again.{bcolors.ENDC}")
-                return self.populateChoices(elements, parent_key)
+        print(f"{BColors.WARNING}Wrong choice, please try again.{BColors.ENDC}")
+        return self.populate_choices(elements, parent_key)

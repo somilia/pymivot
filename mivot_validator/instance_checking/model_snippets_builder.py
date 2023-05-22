@@ -13,6 +13,13 @@ from mivot_validator.utils.xml_utils import XmlUtils
 
 
 class ModelBuilder(Builder):
+    """
+    Class to generate snippets for all the objectTypes and dataTypes of a VODML model
+
+    :param vodml_path: path to the VODML model
+    :param output_dir: path to the output directory
+    """
+
     def __init__(self, vodml_path, output_dir=os.getcwd() + "/../tmp_snippets/"):
         self.model_name = (
             os.path.basename(vodml_path)
@@ -28,7 +35,7 @@ class ModelBuilder(Builder):
         Build one snippet for all the dataType/objectType which are not abstract,
         found in the VODML model
         """
-        for ele in self.vodml.xpath(f".//dataType"):
+        for ele in self.vodml.xpath(".//dataType"):
             if ele.get("abstract") == "true":
                 continue
             for tags in ele.getchildren():
@@ -37,7 +44,7 @@ class ModelBuilder(Builder):
                     continue
                 self.build_object(ele, "", True, True)
 
-        for ele in self.vodml.xpath(f".//objectType"):
+        for ele in self.vodml.xpath(".//objectType"):
             if ele.get("abstract") == "true":
                 continue
             for tags in ele.getchildren():
@@ -53,8 +60,10 @@ class ModelBuilder(Builder):
         Build a MIVOT instance from a VOMDL element
         :ele: VODML representation of the class to be mapped
         :role: VODML role to be affected to the built instance
-        :aggregate: If False, all componentsfound out in the VODML element are added to the enclosing instance
-                    (in that case of inheritance reconstruction) . Otherwise, those components are
+        :aggregate: If False, all components found out
+                    in the VODML element are added to the enclosing instance
+                    (in that case of inheritance reconstruction) .
+                    Otherwise, those components are
                     enclosed in an INSTANCE (composition case)
         """
 
@@ -79,14 +88,16 @@ class ModelBuilder(Builder):
                     print(self.outputname)
 
                     print(f"opening {self.outputname}")
-                    self.output = open(self.outputname, "w")
+                    with open(self.outputname, "w", encoding="utf-8") as file:
+                        self.output = file
 
                 print(f"== build {tags.text}")
                 if aggregate is True:
                     dmid = ""
                     if role == "coords:Coordinate.coordSys":
                         self.write_out(
-                            f"<!-- The Coordinate system can be pushed up to the GLOBALS and replaced here with "
+                            f"<!-- The Coordinate system can be pushed up "
+                            f"to the GLOBALS and replaced here with "
                             f'<REFERENCE dmref="SOME_REF" dmrole="{role}" />">-->'
                         )
                         dmid = 'dmid="PUT_AN_ID_HERE"'
