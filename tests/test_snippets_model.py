@@ -10,7 +10,7 @@ import os
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.model_snippets_builder import ModelBuilder
 
-OUTPUT = os.getcwd() + "/../tmp_snippets/coords"
+OUTPUT = os.path.abspath(os.getcwd() + "/../tmp_snippets/coords/")
 MODEL = os.getcwd() + "/../vodml/Coords-v1.0.vo-dml.xml"
 MODEL_NAME = "coords"
 
@@ -47,7 +47,7 @@ class Test(unittest.TestCase):
         Check that files are generated in the given directory
         '''
         # Given
-        snippets = ModelBuilder(MODEL)
+        snippets = ModelBuilder(MODEL, None)
 
         # When
         snippets.build()
@@ -61,7 +61,7 @@ class Test(unittest.TestCase):
         are the object types of the model
         '''
         # Given
-        snippets = ModelBuilder(MODEL)
+        snippets = ModelBuilder(MODEL, None)
         object_types = getObjectTypes(XmlUtils.xmltree_from_file(MODEL))
 
         # When
@@ -69,6 +69,7 @@ class Test(unittest.TestCase):
 
         # Then
         for obj in object_types:
+            print(OUTPUT + '/' + MODEL_NAME + '.' + obj + ".xml")
             self.assertTrue(os.path.exists(OUTPUT + '/' + MODEL_NAME + '.' + obj + ".xml"))
 
 

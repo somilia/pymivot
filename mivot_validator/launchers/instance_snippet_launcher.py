@@ -75,7 +75,7 @@ def main():
     snippet.output_result()
 
 
-def check_args(args, mode, parser):
+def check_args(args, mode, parser=None):
     """
     Check arguments validity
     :args: arguments
@@ -105,7 +105,8 @@ def check_args(args, mode, parser):
                 x in my_dict.keys() for x in ["dmtype", "dmrole", "context", "class"]
             ):
                 print("Invalid format for class name")
-                parser.print_help()
+                if parser is not None:
+                    parser.print_help()
                 sys.exit(1)
         return args
     return None

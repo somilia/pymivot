@@ -29,6 +29,9 @@ class ModelBuilder(Builder):
             .lower()
         )
 
+        if output_dir is None:
+            output_dir = os.path.abspath(os.getcwd() + '/../tmp_snippets/')
+
         super().__init__(self.model_name, "", vodml_path, output_dir)
 
     def build(self):
@@ -77,7 +80,7 @@ class ModelBuilder(Builder):
             print(f"   TAG {tags.tag}")
             if tags.tag == "vodml-id":
                 if root is True:
-                    output_dir = self.output_dir + self.model_name + "/"
+                    output_dir = self.output_dir + "/" + self.model_name + "/"
 
                     if not os.path.exists(output_dir):
                         os.makedirs(output_dir)
@@ -85,8 +88,6 @@ class ModelBuilder(Builder):
                     self.outputname = os.path.join(
                         output_dir, self.model_name + "." + tags.text + ".xml"
                     )
-
-                    print(self.outputname)
 
                     print(f"opening {self.outputname}")
                     self.output = open(self.outputname, "w", encoding="utf-8")
