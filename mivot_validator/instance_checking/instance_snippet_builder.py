@@ -414,7 +414,7 @@ class InstanceBuilder:
             if element not in clean_elements:
                 clean_elements.append(element)
 
-        if len(self.concrete_list) > 0:
+        if self.concrete_list is not None and len(self.concrete_list) > 0:
             for cc_dict in self.concrete_list:
                 if (
                         self.dmrole == cc_dict["dmrole"]
