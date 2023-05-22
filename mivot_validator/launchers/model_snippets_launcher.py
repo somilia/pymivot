@@ -18,21 +18,23 @@ def main():
     """
     Package launcher (script)
     """
-    if len(sys.argv) != 2:
-        print("USAGE: mivot-snippet-model [path]")
+    if len(sys.argv) < 2:
+        print("USAGE: mivot-snippet-model [path] <output_dir>")
         print("   Create MIVOT snippets from VODML files")
         print("   path: either a simple file to any VODML-Model or an url")
+        print("   output_dir: path to the choosen output directory")
         print("   exit status: 0 in case of success, 1 otherwise")
         sys.exit(1)
 
     path = check_args(sys.argv[1])
+    output_dir = sys.argv[2] if len(sys.argv) == 3 else os.path.abspath(os.getcwd() + '/../tmp_snippets/')
 
-    snippet = ModelBuilder(vodml_path=path)
+    snippet = ModelBuilder(vodml_path=path, output_dir=output_dir)
     if snippet.build():
         print("\n===============================================")
         print(
             f"Snippets generated in "
-            f"{os.path.abspath(os.getcwd() + '/../tmp_snippets/')} \nin the folder : "
+            f"{output_dir} \nin the folder : "
             f"{os.path.basename(sys.argv[1]).split('.')[0].split('_')[0].split('-')[0].lower()}"
         )
         print("===============================================\n")

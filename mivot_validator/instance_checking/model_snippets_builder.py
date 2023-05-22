@@ -20,7 +20,7 @@ class ModelBuilder(Builder):
     :param output_dir: path to the output directory
     """
 
-    def __init__(self, vodml_path, output_dir=os.getcwd() + "/../tmp_snippets/"):
+    def __init__(self, vodml_path, output_dir):
         self.model_name = (
             os.path.basename(vodml_path)
             .split(".")[0]
@@ -28,6 +28,7 @@ class ModelBuilder(Builder):
             .split("-")[0]
             .lower()
         )
+
         super().__init__(self.model_name, "", vodml_path, output_dir)
 
     def build(self):
@@ -88,8 +89,7 @@ class ModelBuilder(Builder):
                     print(self.outputname)
 
                     print(f"opening {self.outputname}")
-                    with open(self.outputname, "w", encoding="utf-8") as file:
-                        self.output = file
+                    self.output = open(self.outputname, "w", encoding="utf-8")
 
                 print(f"== build {tags.text}")
                 if aggregate is True:
