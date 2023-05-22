@@ -64,6 +64,7 @@ class InstanceBuilder:
         self.build_file = self.xml_file
         self.dmrole = None
         self.dmroles = []
+        self.dmtype = None
         self.concrete_list = concrete_list
         self.inheritance_graph = {
             **InstanceChecker._build_inheritence_graph(
@@ -107,6 +108,7 @@ class InstanceBuilder:
                     parent_key = self.getDmType(line)
                 if self.getDmType(line) in self.abstract_classes:
                     self.dmrole = self.getDmRole(line)
+                    self.dmtype = self.getDmType(line)
                     if self.dmrole == "mango:Property.associatedProperties":
                         self.dmroles.append("")
                     else:
@@ -124,9 +126,6 @@ class InstanceBuilder:
                         f"{bcolors.OKCYAN}DMROLE: {bcolors.BOLD}{self.dmrole}{bcolors.ENDC}"
                     )
                     if property_count == 0:
-                        # choice = self.populateChoices(
-                        #     list(self.search(self.data, parent_key, self.getDmType(line)))
-                        # )
                         choice = self.populateChoices(
                             self.inheritance_graph[self.getDmType(line)], parent_key
                         )
@@ -458,10 +457,11 @@ class InstanceBuilder:
             if element not in clean_elements:
                 clean_elements.append(element)
 
-        if self.concrete_list is not None and self.concrete_list[0] in clean_elements:
-            res = self.concrete_list[0]
-            self.concrete_list = self.concrete_list[1:]
-            return res
+        if len(self.concrete_list) > 0:
+            for d in self.concrete_list:
+                if self.dmrole == d["dmrole"] and self.dmtype == d["dmtype"] and self.dmtype == d["dmtype"]:
+                    self.concrete_list.pop(self.concrete_list.index(d))
+                    return d["class"]
         else:
             if parent_key in [
                 "mango:Status",
