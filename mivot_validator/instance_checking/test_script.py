@@ -5,7 +5,8 @@ Script used to test various features along of the development
 
 @author: laurentmichel
 """
-import os, sys
+import os
+import sys
 from astropy.io.votable import parse
 from mivot_validator.instance_checking.xml_interpreter.model_viewer import ModelViewer
 from mivot_validator.instance_checking.instance_checker import InstanceChecker

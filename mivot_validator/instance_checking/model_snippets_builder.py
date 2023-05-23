@@ -29,9 +29,6 @@ class ModelBuilder(Builder):
             .lower()
         )
 
-        if output_dir is None:
-            output_dir = os.path.abspath(os.getcwd() + '/../tmp_snippets/')
-
         super().__init__(self.model_name, "", vodml_path, output_dir)
 
     def build(self):

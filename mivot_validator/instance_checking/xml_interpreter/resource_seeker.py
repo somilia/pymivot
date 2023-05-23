@@ -5,9 +5,10 @@ Created on 7 Nov 2021
 """
 
 
-class ResourceSeeker(object):
+class ResourceSeeker:
     """
-    TODO At the time of writing the class is static in order to be callable from any part of the code.
+    TODO At the time of writing the class is static in order
+    to be callable from any part of the code.
     This feature should be made thread-safe in a public release
     """
 

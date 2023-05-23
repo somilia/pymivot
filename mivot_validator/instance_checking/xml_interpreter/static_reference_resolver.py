@@ -10,7 +10,7 @@ from mivot_validator.instance_checking.xml_interpreter.exceptions import (
 from mivot_validator.utils.xml_utils import XmlUtils
 
 
-class StaticReferenceResolver(object):
+class StaticReferenceResolver:
     """
     Namespace for the  function processing the static REFERENCEs
     """
@@ -21,7 +21,8 @@ class StaticReferenceResolver(object):
         Resolve all static REFERENCEs found in instance.
         The referenced objects are first searched in GLOBALS and then
         in the templates_ref table.
-        REFERENCE elements are replaced with the referenced objects set with the roles of the REFERENCEs
+        REFERENCE elements are replaced with the referenced
+        objects set with the roles of the REFERENCEs
         - A exception is risen if the reference cannot be resolved
         - Works even if REFERENCE tags are numbered by the former processing
         :param annotation_seeker: utility to extract desired elements from the mapping block
@@ -33,7 +34,7 @@ class StaticReferenceResolver(object):
         for ele in instance.xpath(".//*[starts-with(name(), 'REFERENCE_')]"):
             dmref = ele.get("dmref")
             # If we have no @dmref in REFERENCE, we consider this is a ref based on a keys
-            if dmref == None:
+            if dmref is None:
                 StaticReferenceResolver.resolve_from_forein_key(ele, annotation_seeker)
                 continue
 

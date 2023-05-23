@@ -7,7 +7,7 @@ Created on Jul 6, 2020
 from mivot_validator.instance_checking.xml_interpreter.vocabulary import Att
 
 
-class AttUtils(object):
+class AttUtils:
     """
     Some static methods doing tests on JSON mapping elements
     """

@@ -24,7 +24,7 @@ class CheckFailedException(Exception):
     pass
 
 
-class InstanceChecker(object):
+class InstanceChecker:
     """
     API operating the validation of mapped instances against the VODML definition
     - all ATTRIBUTE/COLLECTION/INSTANCE children of the mapped instance must be
@@ -88,11 +88,10 @@ class InstanceChecker(object):
                 os.unlink(file_path)
 
     @staticmethod
-    def _get_vodmlid(self, vodmlid, model_name):
+    def _get_vodmlid(vodmlid, model_name):
         if ":" in vodmlid:
             return f"{vodmlid}"
-        else:
-            return f"{model_name}:{vodmlid}"
+        return f"{model_name}:{vodmlid}"
 
     @staticmethod
     def _get_model_location(model):
@@ -132,7 +131,7 @@ class InstanceChecker(object):
         """
         vodml_tree = XmlUtils.xmltree_from_file(vodml_filepath)
         graph = {}
-        for ele in vodml_tree.xpath(f"./name"):
+        for ele in vodml_tree.xpath("./name"):
             model_name = ele.text
         print(f"   Build inheritence tree for model {model_name}")
 
@@ -140,7 +139,7 @@ class InstanceChecker(object):
         # No distinctions between objecttypeand datatypes
         # MIVOT does not make any difference
         # the vodml)id are unique within the scope of the whole model
-        for ele in vodml_tree.xpath(f"./dataType"):
+        for ele in vodml_tree.xpath("./dataType"):
             for tags in ele.getchildren():
                 if tags.tag == "vodml-id":
                     sub_class = model_name + ":" + tags.text
@@ -151,7 +150,7 @@ class InstanceChecker(object):
                     if sub_class not in graph[super_class]:
                         graph[super_class].append(sub_class)
 
-        for ele in vodml_tree.xpath(f"./objectType"):
+        for ele in vodml_tree.xpath("./objectType"):
             for tags in ele.getchildren():
                 if tags.tag == "vodml-id":
                     sub_class = model_name + ":" + tags.text
@@ -275,15 +274,15 @@ class InstanceChecker(object):
                             f"has items with prohibited types ({mivot_item_type}) "
                             f"instead of expected {vodml_type} "
                         )
-                    else:
-                        for item in collection_etree.xpath("./*"):
-                            if item.tag == "INSTANCE":
-                                InstanceChecker.check_instance_validity(item)
-                        return
+                    for item in collection_etree.xpath("./*"):
+                        if item.tag == "INSTANCE":
+                            InstanceChecker.check_instance_validity(item)
+                    return
 
         if role_found is False:
             raise CheckFailedException(
-                f"No collection with dmrole {collection_role} in object type {vodml_instance.getroot().get('dmtype')}"
+                f"No collection with dmrole {collection_role} "
+                f"in object type {vodml_instance.getroot().get('dmtype')}"
             )
 
     @staticmethod
@@ -323,7 +322,8 @@ class InstanceChecker(object):
                     f"type should be {vodml_type}"
                 )
         raise CheckFailedException(
-            f"dmrole {actual_role} not found in object type {enclosing_vodml_instance.getroot().get('dmtype')}"
+            f"dmrole {actual_role} not found in "
+            f"object type {enclosing_vodml_instance.getroot().get('dmtype')}"
         )
 
     @staticmethod
@@ -369,11 +369,10 @@ class InstanceChecker(object):
                         f'dmtype={child.get("dmtype")} in complex type {dmtype}'
                     )
                     raise CheckFailedException(message)
-                else:
-                    print(
-                        f'VALID: attribute with dmrole={child.get("dmrole")} '
-                        f'dmtype={child.get("dmtype")} in complex type {dmtype}'
-                    )
+                print(
+                    f'VALID: attribute with dmrole={child.get("dmrole")} '
+                    f'dmtype={child.get("dmtype")} in complex type {dmtype}'
+                )
             elif child.tag == "INSTANCE":
                 dmrole = child.get("dmrole")
                 if dmrole in checked_roles:
@@ -386,12 +385,11 @@ class InstanceChecker(object):
                         f'dmtype={child.get("dmtype")} in complex type {dmtype}'
                     )
                     raise CheckFailedException(message)
-                else:
-                    InstanceChecker._check_membership(child, vodml_instance)
-                    print(
-                        f"VALID: instance with dmrole={dmrole} "
-                        f'dmtype={child.get("dmtype")} in complex type {dmtype}'
-                    )
+                InstanceChecker._check_membership(child, vodml_instance)
+                print(
+                    f"VALID: instance with dmrole={dmrole} "
+                    f'dmtype={child.get("dmtype")} in complex type {dmtype}'
+                )
 
             elif child.tag == "COLLECTION":
                 dmrole = child.get("dmrole")
@@ -405,11 +403,10 @@ class InstanceChecker(object):
                         f"in complex type {dmtype}"
                     )
                     raise CheckFailedException(message)
-                else:
-                    print(
-                        f"VALID: collection with dmrole={dmrole} "
-                        f"in complex type {dmtype}"
-                    )
+                print(
+                    f"VALID: collection with dmrole={dmrole} "
+                    f"in complex type {dmtype}"
+                )
             elif child.tag == "REFERENCE":
                 dmrole = child.get("dmrole")
                 if dmrole in checked_roles:

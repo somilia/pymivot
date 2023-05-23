@@ -1,4 +1,4 @@
-'''
+"""
 Global logger setup
 Must be used by the whole application
 
@@ -12,7 +12,7 @@ Created on 2021/07/01
 
 @author: laurentmichel
 
-'''
+"""
 import sys
 import logging
 
@@ -21,6 +21,7 @@ class LoggerSetup:
     """
     manage the logger setup
     """
+
     __default_level = logging.INFO
 
     @staticmethod
@@ -38,12 +39,13 @@ class LoggerSetup:
         """
         set the default message format
         """
-        logging.basicConfig(stream=sys.stdout,
-                            format='%(levelname)7s'
-                                   ' - [%(filename)s:%(lineno)3s'
-                                   ' - %(funcName)10s()] - %(message)s',
-                            # datefmt="%Y-%m-%d %H:%M:%S"
-                            )
+        logging.basicConfig(
+            stream=sys.stdout,
+            format="%(levelname)7s"
+            " - [%(filename)s:%(lineno)3s"
+            " - %(funcName)10s()] - %(message)s",
+            # datefmt="%Y-%m-%d %H:%M:%S"
+        )
         LoggerSetup.restore_default_level()
 
     @staticmethod

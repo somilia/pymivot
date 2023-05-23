@@ -1,18 +1,19 @@
-'''
+"""
 Code imported from SVOM
 Created on 29 mai 2019
 
 @author: michel
-'''
+"""
 import json
 import re
 import urllib
 import ssl
+from collections import OrderedDict
 from mivot_validator.utils import logger
 from mivot_validator.utils.json_encoder import MyEncoder
 
 
-class DictUtils():
+class DictUtils:
     """
     static class processing implementing convenient operation on dictionaries
     """
@@ -33,7 +34,7 @@ class DictUtils():
 
         if key in dictionary.keys():
             return dictionary[key]
-        raise Exception("missing key: {}".format(key))
+        raise Exception(f"missing key: {key}")
 
     @staticmethod
     def get_fatal_value(dictionary, key):
@@ -50,8 +51,7 @@ class DictUtils():
             raise Exception("Cannot get any value for None dict")
         if key in dictionary.keys():
             return dictionary[key]
-        raise Exception("missing key: {}".format(key))
-        return None  # just for Pylint
+        raise Exception(f"missing key: {key}")
 
     @staticmethod
     def get_optional_value(dictionary, key, null=None):
@@ -97,16 +97,17 @@ class DictUtils():
         """
         try:
             logger.debug("Reading json from %s", filename)
-            from collections import OrderedDict
-            with open(filename, 'r') as file:
+
+            with open(filename, "r", encoding="utf-8") as file:
                 retour = json.load(file, object_pairs_hook=OrderedDict)
-                return retour 
+                return retour
 
         except Exception as exception:
             if fatal is True:
-                raise Exception("reading {}". format(filename))
-            else:
-                logger.error("{} reading {}". format(exception, filename))
+                raise Exception(f"reading {filename}")
+            logger.error(f"{exception} reading {filename}")
+
+        return None
 
     @staticmethod
     def write_dict_from_file(dictionary, filename, fatal=False):
@@ -119,14 +120,13 @@ class DictUtils():
         """
         try:
             logger.debug("Writing json in %s", filename)
-            with open(filename, 'w') as file:
+            with open(filename, "w", encoding="utf-8") as file:
                 file.write(json.dumps(dictionary, indent=2, sort_keys=True))
 
         except Exception as exception:
             if fatal is True:
-                raise Exception("writing {}". format(filename))
-            else:
-                logger.error("{} writing {}". format(exception, filename))
+                raise Exception(f"writing {filename}")
+            logger.error(f"{exception} writing {filename}")
 
     @staticmethod
     def read_dict_from_url(url, fatal=False):
@@ -141,16 +141,19 @@ class DictUtils():
         """
         try:
             logger.debug("Reading json from %s", url)
-            open_url = urllib.request.urlopen(url, context=ssl._create_unverified_context())
+            open_url = urllib.request.urlopen(
+                url, context=ssl._create_unverified_context()
+            )
             if open_url.getcode() == 200:
-                return  json.loads(open_url.read().decode('utf-8'))
-            raise Exception("{} return code {}".format(url, open_url.getcode()))
+                return json.loads(open_url.read().decode("utf-8"))
+            raise Exception(f"{url} return code {open_url.getcode()}")
 
         except Exception as exception:
             if fatal is True:
-                raise Exception("reading {}". format(url))
-            logger.error("{} reading {}". format(exception, url))
-            return None  # just for Pylint
+                raise Exception(f"reading {url}")
+            logger.error(f"{exception} reading {url}")
+
+        return None
 
     @staticmethod
     def get_pretty_json(dictionnary):
@@ -158,12 +161,14 @@ class DictUtils():
         :return: A pretty string representation of the dictionary
         :rtype: Python Dict
         """
-        from collections import OrderedDict
-        return json.dumps(dictionnary,
-                          indent=2,
-                          #sort_keys=True,
-                          cls=MyEncoder)
-        
+
+        return json.dumps(
+            dictionnary,
+            indent=2,
+            # sort_keys=True,
+            cls=MyEncoder,
+        )
+
     @staticmethod
     def print_pretty_json(dictionnary):
         """
@@ -183,7 +188,9 @@ class DictUtils():
         """
         replaced = re.sub("svom_mxt_proto_any_.*", "svom_mxt_proto_any_SEQID", text)
         replaced = re.sub("svom_test_.*", "svom_test_any_SEQID", replaced)
-        replaced = re.sub("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}", "DATE", replaced)
+        replaced = re.sub(
+            "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}", "DATE", replaced
+        )
         return replaced
 
     @staticmethod
@@ -230,7 +237,7 @@ class DictUtils():
         return retour
 
     @staticmethod
-    def find_item_by_key(dictionnary, key, first=False):
+    def find_item_by_key(dictionnary, key):
         """
         Look for the first dictionary item attached to key
         :param dictionary: dictionary to be explored
@@ -239,7 +246,7 @@ class DictUtils():
         :type key: string
         """
         result = []
-        DictUtils._find_item_by_key(dictionnary, key,result)
+        DictUtils._find_item_by_key(dictionnary, key, result)
         return result
 
     @staticmethod
@@ -256,9 +263,9 @@ class DictUtils():
         if isinstance(dictionnary, dict):
             if key in dictionnary:
                 result.append(dictionnary[key])
-            
+
             for _, sval in dictionnary.items():
                 DictUtils._find_item_by_key(sval, key, result)
-        elif isinstance(dictionnary,list):
-                for list_item in dictionnary:
-                    DictUtils._find_item_by_key(list_item, key, result)
+        elif isinstance(dictionnary, list):
+            for list_item in dictionnary:
+                DictUtils._find_item_by_key(list_item, key, result)

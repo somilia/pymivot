@@ -4,9 +4,9 @@ Created on 2022/07/01
 @author: laurentmichel
 """
 import os
+import ssl
 from mivot_validator.xml_validator import XMLValidator
 from mivot_validator import logger
-import ssl
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -25,7 +25,8 @@ class AnnotatedVOTableValidator:
     # MIVOT schema
     votable_validator = XMLValidator("http://www.ivoa.net/xml/VOTable/v1.3")
     vodml_validator = XMLValidator(
-        "https://raw.githubusercontent.com/ivoa-std/ModelInstanceInVot/master/schema/xsd/mivot-v1.0.xsd"
+        "https://raw.githubusercontent.com/ivoa-std/"
+        "ModelInstanceInVot/master/schema/xsd/mivot-v1.0.xsd"
     )
 
     def validate(self, data_path):
@@ -41,7 +42,7 @@ class AnnotatedVOTableValidator:
 
         # Check that the path exist
         if os.path.exists(data_path) is False:
-            logger.error("Path {} does not exist".format(data_path))
+            logger.error(f"Path {data_path} does not exist")
             return False
 
         # Process the whole directory content
@@ -57,8 +58,7 @@ class AnnotatedVOTableValidator:
             return True
 
         # Process one single
-        else:
-            return self.__validate_file(data_path)
+        return self.__validate_file(data_path)
 
     def __validate_file(self, file_path):
         """
@@ -72,12 +72,12 @@ class AnnotatedVOTableValidator:
 
         # non XML files are considered as non valid
         if self.__is_xml(file_path) is False:
-            logger.error("File {} does not look like XML".format(file_path))
+            logger.error(f"File {file_path} does not look like XML")
             return False
 
         # Get the filename for the log messages
         file_name = os.path.basename(file_path)
-        logger.info("Validate file {}".format(file_name))
+        logger.info(f"Validate file {file_name}")
         logger.info("- Validate against VOTable/v1.3")
         # Validate the VOTable
         if (
@@ -96,7 +96,7 @@ class AnnotatedVOTableValidator:
         logger.info("- Validate against MIVOT")
         retour = self.validate_mivot(file_path)
         if retour is True:
-            logger.info("{} is a valid annotated VOTable".format(file_name))
+            logger.info(f"{file_name} is a valid annotated VOTable")
         return retour
 
     def validate_mivot(self, file_path):
@@ -109,7 +109,7 @@ class AnnotatedVOTableValidator:
         """
         # non XML files are considered as non valid
         if self.__is_xml(file_path) is False:
-            logger.error("File {} does not look like XML".format(file_path))
+            logger.error("File {file_path} does not look like XML")
             return False
         if (
             AnnotatedVOTableValidator.vodml_validator.validate_file(

@@ -5,7 +5,7 @@ Created on 1 dec. 2021
 """
 
 
-class TableIterator(object):
+class TableIterator:
     """
     Simple wrapper iterating over table rows
     """
@@ -29,7 +29,7 @@ class TableIterator(object):
         The end of table exception usually returned by Numpy is trapped
         """
         # The iterator is set at the first iteration
-        if self.iter == None:
+        if self.iter is None:
             self.iter = iter(self.data_table)
 
         try:
@@ -38,7 +38,7 @@ class TableIterator(object):
                 if row is not None:
                     if (
                         self.row_filter is None
-                        or self.row_filter.row_match(row) == True
+                        or self.row_filter.row_match(row) is True
                     ):
                         self.last_row = row
                         return row

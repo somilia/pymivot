@@ -133,7 +133,8 @@ class InstanceBuilder:
                         )
                         if property_count == 0:
                             choice = self.populate_choices(
-                                self.inheritance_graph[self.get_dm_type(line)], parent_key
+                                self.inheritance_graph[self.get_dm_type(line)],
+                                parent_key,
                             )
                             file = None
                             if choice != "None":
@@ -417,9 +418,9 @@ class InstanceBuilder:
         if self.concrete_list is not None and len(self.concrete_list) > 0:
             for cc_dict in self.concrete_list:
                 if (
-                        self.dmrole == cc_dict["dmrole"]
-                        and self.dmtype == cc_dict["dmtype"]
-                        and self.dmtype == cc_dict["dmtype"]
+                    self.dmrole == cc_dict["dmrole"]
+                    and self.dmtype == cc_dict["dmtype"]
+                    and self.dmtype == cc_dict["dmtype"]
                 ):
                     self.concrete_list.pop(self.concrete_list.index(cc_dict))
                     return cc_dict["class"]

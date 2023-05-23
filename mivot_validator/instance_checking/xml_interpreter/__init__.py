@@ -1,4 +1,4 @@
-import sys, os
+import os
 from mivot_validator.utils.logger_setup import LoggerSetup
 
 file_path = os.path.dirname(os.path.realpath(__file__))

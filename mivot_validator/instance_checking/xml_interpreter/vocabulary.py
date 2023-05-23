@@ -5,7 +5,7 @@ author: michel
 """
 
 
-class Ele(object):
+class Ele:
     """
     classdocs
     """
@@ -24,7 +24,7 @@ class Ele(object):
     NOROLE = "NOROLE"
 
 
-class Att(object):
+class Att:
     """
     classdocs
     """
@@ -45,9 +45,8 @@ class Att(object):
 def key_match(searched_key, key_set):
     if isinstance(key_set, str):
         return key_set.startswith(searched_key)
-    else:
         # May be a list or an odict_keys
-        for key in key_set:
-            if key.startswith(searched_key) is True:
-                return key
+    for key in key_set:
+        if key.startswith(searched_key) is True:
+            return key
     return None

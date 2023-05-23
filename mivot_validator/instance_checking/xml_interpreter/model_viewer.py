@@ -1,11 +1,11 @@
-f"""
+"""
 Created on 5 Jan 2022
 
 @author: laurentmichel
 """
 import re
-from lxml import etree
 from copy import deepcopy
+from lxml import etree
 from mivot_validator.instance_checking import logger
 from mivot_validator.instance_checking.xml_interpreter.exceptions import *
 from mivot_validator.instance_checking.xml_interpreter.annotation_seeker import (
@@ -34,9 +34,10 @@ from mivot_validator.instance_checking.xml_interpreter.join_operator import Join
 from mivot_validator.utils.xml_utils import XmlUtils
 
 
-class ModelViewer(object):
+class ModelViewer:
     """
-    ModelViewer is a PyVO table wrapper aiming at providing a model view on VOTable data read with usual tools
+    ModelViewer is a PyVO table wrapper aiming at providing
+    a model view on VOTable data read with usual tools
 
     Standard usage applied to data rows
 
@@ -128,7 +129,8 @@ class ModelViewer(object):
 
     def get_globals_models(self):
         """
-        Collection types are GLOBALS/COLLECTION/INSTANCE@dmtype: used for collections of static objects
+        Collection types are GLOBALS/COLLECTION/INSTANCE@dmtype:
+        used for collections of static objects
         :return : The dmtypes of all the top level INSTANCE/COLLECTION of GLOBALS
         :rtype:  {'COLLECTION': [dmtpyes], 'INSTANCE': [dmtypes]}
         """
@@ -192,12 +194,11 @@ class ModelViewer(object):
                 retour.append(globals_instance_copy)
         if found is True:
             return retour
-        else:
-            for globals_type in globals_models["INSTANCE"]:
-                if globals_type == dmtype:
-                    raise NotImplementedException(
-                        "GLOBALS/INSTANCE access not implemented yet"
-                    )
+        for globals_type in globals_models["INSTANCE"]:
+            if globals_type == dmtype:
+                raise NotImplementedException(
+                    "GLOBALS/INSTANCE access not implemented yet"
+                )
 
         raise NotImplementedException(f"no {dmtype} type found in GLOBALS")
 
@@ -210,12 +211,12 @@ class ModelViewer(object):
         self._connected_tableref = tableref
         self._connected_table = self._resource_seeker.get_table(tableref)
         if self.connected_table is None:
-            raise MappingException("Cannot find table {} in VOTable".format(tableref))
+            raise MappingException(f"Cannot find table {tableref} in VOTable")
         logger.debug("table %s found in VOTable", tableref)
 
         self._templates = deepcopy(self.annotation_seeker.get_templates_block(tableref))
         if self._templates is None:
-            raise MappingException("Cannot find TEMPLATES {} ".format(tableref))
+            raise MappingException(f"Cannot find TEMPLATES {tableref} ")
         logger.debug("TEMPLATES %s found ", tableref)
 
         self.table_iterator = TableIterator(tableref, self.connected_table.to_table())
@@ -252,7 +253,8 @@ class ModelViewer(object):
                 > 0
             ):
                 pass
-            # Make sure the instances of the resolved references have both indexes and unit attribute
+            # Make sure the instances of the resolved
+            # references have both indexes and unit attribute
             XmlUtils.set_column_indices(
                 templates_copy,
                 self._resource_seeker.get_id_index_mapping(self._connected_tableref),
@@ -300,7 +302,8 @@ class ModelViewer(object):
 
     def get_model_component_by_type(self, searched_dmtype):
         """
-        return the list of the xml instances with @dmtype=searched_ type from the model view of the current data row
+        return the list of the xml instances with @dmtype=searched_ type
+         from the model view of the current data row
         Return a {} if no matching dmtype was found
         """
         self._assert_table_is_connected()
@@ -313,7 +316,9 @@ class ModelViewer(object):
 
     def get_model_component_by_role(self, searched_dmrole):
         """
-        return the list of the xml instances with @dmrole=searched_role from the model view of the current data row
+        return the list of the xml instances with
+        @dmrole=searched_role from the model view
+        of the current data row
         Return a [] if no matching dmrole was found
         """
         self._assert_table_is_connected()
@@ -343,7 +348,7 @@ class ModelViewer(object):
         String extraction must be replaced with astropy.Resource.model_mapping when available
         """
         logger.info("extract vodml block from %s", votable_path)
-        with open(votable_path) as xml_file:
+        with open(votable_path, encoding="utf-8") as xml_file:
             content = xml_file.read()
             start = content.index("<VODML")
             if start == -1:

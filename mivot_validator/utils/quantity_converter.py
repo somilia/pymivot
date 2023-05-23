@@ -1,19 +1,20 @@
-'''
+"""
 Created on 25 Jan 2022
 
 @author: laurentmichel
-'''
+"""
 
-class QuantityConverter(object):
-    '''
+
+class QuantityConverter:
+    """
     classdocs
-    '''
+    """
+
     def __init__(self, params):
-        '''
+        """
         Constructor
-        '''
-        pass
-    
+        """
+
     @staticmethod
     def parallax_to_distance(parallax):
         """
@@ -22,8 +23,7 @@ class QuantityConverter(object):
         """
         # https://edu.obs-mip.fr/la-parallaxe-grace-au-satellite-gaia/
         if parallax == 0:
-            return float('Inf')
-        elif parallax < 0 :
-            return -1/(parallax/1000.)
-        else:
-            return 1/(parallax/1000.)
+            return float("Inf")
+        if parallax < 0:
+            return -1 / (parallax / 1000.0)
+        return 1 / (parallax / 1000.0)

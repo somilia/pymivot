@@ -1,9 +1,9 @@
-'''
+"""
 Testing generations of generic snippets from a VODML-Model file
 
 Created on 9 May 2023
 @author: julien abid
-'''
+"""
 import unittest
 import os
 
@@ -16,12 +16,12 @@ MODEL_NAME = "coords"
 
 
 def getObjectTypes(model):
-    '''
+    """
     Get the object types of the given model which are not abstract
-    '''
+    """
     res = []
 
-    for ele in model.xpath(f'.//objectType'):
+    for ele in model.xpath(f".//objectType"):
         if ele.get("abstract") == "true":
             continue
         for tags in ele.getchildren():
@@ -31,7 +31,6 @@ def getObjectTypes(model):
 
 
 class Test(unittest.TestCase):
-
     @classmethod
     def setUp(cls):
         if os.path.exists(OUTPUT):
@@ -43,9 +42,9 @@ class Test(unittest.TestCase):
             os.system("rm -rf " + OUTPUT)
 
     def testFilesExists(self):
-        '''
+        """
         Check that files are generated in the given directory
-        '''
+        """
         # Given
         snippets = ModelBuilder(MODEL, None)
 
@@ -56,10 +55,10 @@ class Test(unittest.TestCase):
         self.assertTrue(len(os.listdir(OUTPUT)) > 0)
 
     def testFilesCohesion(self):
-        '''
+        """
         Check that files generated in the given directory
         are the object types of the model
-        '''
+        """
         # Given
         snippets = ModelBuilder(MODEL, None)
         object_types = getObjectTypes(XmlUtils.xmltree_from_file(MODEL))
@@ -69,9 +68,11 @@ class Test(unittest.TestCase):
 
         # Then
         for obj in object_types:
-            print(OUTPUT + '/' + MODEL_NAME + '.' + obj + ".xml")
-            self.assertTrue(os.path.exists(OUTPUT + '/' + MODEL_NAME + '.' + obj + ".xml"))
+            print(OUTPUT + "/" + MODEL_NAME + "." + obj + ".xml")
+            self.assertTrue(
+                os.path.exists(OUTPUT + "/" + MODEL_NAME + "." + obj + ".xml")
+            )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

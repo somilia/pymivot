@@ -13,7 +13,7 @@ from mivot_validator.instance_checking.xml_interpreter.static_reference_resolver
 )
 
 
-class DynamicReference(object):
+class DynamicReference:
     """
     classdocs
     """
@@ -48,7 +48,7 @@ class DynamicReference(object):
             )
             if self.target_xml_block is None:
                 raise MappingException(
-                    "No GLOBALS/COLLECTION with dmid={}".format(self.target_id)
+                    f"No GLOBALS/COLLECTION with dmid={self.target_id}"
                 )
 
     def get_target_instance(self, data_row):
@@ -56,15 +56,12 @@ class DynamicReference(object):
         fkey = self.target_xml_block.xpath("//PRIMARY_KEY[@value='" + key + "']")
         if len(fkey) == 0:
             raise MappingException(
-                "GLOBALS/COLLECTION with dmid={} has no item with PRIMARY_KEY={}".format(
-                    self.target_id, key
-                )
+                f"GLOBALS/COLLECTION with dmid={self.target_id} has no item with PRIMARY_KEY={key}"
             )
-        elif len(fkey) > 1:
+        if len(fkey) > 1:
             raise MappingException(
-                "GLOBALS/COLLECTION with dmid={} has more than one item with PRIMARY_KEY={}".format(
-                    self.target_id, key
-                )
+                f"GLOBALS/COLLECTION with dmid={self.target_id} "
+                f"has more than one item with PRIMARY_KEY={key}"
             )
         retour = deepcopy(fkey[0].getparent())
         StaticReferenceResolver.resolve(self.annotation_seeker, None, retour)

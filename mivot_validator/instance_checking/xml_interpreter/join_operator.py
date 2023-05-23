@@ -40,8 +40,9 @@ class Where:
         self.fk_is_constant = fk_is_constant
 
     def __repr__(self):
-        return "(foreign: {}:{}  primary: {}:{})".format(
-            self.primarykey, self.foreign_col, self.primarykey, self.primary_col
+        return (
+            f"(foreign: {self.primarykey}:{self.foreign_col}  "
+            f"primary: {self.primarykey}:{self.primary_col})"
         )
 
     def set_primary_col(self, primary_table_ref):
@@ -55,7 +56,8 @@ class Where:
 
     def match(self, primary_key_value, foreign_row):
         """
-        Returns True if the value of the foreign key read out of the foreign row matches primary_key_value
+        Returns True if the value of the foreign key read out of the
+        foreign row matches primary_key_value
         The comparisons are based on string representations of the evaluated values
         :param primary_key: value of the primary key
         :param foreign_row: Numpy data row of the joined table that must
@@ -63,11 +65,10 @@ class Where:
         """
         if self.fk_is_constant is False:
             return str(foreign_row[self.foreign_col]) == str(primary_key_value)
-        else:
-            return str(self.foreignkey) == str(foreign_row[self.primary_col])
+        return str(self.foreignkey) == str(foreign_row[self.primary_col])
 
 
-class JoinOperator(object):
+class JoinOperator:
     """
     classdocs
     """
@@ -184,7 +185,8 @@ class JoinOperator(object):
             for ele in templates_copy.xpath("//FOREIGN_KEY"):
                 ref = ele.get("ref")
                 if ref is not None:
-                    # We add the PK value for the current row, so that the ref can be resolved as a static one
+                    # We add the PK value for the current row,
+                    # so that the ref can be resolved as a static one
                     ele.attrib["value"] = str(joined_row[ref])
             if resolve_ref is True:
                 StaticReferenceResolver.resolve(

@@ -84,14 +84,14 @@ class Builder:
         Build one snippet for the dataType/objectType found in the VODML block
         and matching the searched class
         """
-        for ele in self.vodml.xpath(f".//dataType"):
+        for ele in self.vodml.xpath(".//dataType"):
             for tags in ele.getchildren():
                 if tags.tag == "vodml-id" and tags.text == self.class_name:
                     print(f"build datatype {tags.text}")
                     self.build_object(ele, "", True, True)
                     return
 
-        for ele in self.vodml.xpath(f".//objectType"):
+        for ele in self.vodml.xpath(".//objectType"):
             for tags in ele.getchildren():
                 if tags.tag == "vodml-id" and tags.text == self.class_name:
                     self.build_object(ele, "", True, True)
@@ -104,9 +104,13 @@ class Builder:
         Build a MIVOT instance from a VOMDL element
         :ele: VODML representation of the class to be mapped
         :role: VODML role to be affected to the built instance
-        :root: If true the INSTANCE is not a component of an enclosing object. The snippet file must be initialized
-        :aggregate: If False, all componentsfound out in the VODML element are added to the enclosing instance
-                    (in that case of inheritance reconstruction) . Otherwise, those components are
+        :root: If true the INSTANCE is not a component of an enclosing object.
+        The snippet file must be initialized
+        :aggregate: If False, all componentsfound out in the
+                    VODML element are added
+                    to the enclosing instance (in that case of
+                    inheritance reconstruction).
+                    Otherwise, those components are
                     enclosed in an INSTANCE (composition case)
         """
         print(f"build object with role={role} within the class {self.class_name}")
@@ -128,7 +132,9 @@ class Builder:
                     dmid = ""
                     if role == "coords:Coordinate.coordSys":
                         self.write_out(
-                            f'<!-- The Coordinate system can be pushed up to the GLOBALS and replaced here with <REFERENCE dmref="SOME_REF" dmrole="{role}" />">-->'
+                            f"<!-- The Coordinate system can be pushed up to the "
+                            f"GLOBALS and replaced here with "
+                            f'<REFERENCE dmref="SOME_REF" dmrole="{role}" />">-->'
                         )
                         dmid = 'dmid="PUT_AN_ID_HERE"'
                     self.write_out(
@@ -262,7 +268,8 @@ class Builder:
         # we need it
         if self.model_name != "meas" and reftype == "meas:Measure":
             self.write_out(
-                f'<ATTRIBUTE dmrole="meas:Measure.ucd" dmtype="ivoa:string" value="phot.mag;em.opt;stat.mean" />'
+                f'<ATTRIBUTE dmrole="meas:Measure.ucd" '
+                f'dmtype="ivoa:string" value="phot.mag;em.opt;stat.mean" />'
             )
         else:
             self.get_object_by_ref(
@@ -300,29 +307,33 @@ class Builder:
         if max_occurs == 1:
             if dmtype.endswith("Quantity"):
                 self.write_out(
-                    f'<ATTRIBUTE dmrole="{dmrole}" dmtype="{dmtype}" {unit_att} ref="@@@@@" value="" />'
+                    f'<ATTRIBUTE dmrole="{dmrole}" dmtype="{dmtype}"'
+                    f' {unit_att} ref="@@@@@" value="" />'
                 )
             else:
                 self.write_out(
-                    f'<ATTRIBUTE dmrole="{dmrole}" dmtype="{dmtype}" {unit_att} ref="@@@@@" value="" />'
+                    f'<ATTRIBUTE dmrole="{dmrole}" dmtype="{dmtype}"'
+                    f' {unit_att} ref="@@@@@" value="" />'
                 )
         else:
             self.write_out(f'<COLLECTION dmrole="{dmrole}">')
             for _ in range(max_occurs):
                 if dmtype.endswith("Quantity"):
                     self.write_out(
-                        f'<ATTRIBUTE dmtype="{dmtype}" {unit_att} ref="@@@@@" value="" />'
+                        f'<ATTRIBUTE dmtype="{dmtype}" '
+                        f'{unit_att} ref="@@@@@" value="" />'
                     )
                 else:
                     self.write_out(
-                        f'<ATTRIBUTE dmtype="{dmtype}" {unit_att} ref="@@@@@" value="" />'
+                        f'<ATTRIBUTE dmtype="{dmtype}" '
+                        f'{unit_att} ref="@@@@@" value="" />'
                     )
             self.write_out("</COLLECTION>")
 
     def get_object_by_ref(self, vodmlid, role, aggregate, extend=False):
         """ """
         print(f"search object with vodmlid={vodmlid}")
-        for ele in self.vodml.xpath(f".//objectType"):
+        for ele in self.vodml.xpath(".//objectType"):
             abstract_att = ele.get("abstract")
             for tags in list(ele):
                 if tags.tag == "vodml-id" and tags.text == vodmlid:
@@ -338,7 +349,7 @@ class Builder:
                         self.build_object(ele, role, False, aggregate)
                     return
 
-        for ele in self.vodml.xpath(f".//dataType"):
+        for ele in self.vodml.xpath(".//dataType"):
             abstract_att = ele.get("abstract")
 
             for tags in list(ele):  # root is the ElementTree object
@@ -355,7 +366,7 @@ class Builder:
                         self.build_object(ele, role, False, aggregate)
                     return
 
-        for ele in self.vodml.xpath(f".//primitiveType"):
+        for ele in self.vodml.xpath(".//primitiveType"):
             found = False
             description = ""
             for tags in list(ele):  # root is the ElementTree object
@@ -372,7 +383,7 @@ class Builder:
                 )
                 return
 
-        for ele in self.vodml.xpath(f".//enumeration"):
+        for ele in self.vodml.xpath(".//enumeration"):
             found = False
             description = ""
             for tags in list(ele):  # root is the ElementTree object
@@ -381,7 +392,7 @@ class Builder:
                 if tags.tag == "description":
                     description = f"<!-- {tags.text} -->"
             if found is True:
-                values = ele.xpath(f".//literal/name")
+                values = ele.xpath(".//literal/name")
                 val_str = ""
                 for value in values:
                     val_str += value.text + " "
@@ -409,7 +420,8 @@ class Builder:
         print(f"search concrete object of vodmlid={abstract_vodmlid}")
         if role.endswith("coordSpace"):
             self.write_out(
-                "<!-- the axis representation (coords:PhysicalCoordSys.coordSpace) is not serialized here -->"
+                "<!-- the axis representation (coords:PhysicalCoordSys.coordSpace)"
+                " is not serialized here -->"
             )
         elif abstract_vodmlid in DEFAULT_CONCRETE_CLASSES:
             concrete_type = DEFAULT_CONCRETE_CLASSES[abstract_vodmlid]
@@ -441,8 +453,7 @@ class Builder:
         """
         if ":" in vodmlid:
             return f"{vodmlid}"
-        else:
-            return f"{self.model_name}:{vodmlid}"
+        return f"{self.model_name}:{vodmlid}"
 
     def write_out(self, string):
         """

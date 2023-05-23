@@ -14,7 +14,8 @@ class AnnotationSeeker(object):
     """
     This class provides tools extracting mapping sub-blocks that often used by others stakeholders
     All functions using the mapping are using this class the get XML elements.
-    To make the job simpler for others tools, the XML is namespace removed from the mapping block whatever it is.
+    To make the job simpler for others tools, the XML is
+    namespace removed from the mapping block whatever it is.
     This is usually done by Astropy as well
     """
 
@@ -274,15 +275,13 @@ class AnnotationSeeker(object):
         )
         if len(eset) == 0:
             raise MappingException(
-                "Instance with primary key = {} in collection dmid {} not found".format(
-                    key_value, key_value
-                )
+                f"Instance with primary key = {key_value} "
+                f"in collection dmid {key_value} not found"
             )
         if len(eset) > 1:
             raise MappingException(
-                "More than one instance with primary key = {} found in in collection dmid {}".format(
-                    key_value, key_value
-                )
+                f"More than one instance with primary key = {key_value} "
+                f"found in in collection dmid {key_value}"
             )
         logger.debug(
             "Instance with primary_key=%s found in collection dmid=%s",
