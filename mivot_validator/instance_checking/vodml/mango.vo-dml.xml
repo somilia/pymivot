@@ -255,7 +255,7 @@ As long as the vocabulary is not set, the possible values of this attribute are 
       <vodml-ref>mango:AssociatedData</vodml-ref>
     </extends>
     <composition>
-      <vodml-id>AssociatedMangoInstance.mangoInstance</vodml-id>
+      <vodml-id>AssociatedMangoInstance.mangoInstance</vodml-id> <!-- maybe chaning the AssociatedMangoInstance.mangoInstance by AssociatedMangoInstance.refSource ? -->
       <name>mangoInstance</name>
       <description>Composition link pointing on one MANGO instance associated with the source.</description>
       <datatype>
@@ -601,7 +601,7 @@ As long as the vocabulary is not set, the possible values of this attribute are 
           TODO : Missing description : please, update your UML model asap.
         </description>
       <datatype>
-        <vodml-ref>:PhotFilter</vodml-ref>
+        <vodml-ref>Phot:PhotometryFilter</vodml-ref>
       </datatype>
       <multiplicity>
         <minOccurs>1</minOccurs>
@@ -615,7 +615,7 @@ As long as the vocabulary is not set, the possible values of this attribute are 
           TODO : Missing description : please, update your UML model asap.
         </description>
       <datatype>
-        <vodml-ref>:PhotFilter</vodml-ref>
+        <vodml-ref>Phot:PhotometryFilter</vodml-ref>
       </datatype>
       <multiplicity>
         <minOccurs>1</minOccurs>
