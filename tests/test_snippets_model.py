@@ -10,9 +10,14 @@ import os
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.model_snippets_builder import ModelBuilder
 
-OUTPUT = os.path.abspath(os.getcwd() + "/../tmp_snippets/coords/")
-MODEL = os.getcwd() + "/../vodml/Coords-v1.0.vo-dml.xml"
-MODEL_NAME = "coords"
+OUTPUT = os.path.abspath(os.getcwd() + "/../tmp_snippets/")
+MODELS = {
+    "coords": os.getcwd() + "/../vodml/Coords-v1.0.vo-dml.xml",
+    "meas": os.getcwd() + "/../vodml/Meas-v1.vo-dml.xml",
+    "Phot": os.getcwd() + "/../vodml/Phot-v1.1.vodml.xml",
+    "mango": os.getcwd() + "/../vodml/mango.vo-dml.xml",
+}
+MAPPING_SAMPLE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 
 
 def getObjectTypes(model):
@@ -22,6 +27,20 @@ def getObjectTypes(model):
     res = []
 
     for ele in model.xpath(f".//objectType"):
+        if ele.get("abstract") == "true":
+            continue
+        for tags in ele.getchildren():
+            if tags.tag == "vodml-id":
+                res.append(tags.text)
+    return res
+
+def getDataTypes(model):
+    """
+    Get the data types of the given model which are not abstract
+    """
+    res = []
+
+    for ele in model.xpath(f".//dataType"):
         if ele.get("abstract") == "true":
             continue
         for tags in ele.getchildren():
@@ -45,32 +64,40 @@ class Test(unittest.TestCase):
         """
         Check that files are generated in the given directory
         """
-        # Given
-        snippets = ModelBuilder(MODEL, None)
+        for model_name, model in MODELS.items():
+            # Given
+            snippets = ModelBuilder(model, OUTPUT)
 
-        # When
-        snippets.build()
+            # When
+            snippets.build()
 
-        # Then
-        self.assertTrue(len(os.listdir(OUTPUT)) > 0)
+            # Then
+            self.assertTrue(
+                len(os.listdir(OUTPUT)) > 0,
+                f"Snippets for model {model_name} should be generated",
+            )
 
     def testFilesCohesion(self):
         """
         Check that files generated in the given directory
-        are the object types of the model
+        are the object types  and data types of the model
         """
         # Given
-        snippets = ModelBuilder(MODEL, None)
+        snippets = ModelBuilder(MODEL, os.path.abspath(os.getcwd() + "/../tmp_snippets/"))
         object_types = getObjectTypes(XmlUtils.xmltree_from_file(MODEL))
+        data_types = getDataTypes(XmlUtils.xmltree_from_file(MODEL))
 
         # When
         snippets.build()
 
         # Then
         for obj in object_types:
-            print(OUTPUT + "/" + MODEL_NAME + "." + obj + ".xml")
             self.assertTrue(
                 os.path.exists(OUTPUT + "/" + MODEL_NAME + "." + obj + ".xml")
+            )
+        for data in data_types:
+            self.assertTrue(
+                os.path.exists(OUTPUT + "/" + MODEL_NAME + "." + data + ".xml")
             )
 
 

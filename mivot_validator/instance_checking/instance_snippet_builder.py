@@ -64,20 +64,16 @@ class InstanceBuilder:
         self.concrete_list = concrete_list
         self.inheritance_graph = {
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/"
-                "instance_checking/vodml/mango.vo-dml.xml"
+                "../vodml/mango.vo-dml.xml"
             ),
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/"
-                "instance_checking/vodml/Phot-v1.1.vodml.xml"
+                "../vodml/Phot-v1.1.vodml.xml"
             ),
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/"
-                "instance_checking/vodml/Coords-v1.0.vo-dml.xml"
+                "../vodml/Coords-v1.0.vo-dml.xml"
             ),
             **InstanceChecker._build_inheritence_graph(
-                "/home/jabid/mivot-validator/mivot_validator/"
-                "instance_checking/vodml/Meas-v1.vo-dml.xml"
+                "../vodml/Meas-v1.vo-dml.xml"
             ),
         }
         self.abstract_classes = list(self.inheritance_graph.keys())
