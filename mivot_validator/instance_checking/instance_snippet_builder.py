@@ -106,10 +106,8 @@ class InstanceBuilder:
                         parent_key = self.get_dm_type(line)
                     if self.get_dm_type(line) in self.abstract_classes:
                         self.dmrole = self.get_dm_role(line)
-                        print("@@@@@@", self.dmrole)
                         self.dmtype = self.get_dm_type(line)
                         if not self.dmrole == "mango:Property.associatedProperties":
-                            print("@@@@@@ added ", self.dmrole)
                             self.dmroles.append(self.dmrole)
                         print(
                             f"{BColors.OKCYAN}{BColors.UNDERLINE}"
@@ -280,13 +278,11 @@ class InstanceBuilder:
         """
         Insert the dmroles in the concrete MIVOT snippet
         """
-        print(dmroles)
         with open(xml_file, "r", encoding="utf-8") as file:
             buffer = ""
             first = True
             for line in file:
                 if 'dmrole=""' in line:
-                    print("@@@@@@", line)
                     if first:
                         first = False
                     elif not first:
