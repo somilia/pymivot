@@ -27,6 +27,10 @@ def main():
         sys.exit(1)
 
     path = check_args(sys.argv[1])
+
+    if not os.path.exists("../tmp_snippets"):
+        os.makedirs("../tmp_snippets")
+
     output_dir = sys.argv[2] if len(sys.argv) == 3 else os.path.abspath(os.getcwd() + "/../tmp_snippets/")
 
     snippet = ModelBuilder(vodml_path=path, output_dir=output_dir)
