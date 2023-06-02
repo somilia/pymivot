@@ -100,12 +100,13 @@ class InstanceBuilder:
                     if open_count == 0:
                         parent_key = None
                 if "<INSTANCE" in line:
-                    if not "/>" in line:
+                    if "/>" not in line:
                         open_count += 1
                     if parent_key is None:
                         parent_key = self.get_dm_type(line)
                     if self.get_dm_type(line) in self.abstract_classes:
                         self.dmrole = self.get_dm_role(line)
+                        print("@@@@@@", self.dmrole)
                         self.dmtype = self.get_dm_type(line)
                         if self.dmrole == "mango:Property.associatedProperties":
                             self.dmroles.append("")
@@ -280,16 +281,14 @@ class InstanceBuilder:
         """
         Insert the dmroles in the concrete MIVOT snippet
         """
+        print(dmroles)
         with open(xml_file, "r", encoding="utf-8") as file:
             buffer = ""
-            first = True
             for line in file:
                 if 'dmrole=""' in line:
-                    if first:
-                        first = False
-                    elif not first:
-                        dmrole = dmroles.pop(0) if len(dmroles) > 0 else ""
-                        line = line.replace('dmrole=""', f'dmrole="{dmrole}"')
+                    print("@@@@@@", line)
+                    dmrole = dmroles.pop(0) if len(dmroles) > 0 else ""
+                    line = line.replace('dmrole=""', f'dmrole="{dmrole}"')
                 buffer += line
 
         with open(xml_file, "w", encoding="utf-8") as file:
@@ -414,9 +413,9 @@ class InstanceBuilder:
         if self.concrete_list is not None and len(self.concrete_list) > 0:
             for cc_dict in self.concrete_list:
                 if (
-                    self.dmrole == cc_dict["dmrole"]
-                    and self.dmtype == cc_dict["dmtype"]
-                    and self.dmtype == cc_dict["dmtype"]
+                        self.dmrole == cc_dict["dmrole"]
+                        and self.dmtype == cc_dict["dmtype"]
+                        and self.dmtype == cc_dict["dmtype"]
                 ):
                     self.concrete_list.pop(self.concrete_list.index(cc_dict))
                     return cc_dict["class"]
