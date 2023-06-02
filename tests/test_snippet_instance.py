@@ -17,24 +17,26 @@ REF_FILE_NAME = "meas.Position.test"
 
 
 class Test(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        if not os.path.exists(OUTPUT):
+            os.system("mkdir " + OUTPUT)
+
     @classmethod
     def setUp(cls):
-        if os.path.exists(OUTPUT + FILE_NAME + ".xml"):
-            os.system("rm " + OUTPUT + FILE_NAME + ".xml")
-            os.system("rm -rf " + os.getcwd() + "/tmp_vodml")
+        if os.path.exists(OUTPUT):
+            for file in os.listdir(OUTPUT):
+                if file != ".gitkeep":
+                    os.system("rm -rf " + OUTPUT + "/" + file)
 
     @classmethod
     def tearDown(cls):
         filecmp.clear_cache()
-        if os.path.exists(OUTPUT + FILE_NAME + ".xml"):
-            os.system("rm " + OUTPUT + FILE_NAME + ".xml")
-            os.system("rm -rf " + os.getcwd() + "/tmp_vodml")
-
-    @classmethod
-    def tearDownClass(cls):
-        for file in os.listdir(OUTPUT):
-            if file != ".gitkeep":
-                os.system("rm -rf " + OUTPUT + "/" + file)
+        if os.path.exists(OUTPUT):
+            for file in os.listdir(OUTPUT):
+                if file != ".gitkeep":
+                    os.system("rm -rf " + OUTPUT + "/" + file)
 
     def testFileExist(self):
         """
