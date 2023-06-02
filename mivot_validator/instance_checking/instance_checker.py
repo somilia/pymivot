@@ -8,6 +8,7 @@ import shutil
 import urllib.request
 
 from mivot_validator.utils.xml_utils import XmlUtils
+from mivot_validator.instance_checking.inheritance_checker import InheritanceChecker
 from mivot_validator.instance_checking.snippet_builder import Builder
 
 tmp_data_path = os.path.join(
@@ -241,7 +242,8 @@ class InstanceChecker:
         item_type = ""
         for item in collection_etree.xpath("./*"):
             mivot_item_type = item.get("dmtype")
-            if item_type != "" and item_type != mivot_item_type:
+            if item_type != "" and not InheritanceChecker.check_inheritance(
+                    InstanceChecker.inheritence_tree, mivot_item_type, item_type):
                 raise CheckFailedException(
                     f"Collection with dmrole={collection_role} has items with different dmtypes "
                 )
