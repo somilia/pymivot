@@ -209,7 +209,7 @@ class InstanceBuilder:
             state = False
         else:
             print(f"{BColors.WARNING}Please enter a valid choice{BColors.ENDC}")
-            self.ask_for_property(parent_key)
+            return self.ask_for_property(parent_key)
 
         return state
 
