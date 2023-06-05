@@ -63,20 +63,17 @@ class InstanceBuilder:
         self.dmtype = None
         self.concrete_list = concrete_list
         self.inheritance_graph = {
-            **InstanceChecker._build_inheritence_graph(
-                "../vodml/mango.vo-dml.xml"
-            ),
-            **InstanceChecker._build_inheritence_graph(
-                "../vodml/Phot-v1.1.vodml.xml"
-            ),
+            **InstanceChecker._build_inheritence_graph("../vodml/mango.vo-dml.xml"),
+            **InstanceChecker._build_inheritence_graph("../vodml/Phot-v1.1.vodml.xml"),
             **InstanceChecker._build_inheritence_graph(
                 "../vodml/Coords-v1.0.vo-dml.xml"
             ),
-            **InstanceChecker._build_inheritence_graph(
-                "../vodml/Meas-v1.vo-dml.xml"
-            ),
+            **InstanceChecker._build_inheritence_graph("../vodml/Meas-v1.vo-dml.xml"),
         }
         self.abstract_classes = list(self.inheritance_graph.keys())
+
+        if not "mango:Source" in self.build_file:
+            self.dmroles.append("")
 
     def build(self):
         """
@@ -90,7 +87,8 @@ class InstanceBuilder:
 
         parent_key = None
         open_count = 0
-        property_count = 0
+        collection_count = 0
+
         with open(self.build_file, "r", encoding="utf-8") as file:
             for line in file:
                 if "left blank" not in line:
@@ -106,9 +104,15 @@ class InstanceBuilder:
                         parent_key = self.get_dm_type(line)
                     if self.get_dm_type(line) in self.abstract_classes:
                         self.dmrole = self.get_dm_role(line)
+                        print("@@@@@@ DMROLE: " + self.dmrole)
                         self.dmtype = self.get_dm_type(line)
-                        if not self.dmrole == "mango:Property.associatedProperties":
+                        if self.dmrole == "mango:Property.associatedProperties":
+                            self.dmroles.append("")
+                            print("@@@@@@ ADDED EMPTY FOR " + self.dmtype)
+                        else:
                             self.dmroles.append(self.dmrole)
+                            print("@@@@@@ ADDED " + self.dmrole)
+
                         print(
                             f"{BColors.OKCYAN}{BColors.UNDERLINE}"
                             f"List of possible concrete classes :{BColors.ENDC}"
@@ -125,7 +129,10 @@ class InstanceBuilder:
                             f"{BColors.OKCYAN}DMROLE: {BColors.BOLD}"
                             f"{self.dmrole}{BColors.ENDC}"
                         )
-                        if property_count == 0:
+                        if (
+                            collection_count == 0
+                            and self.dmtype != "mango:ComputedProperty"
+                        ):
                             choice = self.populate_choices(
                                 self.inheritance_graph[self.get_dm_type(line)],
                                 parent_key,
@@ -137,17 +144,21 @@ class InstanceBuilder:
                                 )
                             if file is not None:
                                 if self.get_dm_type(line) == "mango:Property":
-                                    property_count += 1
+                                    collection_count += 1
                                 self.buffer = self.buffer.replace(line, "")
                                 self.build_file = file
+                                print("@@@@@@ LIST OF DMROLES: " + str(self.dmroles))
                                 self.build()
                                 self.build_file = self.xml_file
-                        if property_count > 0:
-                            property_dock = True
-                            while property_dock:
-                                property_dock = self.ask_for_property(parent_key)
-                                if property_dock:
-                                    property_count += 1
+                        if (
+                            collection_count > 0
+                            and self.dmtype != "mango:ComputedProperty"
+                        ):
+                            collection_dock = True
+                            while collection_dock:
+                                collection_dock = self.ask_for_collection(parent_key)
+                                if collection_dock:
+                                    collection_count += 1
                                     choice = self.populate_choices(
                                         self.inheritance_graph[self.get_dm_type(line)],
                                         parent_key,
@@ -161,12 +172,8 @@ class InstanceBuilder:
                                             self.build()
                                             self.build_file = self.xml_file
                                     else:
-                                        self.dmroles[
-                                            self.dmroles.index(
-                                                "mango:Property:associatedProperty"
-                                            )
-                                        ].pop()
-                            property_count -= 1
+                                        self.dmroles.pop()
+                            collection_count -= 1
 
     def output_result(self):
         """
@@ -191,7 +198,7 @@ class InstanceBuilder:
             f"{BColors.BOLD}{output_file}{BColors.ENDC}"
         )
 
-    def ask_for_property(self, parent_key):
+    def ask_for_collection(self, parent_key):
         """
         Ask the user if he wants to add another property in the collection
 
@@ -199,7 +206,7 @@ class InstanceBuilder:
         """
         state = None
         print(
-            f"{BColors.OKCYAN} Do you want to add another Property in this collection"
+            f"{BColors.OKCYAN} Do you want to add another Instance in this collection"
             f" for {parent_key}? (y/n){BColors.ENDC}"
         )
         choice = input()
@@ -209,7 +216,7 @@ class InstanceBuilder:
             state = False
         else:
             print(f"{BColors.WARNING}Please enter a valid choice{BColors.ENDC}")
-            return self.ask_for_property(parent_key)
+            return self.ask_for_collection(parent_key)
 
         return state
 
@@ -278,16 +285,14 @@ class InstanceBuilder:
         """
         Insert the dmroles in the concrete MIVOT snippet
         """
+        print(dmroles)
         with open(xml_file, "r", encoding="utf-8") as file:
             buffer = ""
-            first = True
             for line in file:
                 if 'dmrole=""' in line:
-                    if first:
-                        first = False
-                    elif not first:
-                        dmrole = dmroles.pop(0) if len(dmroles) > 0 else ""
-                        line = line.replace('dmrole=""', f'dmrole="{dmrole}"')
+                    dmrole = dmroles.pop(0) if len(dmroles) > 0 else ""
+                    line = line.replace('dmrole=""', f'dmrole="{dmrole}"')
+                    print("@@@@@@ ADDED: ", dmrole, " FOR:", self.get_dm_type(line))
                 buffer += line
 
         with open(xml_file, "w", encoding="utf-8") as file:
@@ -412,9 +417,9 @@ class InstanceBuilder:
         if self.concrete_list is not None and len(self.concrete_list) > 0:
             for cc_dict in self.concrete_list:
                 if (
-                        self.dmrole == cc_dict["dmrole"]
-                        and self.dmtype == cc_dict["dmtype"]
-                        and self.dmtype == cc_dict["dmtype"]
+                    self.dmrole == cc_dict["dmrole"]
+                    and self.dmtype == cc_dict["dmtype"]
+                    and self.dmtype == cc_dict["dmtype"]
                 ):
                     self.concrete_list.pop(self.concrete_list.index(cc_dict))
                     return cc_dict["class"]
