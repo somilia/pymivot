@@ -74,7 +74,6 @@ class InstanceBuilder:
 
         if "Source" not in self.build_file:
             self.dmroles.append("")
-            print("@@@@@@ ADDED EMPTY FOR mango:Source")
 
     def build(self):
         """
@@ -105,15 +104,11 @@ class InstanceBuilder:
                         parent_key = self.get_dm_type(line)
                     if self.get_dm_type(line) in self.abstract_classes:
                         self.dmrole = self.get_dm_role(line)
-                        print("@@@@@@ DMROLE: " + self.dmrole)
                         self.dmtype = self.get_dm_type(line)
-                        if self.dmrole == "mango:Property.associatedProperties":
-                            self.dmroles.append("")
-                            print("@@@@@@ ADDED EMPTY FOR " + self.dmtype)
-                        else:
+                        if self.dmrole != "mango:Property.associatedProperties":
                             self.dmroles.append(self.dmrole)
-                            print("@@@@@@ ADDED " + self.dmrole)
-
+                        else:
+                            self.dmroles.append("")
                         print(
                             f"{BColors.OKCYAN}{BColors.UNDERLINE}"
                             f"List of possible concrete classes :{BColors.ENDC}"
@@ -215,6 +210,7 @@ class InstanceBuilder:
             state = True
         elif choice == "n":
             state = False
+            self.dmroles.pop(self.dmroles.index(""))
         else:
             print(f"{BColors.WARNING}Please enter a valid choice{BColors.ENDC}")
             return self.ask_for_collection(parent_key)
