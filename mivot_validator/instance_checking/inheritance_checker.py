@@ -10,18 +10,23 @@ class InheritanceChecker:
     classdocs
     """
 
-    @staticmethod
-    def get_inheritance(tree, class_name):
+    def __init__(self, tree):
+        """
+        Constructor
+        """
+        self.tree = tree
+
+    def get_inheritance(self, class_name):
         """
         Get the inheritance of an inheritance tree for a given class
         """
-        for k, v in tree.items():
+        keys = []
+        for k, v in self.tree.items():
             if class_name in v:
-                return k
-        return []
+                keys.append(k)
+        return keys
 
-    @staticmethod
-    def check_inheritance(tree, first_class, second_class):
+    def check_inheritance(self, first_class, second_class):
         """
         Check if two classes are in inheritance relation
         """
@@ -29,10 +34,11 @@ class InheritanceChecker:
         if first_class == second_class:
             return True
 
-        inheritance_first = InheritanceChecker.get_inheritance(tree, first_class)
-        inheritance_second = InheritanceChecker.get_inheritance(tree, second_class)
+        inheritance_first = self.get_inheritance(first_class)
+        inheritance_second = self.get_inheritance(second_class)
 
-        if inheritance_second in inheritance_first or inheritance_first in inheritance_second:
-            return True
+        for el in inheritance_first:
+            if el in inheritance_second:
+                return True
 
         return False

@@ -13,6 +13,9 @@ from mivot_validator.utils.dict_utils import DictUtils
 from mivot_validator.instance_checking.instance_checker import (
     InstanceChecker,
 )
+from mivot_validator.instance_checking.inheritance_checker import (
+    InheritanceChecker,
+)
 
 mapping_sample = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 vodml_sample = os.path.join(
@@ -74,6 +77,33 @@ class TestInheritenceGraph(unittest.TestCase):
                 os.path.join(mapping_sample, "instcheck_inherit_coords.json")
             ),
         )
+
+    def testGetInheritence(self):
+        models = ["Meas-v1.vo-dml.xml", "Coords-v1.0.vo-dml.xml"]
+        instchecks = ["instcheck_inherit_meas.json", "instcheck_inherit_coords.json"]
+
+        for model, inst in zip(models, instchecks):
+            vodml_filepath = os.path.join(vodml_sample, model)
+            InstanceChecker._build_inheritence_graph(vodml_filepath)
+            check = InheritanceChecker(InstanceChecker.inheritence_tree)
+            graph = DictUtils.read_dict_from_file(os.path.join(mapping_sample, inst))
+            for k, v in graph.items():
+                for el in v:
+                    self.assertIn(k, check.get_inheritance(el))
+
+    def testCheckInheritence(self):
+        models = ["Meas-v1.vo-dml.xml", "Coords-v1.0.vo-dml.xml"]
+        instchecks = ["instcheck_inherit_meas.json", "instcheck_inherit_coords.json"]
+
+        for model, inst in zip(models, instchecks):
+            vodml_filepath = os.path.join(vodml_sample, model)
+            InstanceChecker._build_inheritence_graph(vodml_filepath)
+            check = InheritanceChecker(InstanceChecker.inheritence_tree)
+            graph = DictUtils.read_dict_from_file(os.path.join(mapping_sample, inst))
+            for k, v in graph.items():
+                for el in v:
+                    for el2 in v:
+                        self.assertTrue(check.check_inheritance(el, el2))
 
 
 if __name__ == "__main__":
