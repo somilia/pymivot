@@ -72,8 +72,9 @@ class InstanceBuilder:
         }
         self.abstract_classes = list(self.inheritance_graph.keys())
 
-        if not "mango:Source" in self.build_file:
+        if "Source" not in self.build_file:
             self.dmroles.append("")
+            print("@@@@@@ ADDED EMPTY FOR mango:Source")
 
     def build(self):
         """
@@ -130,8 +131,8 @@ class InstanceBuilder:
                             f"{self.dmrole}{BColors.ENDC}"
                         )
                         if (
-                            collection_count == 0
-                            and self.dmtype != "mango:ComputedProperty"
+                                collection_count == 0
+                                and self.dmtype != "mango:ComputedProperty"
                         ):
                             choice = self.populate_choices(
                                 self.inheritance_graph[self.get_dm_type(line)],
@@ -151,8 +152,8 @@ class InstanceBuilder:
                                 self.build()
                                 self.build_file = self.xml_file
                         if (
-                            collection_count > 0
-                            and self.dmtype != "mango:ComputedProperty"
+                                collection_count > 0
+                                and self.dmtype != "mango:ComputedProperty"
                         ):
                             collection_dock = True
                             while collection_dock:
@@ -417,9 +418,9 @@ class InstanceBuilder:
         if self.concrete_list is not None and len(self.concrete_list) > 0:
             for cc_dict in self.concrete_list:
                 if (
-                    self.dmrole == cc_dict["dmrole"]
-                    and self.dmtype == cc_dict["dmtype"]
-                    and self.dmtype == cc_dict["dmtype"]
+                        self.dmrole == cc_dict["dmrole"]
+                        and self.dmtype == cc_dict["dmtype"]
+                        and self.dmtype == cc_dict["dmtype"]
                 ):
                     self.concrete_list.pop(self.concrete_list.index(cc_dict))
                     return cc_dict["class"]
