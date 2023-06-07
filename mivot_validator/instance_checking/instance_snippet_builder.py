@@ -18,13 +18,13 @@ from lxml import etree
 from mivot_validator.instance_checking.snippet_builder import Builder
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.instance_checker import InstanceChecker
+from mivot_validator.utils.dict_utils import DictUtils
 
 
 class BColors:
     """
     Color codes for terminal output
     """
-
     GRAY = "\033[37m"
     OKBLUE = "\033[94m"
     OKCYAN = "\033[96m"
@@ -34,6 +34,28 @@ class BColors:
     ENDC = "\033[0m"
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
+
+
+def setup_graph(my_dict):
+    """
+    Setup the inheritance graph of the model.
+    Remove the duplicate classes in the graph
+    and delete the keys with empty values
+    """
+    values = set()
+    keys_to_remove = []
+
+    for value in my_dict.values():
+        values.update(value)
+
+    for key, value in my_dict.items():
+        if key in values:
+            keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        del my_dict[key]
+
+    return my_dict
 
 
 class InstanceBuilder:
@@ -59,11 +81,11 @@ class InstanceBuilder:
         self.buffer = ""
         self.build_file = self.xml_file
         self.dmrole = None
-        self.dmroles = []
+        self.dmroles = {}
         self.dmtype = None
         self.concrete_list = concrete_list
         self.inheritance_graph = {
-            **InstanceChecker._build_inheritence_graph("../vodml/mango.vo-dml.xml"),
+            **setup_graph(InstanceChecker._build_inheritence_graph("../vodml/mango.vo-dml.xml")),
             **InstanceChecker._build_inheritence_graph("../vodml/Phot-v1.1.vodml.xml"),
             **InstanceChecker._build_inheritence_graph(
                 "../vodml/Coords-v1.0.vo-dml.xml"
@@ -71,9 +93,7 @@ class InstanceBuilder:
             **InstanceChecker._build_inheritence_graph("../vodml/Meas-v1.vo-dml.xml"),
         }
         self.abstract_classes = list(self.inheritance_graph.keys())
-
-        if "Source" not in self.build_file:
-            self.dmroles.append("")
+        self.collections = []
 
     def build(self):
         """
@@ -87,12 +107,20 @@ class InstanceBuilder:
 
         parent_key = None
         open_count = 0
-        collection_count = 0
+        actual_collection = None
+        lines = []
 
         with open(self.build_file, "r", encoding="utf-8") as file:
             for line in file:
                 if "left blank" not in line:
                     self.buffer += line
+                if "<COLLECTION" in line:
+                    self.collections.append(self.get_dm_role(line))
+                    actual_collection = self.collections[-1] if len(self.collections) > 0 else None
+                if "</COLLECTION" in line:
+                    self.collections.pop()
+                    actual_collection = self.collections[-1] if len(self.collections) > 0 else None
+
                 if "</INSTANCE" in line:
                     open_count -= 1
                     if open_count == 0:
@@ -103,73 +131,86 @@ class InstanceBuilder:
                     if parent_key is None:
                         parent_key = self.get_dm_type(line)
                     if self.get_dm_type(line) in self.abstract_classes:
-                        self.dmrole = self.get_dm_role(line)
-                        self.dmtype = self.get_dm_type(line)
-                        if self.dmrole != "mango:Property.associatedProperties":
-                            self.dmroles.append(self.dmrole)
+                        previous_line = lines[-1] if len(lines) > 0 else ""
+                        if "<COLLECTION" in previous_line:
+                            if actual_collection == self.collections[-1]:
+                                instance_count = 0
+                                while self.ask_for_collection(self.collections[-1], instance_count, parent_key):
+                                    instance_count += 1
+                                    print(
+                                        f"{BColors.OKCYAN}{BColors.UNDERLINE}"
+                                        f"List of possible concrete classes :{BColors.ENDC}"
+                                    )
+                                    print(
+                                        f"{BColors.OKCYAN}DMTYPE: {BColors.BOLD}"
+                                        f"{self.get_dm_type(line)}{BColors.ENDC}"
+                                    )
+                                    print(
+                                        f"{BColors.OKCYAN}CONTEXT: {BColors.BOLD}"
+                                        f"{parent_key}{BColors.ENDC}"
+                                    )
+                                    print(
+                                        f"{BColors.OKCYAN}DMROLE: {BColors.BOLD}"
+                                        f"{self.get_dm_role(line)}{BColors.ENDC}"
+                                    )
+
+                                    choice = self.populate_choices(
+                                        self.inheritance_graph[self.get_dm_type(line)],
+                                        parent_key,
+                                    )
+
+                                    file = None
+                                    if choice != "None":
+                                        self.dmroles[choice] = ""
+                                        file = self.get_instance(
+                                            choice.split(":")[0], choice.split(":")[1]
+                                        )
+                                    if file is not None:
+                                        self.buffer = self.buffer.replace(line, "")
+                                        self.build_file = file
+                                        self.build()
+                                        self.build_file = self.xml_file
                         else:
-                            self.dmroles.append("")
-                        print(
-                            f"{BColors.OKCYAN}{BColors.UNDERLINE}"
-                            f"List of possible concrete classes :{BColors.ENDC}"
-                        )
-                        print(
-                            f"{BColors.OKCYAN}DMTYPE: {BColors.BOLD}"
-                            f"{self.get_dm_type(line)}{BColors.ENDC}"
-                        )
-                        print(
-                            f"{BColors.OKCYAN}CONTEXT: {BColors.BOLD}"
-                            f"{parent_key}{BColors.ENDC}"
-                        )
-                        print(
-                            f"{BColors.OKCYAN}DMROLE: {BColors.BOLD}"
-                            f"{self.dmrole}{BColors.ENDC}"
-                        )
-                        if (
-                                collection_count == 0
-                                and self.dmtype != "mango:ComputedProperty"
-                        ):
+                            self.dmrole = self.get_dm_role(line)
+                            self.dmtype = self.get_dm_type(line)
+
+                            print(
+                                f"{BColors.OKCYAN}{BColors.UNDERLINE}"
+                                f"List of possible concrete classes :{BColors.ENDC}"
+                            )
+                            print(
+                                f"{BColors.OKCYAN}DMTYPE: {BColors.BOLD}"
+                                f"{self.get_dm_type(line)}{BColors.ENDC}"
+                            )
+                            print(
+                                f"{BColors.OKCYAN}CONTEXT: {BColors.BOLD}"
+                                f"{parent_key}{BColors.ENDC}"
+                            )
+                            print(
+                                f"{BColors.OKCYAN}DMROLE: {BColors.BOLD}"
+                                f"{self.dmrole}{BColors.ENDC}"
+                            )
+
                             choice = self.populate_choices(
                                 self.inheritance_graph[self.get_dm_type(line)],
                                 parent_key,
                             )
                             file = None
                             if choice != "None":
+                                if self.dmrole is not None:
+                                    self.dmroles[choice] = self.dmrole
+                                else:
+                                    self.dmroles[choice] = ""
                                 file = self.get_instance(
                                     choice.split(":")[0], choice.split(":")[1]
                                 )
                             if file is not None:
-                                if self.get_dm_type(line) == "mango:Property":
-                                    collection_count += 1
                                 self.buffer = self.buffer.replace(line, "")
                                 self.build_file = file
-                                print("@@@@@@ LIST OF DMROLES: " + str(self.dmroles))
                                 self.build()
                                 self.build_file = self.xml_file
-                        if (
-                                collection_count > 0
-                                and self.dmtype != "mango:ComputedProperty"
-                        ):
-                            collection_dock = True
-                            while collection_dock:
-                                collection_dock = self.ask_for_collection(parent_key)
-                                if collection_dock:
-                                    collection_count += 1
-                                    choice = self.populate_choices(
-                                        self.inheritance_graph[self.get_dm_type(line)],
-                                        parent_key,
-                                    )
-                                    if choice != "None":
-                                        file = self.get_instance(
-                                            choice.split(":")[0], choice.split(":")[1]
-                                        )
-                                        if file is not None:
-                                            self.build_file = file
-                                            self.build()
-                                            self.build_file = self.xml_file
-                                    else:
-                                        self.dmroles.pop()
-                            collection_count -= 1
+                if "left blank" not in line:
+                    lines.append(line)
 
     def output_result(self):
         """
@@ -194,26 +235,27 @@ class InstanceBuilder:
             f"{BColors.BOLD}{output_file}{BColors.ENDC}"
         )
 
-    def ask_for_collection(self, parent_key):
+    def ask_for_collection(self, actual_collection, instance_count, parent_key):
         """
         Ask the user if he wants to add another property in the collection
 
-        :param parent_key: the context of the property
+        :param actual_collection: the context of the property
+        :param instance_count: the number of instance in the collection
+        :param parent_key: the parent key of the property
         """
-        state = None
         print(
-            f"{BColors.OKCYAN} Do you want to add another Instance in this collection"
-            f" for {parent_key}? (y/n){BColors.ENDC}"
+            f"{BColors.OKCYAN} Do you want to add an Instance in this collection"
+            f"  ( {actual_collection} ) for {parent_key}? \n ACTUAL NUMBER OF INSTANCE : {instance_count} \n "
+            f"(y/n){BColors.ENDC}"
         )
         choice = input()
         if choice == "y":
             state = True
         elif choice == "n":
             state = False
-            self.dmroles.pop(self.dmroles.index(""))
         else:
             print(f"{BColors.WARNING}Please enter a valid choice{BColors.ENDC}")
-            return self.ask_for_collection(parent_key)
+            return self.ask_for_collection(actual_collection, instance_count, parent_key)
 
         return state
 
@@ -242,38 +284,29 @@ class InstanceBuilder:
     @staticmethod
     def clean(xml_file):
         """
-        Remove all collections with no concrete instances
+        Remove all empty collection in the xml file
         """
+        to_exclude = []
+        with open(xml_file, "r", encoding="utf-8") as file:
+            previous_line = ""
+            counter = 0
+            for line in file:
+                if "</COLLECTION>" in line and "<COLLECTION" in previous_line \
+                        or "<INSTANCE" in previous_line and "/>" in previous_line:
+                    if "<INSTANCE" in previous_line and "/>" in previous_line:
+                        to_exclude.append(counter - 2)
+                    to_exclude.append(counter - 1)
+                    to_exclude.append(counter)
+                previous_line = line
+                counter += 1
+
         buffer = ""
-        counter = []
-        to_remove = False
-        temp = []
-
         with open(xml_file, "r", encoding="utf-8") as file:
-            i = 0
+            counter = 0
             for line in file:
-                if "<COLLECTION" in line:
-                    temp.append(i)
-                elif 'dmtype="mango:Property"' in line:
-                    to_remove = True
-                    temp.append(i)
-                elif "</COLLECTION" in line:
-                    if to_remove:
-                        to_remove = False
-                        temp.append(i)
-                        counter.extend(temp)
-                    else:
-                        temp.clear()
-                else:
-                    temp.clear()
-                i += 1
-
-        with open(xml_file, "r", encoding="utf-8") as file:
-            i = 0
-            for line in file:
-                if i not in counter:
+                if counter not in to_exclude:
                     buffer += line
-                i += 1
+                counter += 1
 
         with open(xml_file, "w", encoding="utf-8") as file:
             file.write(buffer)
@@ -282,14 +315,17 @@ class InstanceBuilder:
         """
         Insert the dmroles in the concrete MIVOT snippet
         """
-        print(dmroles)
         with open(xml_file, "r", encoding="utf-8") as file:
             buffer = ""
             for line in file:
                 if 'dmrole=""' in line:
-                    dmrole = dmroles.pop(0) if len(dmroles) > 0 else ""
-                    line = line.replace('dmrole=""', f'dmrole="{dmrole}"')
-                    print("@@@@@@ ADDED: ", dmrole, " FOR:", self.get_dm_type(line))
+                    if self.get_dm_type(line) in list(dmroles.keys()):
+                        if len(dmroles) > 0:
+                            dmrole = list(dmroles.values())[0]
+                            dmroles.pop(list(dmroles.keys())[0])
+                        else:
+                            dmrole = ""
+                        line = line.replace('dmrole=""', f'dmrole="{dmrole}"')
                 buffer += line
 
         with open(xml_file, "w", encoding="utf-8") as file:
