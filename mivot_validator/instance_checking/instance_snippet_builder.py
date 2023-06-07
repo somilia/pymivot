@@ -57,6 +57,38 @@ def setup_graph(my_dict):
 
     return my_dict
 
+def add_value(dict_obj, key, value):
+    """
+    Adds a key-value pair to the dictionary.
+    If the key already exists in the dictionary,
+    it will associate multiple values with that
+    key instead of overwritting its value
+    """
+    if key not in dict_obj:
+        dict_obj[key] = value
+    elif isinstance(dict_obj[key], list):
+        dict_obj[key].append(value)
+    else:
+        dict_obj[key] = [dict_obj[key], value]
+
+def remove_value(dict_obj, key, value):
+    """
+    Removes a value from a key that has multiple values associated with it.
+    If the key only has one value associated with it, it will remove the key
+    from the dictionary
+    """
+    if key not in dict_obj:
+        return
+    elif isinstance(dict_obj[key], list):
+        dict_obj[key].remove(value)
+
+        if len(dict_obj[key]) == 1:
+            dict_obj[key] = dict_obj[key][0]
+
+        if len(dict_obj[key]) == 0:
+            del dict_obj[key]
+    else:
+        del dict_obj[key]
 
 class InstanceBuilder:
     """
@@ -161,7 +193,7 @@ class InstanceBuilder:
 
                                     file = None
                                     if choice != "None":
-                                        self.dmroles[choice] = ""
+                                        add_value(self.dmroles, choice, "")
                                         file = self.get_instance(
                                             choice.split(":")[0], choice.split(":")[1]
                                         )
@@ -198,9 +230,9 @@ class InstanceBuilder:
                             file = None
                             if choice != "None":
                                 if self.dmrole is not None:
-                                    self.dmroles[choice] = self.dmrole
+                                    add_value(self.dmroles, choice, self.dmrole)
                                 else:
-                                    self.dmroles[choice] = ""
+                                    add_value(self.dmroles, choice, "")
                                 file = self.get_instance(
                                     choice.split(":")[0], choice.split(":")[1]
                                 )
@@ -321,8 +353,12 @@ class InstanceBuilder:
                 if 'dmrole=""' in line:
                     if self.get_dm_type(line) in list(dmroles.keys()):
                         if len(dmroles) > 0:
-                            dmrole = list(dmroles.values())[0]
-                            dmroles.pop(list(dmroles.keys())[0])
+                            if isinstance(list(dmroles.values())[0], list):
+                                dmrole = list(dmroles.values())[0][0]
+                                remove_value(dmroles, list(dmroles.keys())[0], list(dmroles.values())[0][0])
+                            else:
+                                dmrole = list(dmroles.values())[0]
+                                remove_value(dmroles, list(dmroles.keys())[0], list(dmroles.values())[0])
                         else:
                             dmrole = ""
                         line = line.replace('dmrole=""', f'dmrole="{dmrole}"')
