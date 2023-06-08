@@ -18,7 +18,6 @@ from lxml import etree
 from mivot_validator.instance_checking.snippet_builder import Builder
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.instance_checker import InstanceChecker
-from mivot_validator.utils.dict_utils import DictUtils
 
 
 class BColors:
@@ -57,6 +56,7 @@ def setup_graph(my_dict):
 
     return my_dict
 
+
 def add_value(dict_obj, key, value):
     """
     Adds a key-value pair to the dictionary.
@@ -70,6 +70,7 @@ def add_value(dict_obj, key, value):
         dict_obj[key].append(value)
     else:
         dict_obj[key] = [dict_obj[key], value]
+
 
 def remove_value(dict_obj, key, value):
     """
@@ -89,6 +90,7 @@ def remove_value(dict_obj, key, value):
             del dict_obj[key]
     else:
         del dict_obj[key]
+
 
 class InstanceBuilder:
     """
@@ -165,7 +167,8 @@ class InstanceBuilder:
                     if self.get_dm_type(line) in self.abstract_classes:
                         previous_line = lines[-1] if len(lines) > 0 else ""
                         if "<COLLECTION" in previous_line:
-                            if actual_collection == self.collections[-1]:
+                            if actual_collection != "mango:Property.associatedProperties" and actual_collection == \
+                                    self.collections[-1]:
                                 instance_count = 0
                                 while self.ask_for_collection(self.collections[-1], instance_count, parent_key):
                                     instance_count += 1
@@ -202,6 +205,11 @@ class InstanceBuilder:
                                         self.build_file = file
                                         self.build()
                                         self.build_file = self.xml_file
+                            elif actual_collection == "mango:Property.associatedProperties":
+                                self.buffer = self.buffer.replace(line,
+                                                                  '<!-- PUT HERE REFERENCES TO OTHER PROPERTY YOU '
+                                                                  'WANT TO '
+                                                                  'ASSOCIATE OR REMOVE THIS COLLECTION -->\n')
                         else:
                             self.dmrole = self.get_dm_role(line)
                             self.dmtype = self.get_dm_type(line)
@@ -248,7 +256,7 @@ class InstanceBuilder:
         """
         Write the concrete MIVOT snippet in the output directory
         """
-
+        print(self.buffer)
         if not self.output_name.endswith(".xml"):
             self.output_name += ".xml"
         output_file = os.path.join(self.output_dir, os.path.basename(self.output_name))
@@ -323,12 +331,14 @@ class InstanceBuilder:
             previous_line = ""
             counter = 0
             for line in file:
-                if "</COLLECTION>" in line and "<COLLECTION" in previous_line \
-                        or "<INSTANCE" in previous_line and "/>" in previous_line:
-                    if "<INSTANCE" in previous_line and "/>" in previous_line:
-                        to_exclude.append(counter - 2)
-                    to_exclude.append(counter - 1)
-                    to_exclude.append(counter)
+                if InstanceBuilder.get_dm_role(previous_line) != "mango:Property.associatedProperties":
+                    if "</COLLECTION>" in line and "<COLLECTION" in previous_line \
+                            or "<INSTANCE" in previous_line and "/>" in previous_line:
+                        if "<INSTANCE" in previous_line and "/>" in previous_line:
+                            to_exclude.append(counter - 2)
+                        to_exclude.append(counter - 1)
+                        to_exclude.append(counter)
+
                 previous_line = line
                 counter += 1
 
