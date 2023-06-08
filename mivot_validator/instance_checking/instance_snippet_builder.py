@@ -18,6 +18,7 @@ from lxml import etree
 from mivot_validator.instance_checking.snippet_builder import Builder
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.instance_checker import InstanceChecker
+from mivot_validator.utils.dict_utils import DictUtils
 
 
 class BColors:
@@ -145,7 +146,7 @@ class InstanceBuilder:
         open_count = 0
         actual_collection = None
         lines = []
-
+        print(DictUtils.print_pretty_json(self.concrete_list))
         with open(self.build_file, "r", encoding="utf-8") as file:
             for line in file:
                 if "left blank" not in line:
@@ -172,13 +173,10 @@ class InstanceBuilder:
                             if actual_collection != "mango:Property.associatedProperties" and actual_collection == \
                                     self.collections[-1]:
                                 instance_count = 0
+                                self.dmrole = self.get_dm_role(line)
+                                self.dmtype = self.get_dm_type(line)
                                 while self.ask_for_collection(self.collections[-1], instance_count, parent_key):
                                     instance_count += 1
-
-                                    self.dmrole = self.get_dm_role(line)
-                                    self.dmtype = self.get_dm_type(line)
-
-
                                     print(
                                         f"{BColors.OKCYAN}{BColors.UNDERLINE}"
                                         f"List of possible concrete classes :{BColors.ENDC}"
@@ -295,21 +293,34 @@ class InstanceBuilder:
         :param instance_count: the number of instance in the collection
         :param parent_key: the parent key of the property
         """
-        print(
-            f"{BColors.OKCYAN} Do you want to add an Instance in this collection"
-            f"  ( {actual_collection} ) for {parent_key}? \n ACTUAL NUMBER OF INSTANCE : {instance_count} \n "
-            f"(y/n){BColors.ENDC}"
-        )
-        choice = input()
-        if choice == "y":
-            state = True
-        elif choice == "n":
-            state = False
-        else:
-            print(f"{BColors.WARNING}Please enter a valid choice{BColors.ENDC}")
-            return self.ask_for_collection(actual_collection, instance_count, parent_key)
+        if self.concrete_list is None:
+            print(
+                f"{BColors.OKCYAN} Do you want to add an Instance in this collection"
+                f"  ( {actual_collection} ) for {parent_key}? \n ACTUAL NUMBER OF INSTANCE : {instance_count} \n "
+                f"(y/n){BColors.ENDC}"
+            )
+            choice = input()
+            if choice == "y":
+                state = True
+            elif choice == "n":
+                state = False
+            else:
+                print(f"{BColors.WARNING}Please enter a valid choice{BColors.ENDC}")
+                return self.ask_for_collection(actual_collection, instance_count, parent_key)
 
-        return state
+            return state
+        else:
+            print("@@@@@ j'arrive là")
+            for cc_dict in self.concrete_list:
+                print(f'@@@@@@ DMROLE: {cc_dict["dmrole"]} : {self.dmrole}')
+                print(f'@@@@@@ DMTYPE: {cc_dict["dmtype"]} : {self.dmtype}')
+                if (
+                        self.dmrole == cc_dict["dmrole"]
+                        and self.dmtype == cc_dict["dmtype"]
+                ):
+                    return True
+                else:
+                    return False
 
     @staticmethod
     def remove_instance(xml_file, dmtype):
@@ -529,17 +540,19 @@ class InstanceBuilder:
                 ):
                     self.concrete_list.pop(self.concrete_list.index(cc_dict))
                     return cc_dict["class"]
-        else:
-            if min_occurs == 0:
-                clean_elements.append("None")
-            print(f"{BColors.OKBLUE}Please choose from the list below : {BColors.ENDC}")
+                elif min_occurs == 0:
+                    return "None"
 
-            for i, clean_element in enumerate(clean_elements):
-                print(f"{BColors.GRAY}{str(i)} : {clean_element}{BColors.ENDC}")
+        if min_occurs == 0:
+            clean_elements.append("None")
+        print(f"{BColors.OKBLUE}Please choose from the list below : {BColors.ENDC}")
 
-            choice = input("Your choice : ")
+        for i, clean_element in enumerate(clean_elements):
+            print(f"{BColors.GRAY}{str(i)} : {clean_element}{BColors.ENDC}")
 
-            if choice.isdigit() and int(choice) < len(clean_elements):
-                return clean_elements[int(choice)]
+        choice = input("Your choice : ")
+
+        if choice.isdigit() and int(choice) < len(clean_elements):
+            return clean_elements[int(choice)]
         print(f"{BColors.WARNING}Wrong choice, please try again.{BColors.ENDC}")
         return self.populate_choices(elements, parent_key)
