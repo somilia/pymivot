@@ -102,18 +102,19 @@ class InstanceBuilder:
         """
         :xml_file: path to the generic MIVOT
         :output_dir: path to the output directory
-        :model_xml: path to the model xml file
         :abstract_classes: list of abstract classes
         :buffer: temporary content of the output file
         :build_file: actual path of the file being built (recursively)
         :dmrole: dmrole of the current instance
         :dmroles: list of dmroles in the snippet
+
         """
         self.xml_file = xml_file
         self.output_dir = output_dir
         self.output_name = output_name
         self.buffer = ""
         self.build_file = self.xml_file
+        self.actual_model = None
         self.dmrole = None
         self.dmroles = {}
         self.dmtype = None
@@ -133,6 +134,7 @@ class InstanceBuilder:
         """
         Build the concrete MIVOT snippet
         """
+        self.mapping_block = XmlUtils.xmltree_from_file(self.build_file)
         if not os.path.exists("../tmp_snippets/temp"):
             os.makedirs("../tmp_snippets/temp")
 
@@ -172,6 +174,11 @@ class InstanceBuilder:
                                 instance_count = 0
                                 while self.ask_for_collection(self.collections[-1], instance_count, parent_key):
                                     instance_count += 1
+
+                                    self.dmrole = self.get_dm_role(line)
+                                    self.dmtype = self.get_dm_type(line)
+
+
                                     print(
                                         f"{BColors.OKCYAN}{BColors.UNDERLINE}"
                                         f"List of possible concrete classes :{BColors.ENDC}"
@@ -188,6 +195,8 @@ class InstanceBuilder:
                                         f"{BColors.OKCYAN}DMROLE: {BColors.BOLD}"
                                         f"{self.get_dm_role(line)}{BColors.ENDC}"
                                     )
+
+                                    self.actual_model = self.get_model_xml_from_name(self.get_dm_type(line).split(":")[0])
 
                                     choice = self.populate_choices(
                                         self.inheritance_graph[self.get_dm_type(line)],
@@ -231,6 +240,8 @@ class InstanceBuilder:
                                 f"{self.dmrole}{BColors.ENDC}"
                             )
 
+                            self.actual_model = self.get_model_xml_from_name(self.get_dm_type(line).split(":")[0])
+
                             choice = self.populate_choices(
                                 self.inheritance_graph[self.get_dm_type(line)],
                                 parent_key,
@@ -244,6 +255,8 @@ class InstanceBuilder:
                                 file = self.get_instance(
                                     choice.split(":")[0], choice.split(":")[1]
                                 )
+                            else:
+                                self.buffer = self.buffer.replace(line,"")
                             if file is not None:
                                 self.buffer = self.buffer.replace(line, "")
                                 self.build_file = file
@@ -256,7 +269,6 @@ class InstanceBuilder:
         """
         Write the concrete MIVOT snippet in the output directory
         """
-        print(self.buffer)
         if not self.output_name.endswith(".xml"):
             self.output_name += ".xml"
         output_file = os.path.join(self.output_dir, os.path.basename(self.output_name))
@@ -338,7 +350,6 @@ class InstanceBuilder:
                             to_exclude.append(counter - 2)
                         to_exclude.append(counter - 1)
                         to_exclude.append(counter)
-
                 previous_line = line
                 counter += 1
 
@@ -488,6 +499,23 @@ class InstanceBuilder:
         """
         Make an input with choices from the list
         """
+
+        min_occurs = 1
+
+        if len(self.dmrole) > 0:
+            print(parent_key.split(":")[0])
+            to_check = self.dmrole.split(":")[1]
+            xml_tree = XmlUtils.xmltree_from_file(self.get_model_xml_from_name(parent_key.split(":")[0])).xpath(".//objectType/attribute")
+        else:
+            to_check = self.dmtype.split(":")[1]
+            xml_tree = XmlUtils.xmltree_from_file(self.get_model_xml_from_name(self.dmtype.split(":")[0])).xpath(".//objectType")
+
+        for ele in xml_tree:
+            for tags in ele.getchildren():
+                if tags.tag == "vodml-id" and tags.text == to_check:
+                    ext = ele.xpath(".//multiplicity/minOccurs")[0]
+                    min_occurs = int(ext.text) if ext.text is not None else 1
+
         clean_elements = []
         for element in elements:
             if element not in clean_elements:
@@ -498,22 +526,12 @@ class InstanceBuilder:
                 if (
                         self.dmrole == cc_dict["dmrole"]
                         and self.dmtype == cc_dict["dmtype"]
-                        and self.dmtype == cc_dict["dmtype"]
                 ):
                     self.concrete_list.pop(self.concrete_list.index(cc_dict))
                     return cc_dict["class"]
         else:
-            if parent_key in [
-                "mango:Status",
-                "mango:Label",
-                "mango:Shape",
-                "mango:ComputedProperty",
-                "mango:PhysicalProperty",
-                "mango:BitField",
-                "mango:Color",
-            ]:
+            if min_occurs == 0:
                 clean_elements.append("None")
-
             print(f"{BColors.OKBLUE}Please choose from the list below : {BColors.ENDC}")
 
             for i, clean_element in enumerate(clean_elements):
