@@ -18,6 +18,7 @@ from lxml import etree
 from mivot_validator.instance_checking.snippet_builder import Builder
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.instance_checker import InstanceChecker
+from mivot_validator.utils.dict_utils import DictUtils
 
 
 class BColors:
@@ -309,8 +310,6 @@ class InstanceBuilder:
             return state
         else:
             for cc_dict in self.concrete_list:
-                print(f'@@@@@@ DMROLE: {cc_dict["dmrole"]} : {self.dmrole}')
-                print(f'@@@@@@ DMTYPE: {cc_dict["dmtype"]} : {self.dmtype}')
                 if (
                         self.dmrole == cc_dict["dmrole"]
                         and self.dmtype == cc_dict["dmtype"]
@@ -529,29 +528,40 @@ class InstanceBuilder:
                 clean_elements.append(element)
 
         if self.concrete_list is not None and len(self.concrete_list) > 0:
-            for cc_dict in self.concrete_list:
-                if (
-                        self.dmrole == cc_dict["dmrole"]
-                        and self.dmtype == cc_dict["dmtype"]
-                        and parent_key == cc_dict["context"]
-                ):
-                    if cc_dict["class"] in clean_elements:
-                        return cc_dict["class"]
-                    else:
-                        print(f'{BColors.WARNING}{cc_dict["class"]} is an invalid proposition for {cc_dict["dmtype"]} '
-                              f'(for {cc_dict["dmrole"]} in parent {cc_dict["context"]}).\n{BColors.ENDC}')
-                elif min_occurs == 0:
+            cc_dict = self.concrete_list[0] if isinstance(self.concrete_list, list) else self.concrete_list
+            print(f'{BColors.BOLD}{BColors.OKBLUE}INFORMATIONS GIVEN: {BColors.ENDC}')
+            print(f'{BColors.OKBLUE}dmrole: {cc_dict["dmrole"]}{BColors.ENDC}')
+            print(f'{BColors.OKBLUE}dmtype: {cc_dict["dmtype"]}{BColors.ENDC}')
+            print(f'{BColors.OKBLUE}context: {cc_dict["context"]}{BColors.ENDC}')
+            print(f'{BColors.OKBLUE}class: {cc_dict["class"]}{BColors.ENDC}')
+            if (
+                    self.dmrole == cc_dict["dmrole"]
+                    and self.dmtype == cc_dict["dmtype"]
+                    and parent_key == cc_dict["context"]
+            ):
+                print("IN IF 1")
+                if cc_dict["class"] in clean_elements:
+                    print("Found concrete class: " + cc_dict["class"])
+                    self.concrete_list.pop(0)
+                    return cc_dict["class"]
+                else:
+                    print("IN ELSE")
+                    print(f'{BColors.WARNING}{cc_dict["class"]} is an invalid proposition for {self.dmtype} '
+                          f'(for {self.dmrole}).\n{BColors.ENDC}')
+            else:
+                if min_occurs == 0:
+                    print(f'{BColors.WARNING}{self.dmrole} is optional, skipping... {BColors.ENDC}')
                     return "None"
-                if self.dmrole != cc_dict["dmrole"]:
-                    print(f'{BColors.WARNING}{cc_dict["dmrole"]} is an invalid dmrole for class {cc_dict["dmtype"]}'
-                          f' in parent class {cc_dict["context"]}.\n{BColors.ENDC}')
-                if self.dmtype != cc_dict["dmtype"]:
-                    print(f'{BColors.WARNING}{cc_dict["dmtype"]} is an invalid dmtype for dmrole {cc_dict["dmrole"]}'
-                          f' in parent class {cc_dict["context"]}.\n{BColors.ENDC}')
-                if parent_key != cc_dict["context"]:
-                    print(f'{BColors.WARNING}{cc_dict["context"]} is an invalid parent class for dmrole {cc_dict["dmrole"]}'
-                          f' and dmtype {cc_dict["dmtype"]}.\n{BColors.ENDC}')
-                self.concrete_list.pop(self.concrete_list.index(cc_dict))
+            if self.dmrole != cc_dict["dmrole"]:
+                print(f'{BColors.WARNING}{cc_dict["dmrole"]} is an invalid dmrole for class {self.dmtype}'
+                      f' in parent class {parent_key}. Actual dmrole: {self.dmrole}\n{BColors.ENDC}')
+            if self.dmtype != cc_dict["dmtype"]:
+                print(f'{BColors.WARNING}{cc_dict["dmtype"]} is an invalid dmtype for dmrole {self.dmrole}'
+                      f' in parent class {parent_key}. Actual dmtype: {self.dmtype}\n{BColors.ENDC}')
+            if parent_key != cc_dict["context"]:
+                print(f'{BColors.WARNING}{cc_dict["context"]} is an invalid parent class for dmrole {self.dmrole}'
+                      f' and dmtype {self.dmtype}. Actual parent class: {parent_key}\n{BColors.ENDC}')
+            self.concrete_list.pop(0)
 
         if min_occurs == 0:
             clean_elements.append("None")
