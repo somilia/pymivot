@@ -52,12 +52,16 @@ def main():
         nargs="?",
         action="append",
         help="[OPTIONAL] list of classes to be included in the snippet, "
-        "it will prevent the script to ask for the user input if given."
+        "it will prevent the script to ask for the user input if given.\n"
         "Syntax is : dmrole=model:Type.role,"
         "context=model:ParentType,dmtype=model:Type,class=model:Type",
     )
 
     args = vars(parser.parse_args())
+
+    if args["output_dir"] is None or args["output_name"] is None or args["class_name"] is None:
+        parser.print_help()
+        sys.exit(1)
 
     if not os.path.isdir("../tmp_snippets"):
         os.makedirs("../tmp_snippets")
