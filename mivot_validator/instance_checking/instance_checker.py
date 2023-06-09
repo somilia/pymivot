@@ -242,8 +242,10 @@ class InstanceChecker:
         item_type = ""
         for item in collection_etree.xpath("./*"):
             mivot_item_type = item.get("dmtype")
-            if item_type != "" and not InheritanceChecker.check_inheritance(
-                    InstanceChecker.inheritence_tree, mivot_item_type, item_type):
+            checker = InheritanceChecker(InstanceChecker.inheritence_tree)
+            if item_type != "" and not checker.check_inheritance(
+                mivot_item_type, item_type
+            ):
                 raise CheckFailedException(
                     f"Collection with dmrole={collection_role} has items with different dmtypes "
                 )
