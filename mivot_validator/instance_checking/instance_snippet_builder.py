@@ -536,12 +536,22 @@ class InstanceBuilder:
                         and parent_key == cc_dict["context"]
                 ):
                     if cc_dict["class"] in clean_elements:
-                        self.concrete_list.pop(self.concrete_list.index(cc_dict))
                         return cc_dict["class"]
+                    else:
+                        print(f'{BColors.WARNING}{cc_dict["class"]} is an invalid proposition for {cc_dict["dmtype"]} '
+                              f'(for {cc_dict["dmrole"]} in parent {cc_dict["context"]}).\n{BColors.ENDC}')
                 elif min_occurs == 0:
                     return "None"
-                print(f'{BColors.WARNING}{cc_dict["class"]} is an invalid proposition for {cc_dict["dmtype"]} '
-                      f'(for {cc_dict["dmrole"]} in parent {cc_dict["context"]}).\n{BColors.ENDC}')
+                if self.dmrole != cc_dict["dmrole"]:
+                    print(f'{BColors.WARNING}{cc_dict["dmrole"]} is an invalid dmrole for class {cc_dict["dmtype"]}'
+                          f' in parent class {cc_dict["context"]}.\n{BColors.ENDC}')
+                if self.dmtype != cc_dict["dmtype"]:
+                    print(f'{BColors.WARNING}{cc_dict["dmtype"]} is an invalid dmtype for dmrole {cc_dict["dmrole"]}'
+                          f' in parent class {cc_dict["context"]}.\n{BColors.ENDC}')
+                if parent_key != cc_dict["context"]:
+                    print(f'{BColors.WARNING}{cc_dict["context"]} is an invalid parent class for dmrole {cc_dict["dmrole"]}'
+                          f' and dmtype {cc_dict["dmtype"]}.\n{BColors.ENDC}')
+                self.concrete_list.pop(self.concrete_list.index(cc_dict))
 
         if min_occurs == 0:
             clean_elements.append("None")
