@@ -18,7 +18,6 @@ from lxml import etree
 from mivot_validator.instance_checking.snippet_builder import Builder
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.instance_checker import InstanceChecker
-from mivot_validator.utils.dict_utils import DictUtils
 
 
 class BColors:
@@ -146,7 +145,6 @@ class InstanceBuilder:
         open_count = 0
         actual_collection = None
         lines = []
-        print(DictUtils.print_pretty_json(self.concrete_list))
         with open(self.build_file, "r", encoding="utf-8") as file:
             for line in file:
                 if "left blank" not in line:
@@ -310,7 +308,6 @@ class InstanceBuilder:
 
             return state
         else:
-            print("@@@@@ j'arrive là")
             for cc_dict in self.concrete_list:
                 print(f'@@@@@@ DMROLE: {cc_dict["dmrole"]} : {self.dmrole}')
                 print(f'@@@@@@ DMTYPE: {cc_dict["dmtype"]} : {self.dmtype}')
@@ -514,7 +511,6 @@ class InstanceBuilder:
         min_occurs = 1
 
         if len(self.dmrole) > 0:
-            print(parent_key.split(":")[0])
             to_check = self.dmrole.split(":")[1]
             xml_tree = XmlUtils.xmltree_from_file(self.get_model_xml_from_name(parent_key.split(":")[0])).xpath(".//objectType/attribute")
         else:
@@ -537,11 +533,15 @@ class InstanceBuilder:
                 if (
                         self.dmrole == cc_dict["dmrole"]
                         and self.dmtype == cc_dict["dmtype"]
+                        and parent_key == cc_dict["context"]
                 ):
-                    self.concrete_list.pop(self.concrete_list.index(cc_dict))
-                    return cc_dict["class"]
+                    if cc_dict["class"] in clean_elements:
+                        self.concrete_list.pop(self.concrete_list.index(cc_dict))
+                        return cc_dict["class"]
                 elif min_occurs == 0:
                     return "None"
+                print(f'{BColors.WARNING}{cc_dict["class"]} is an invalid proposition for {cc_dict["dmtype"]} '
+                      f'(for {cc_dict["dmrole"]} in parent {cc_dict["context"]}).\n{BColors.ENDC}')
 
         if min_occurs == 0:
             clean_elements.append("None")
