@@ -18,13 +18,13 @@ from lxml import etree
 from mivot_validator.instance_checking.snippet_builder import Builder
 from mivot_validator.utils.xml_utils import XmlUtils
 from mivot_validator.instance_checking.instance_checker import InstanceChecker
-from mivot_validator.utils.dict_utils import DictUtils
 
 
 class BColors:
     """
     Color codes for terminal output
     """
+
     GRAY = "\033[37m"
     OKBLUE = "\033[94m"
     OKCYAN = "\033[96m"
@@ -36,26 +36,23 @@ class BColors:
     UNDERLINE = "\033[4m"
 
 
-def setup_graph(my_dict):
+def setup_elements(graph, dmtype, abstract_list):
     """
-    Setup the inheritance graph of the model.
-    Remove the duplicate classes in the graph
-    and delete the keys with empty values
+    Sets up the elements of the graph
     """
-    values = set()
-    keys_to_remove = []
+    res = graph[dmtype]
 
-    for value in my_dict.values():
-        values.update(value)
+    for k, v in graph.items():
+        for i in range(len(v)):
+            if k != dmtype and v[i] in res:
+                res[res.index(v[i])] = [v[i], f"{k}/{v[i]}"]
 
-    for key, value in my_dict.items():
-        if key in values:
-            keys_to_remove.append(key)
 
-    for key in keys_to_remove:
-        del my_dict[key]
+    for el in res:
+        if el[0] in abstract_list:
+            res.remove(el)
 
-    return my_dict
+    return res
 
 
 def add_value(dict_obj, key, value):
@@ -81,7 +78,7 @@ def remove_value(dict_obj, key, value):
     """
     if key not in dict_obj:
         return
-    elif isinstance(dict_obj[key], list):
+    if isinstance(dict_obj[key], list):
         dict_obj[key].remove(value)
 
         if len(dict_obj[key]) == 1:
@@ -115,21 +112,15 @@ class InstanceBuilder:
         self.output_name = output_name
         self.buffer = ""
         self.build_file = self.xml_file
-        self.actual_model = None
+        self.added_model = []
         self.dmrole = None
         self.dmroles = {}
         self.dmtype = None
         self.concrete_list = concrete_list
-        self.inheritance_graph = {
-            **setup_graph(InstanceChecker._build_inheritence_graph("../vodml/mango.vo-dml.xml")),
-            **InstanceChecker._build_inheritence_graph("../vodml/Phot-v1.1.vodml.xml"),
-            **InstanceChecker._build_inheritence_graph(
-                "../vodml/Coords-v1.0.vo-dml.xml"
-            ),
-            **InstanceChecker._build_inheritence_graph("../vodml/Meas-v1.vo-dml.xml"),
-        }
-        self.abstract_classes = list(self.inheritance_graph.keys())
+        self.inheritance_graph = {}
+        self.abstract_classes = []
         self.collections = []
+        self.mapping_block = None
 
     def build(self):
         """
@@ -152,10 +143,14 @@ class InstanceBuilder:
                     self.buffer += line
                 if "<COLLECTION" in line:
                     self.collections.append(self.get_dm_role(line))
-                    actual_collection = self.collections[-1] if len(self.collections) > 0 else None
+                    actual_collection = (
+                        self.collections[-1] if len(self.collections) > 0 else None
+                    )
                 if "</COLLECTION" in line:
                     self.collections.pop()
-                    actual_collection = self.collections[-1] if len(self.collections) > 0 else None
+                    actual_collection = (
+                        self.collections[-1] if len(self.collections) > 0 else None
+                    )
 
                 if "</INSTANCE" in line:
                     open_count -= 1
@@ -166,15 +161,30 @@ class InstanceBuilder:
                         open_count += 1
                     if parent_key is None:
                         parent_key = self.get_dm_type(line)
+                    if self.get_dm_type(line).split(":")[0] not in self.added_model:
+                        self.inheritance_graph.update(
+                            **InstanceChecker._build_inheritence_graph(
+                                self.get_model_xml_from_name(
+                                    self.get_dm_type(line).split(":")[0]
+                                )
+                            )
+                        )
+                        self.add_abstract_classes(self.get_dm_type(line).split(":")[0])
+                        self.added_model.append(self.get_dm_type(line).split(":")[0])
                     if self.get_dm_type(line) in self.abstract_classes:
                         previous_line = lines[-1] if len(lines) > 0 else ""
                         if "<COLLECTION" in previous_line:
-                            if actual_collection != "mango:Property.associatedProperties" and actual_collection == \
-                                    self.collections[-1]:
+                            if (
+                                actual_collection
+                                != "mango:Property.associatedProperties"
+                                and actual_collection == self.collections[-1]
+                            ):
                                 instance_count = 0
                                 self.dmrole = self.get_dm_role(line)
                                 self.dmtype = self.get_dm_type(line)
-                                while self.ask_for_collection(self.collections[-1], instance_count, parent_key):
+                                while self.ask_for_collection(
+                                    self.collections[-1], instance_count, parent_key
+                                ):
                                     instance_count += 1
                                     print(
                                         f"{BColors.OKCYAN}{BColors.UNDERLINE}"
@@ -193,10 +203,8 @@ class InstanceBuilder:
                                         f"{self.get_dm_role(line)}{BColors.ENDC}"
                                     )
 
-                                    self.actual_model = self.get_model_xml_from_name(self.get_dm_type(line).split(":")[0])
-
                                     choice = self.populate_choices(
-                                        self.inheritance_graph[self.get_dm_type(line)],
+                                        self.inheritance_graph,
                                         parent_key,
                                     )
 
@@ -211,11 +219,16 @@ class InstanceBuilder:
                                         self.build_file = file
                                         self.build()
                                         self.build_file = self.xml_file
-                            elif actual_collection == "mango:Property.associatedProperties":
-                                self.buffer = self.buffer.replace(line,
-                                                                  '<!-- PUT HERE REFERENCES TO OTHER PROPERTY YOU '
-                                                                  'WANT TO '
-                                                                  'ASSOCIATE OR REMOVE THIS COLLECTION -->\n')
+                            elif (
+                                actual_collection
+                                == "mango:Property.associatedProperties"
+                            ):
+                                self.buffer = self.buffer.replace(
+                                    line,
+                                    "<!-- PUT HERE REFERENCES TO OTHER PROPERTY YOU "
+                                    "WANT TO "
+                                    "ASSOCIATE OR REMOVE THIS COLLECTION -->\n",
+                                )
                         else:
                             self.dmrole = self.get_dm_role(line)
                             self.dmtype = self.get_dm_type(line)
@@ -237,10 +250,8 @@ class InstanceBuilder:
                                 f"{self.dmrole}{BColors.ENDC}"
                             )
 
-                            self.actual_model = self.get_model_xml_from_name(self.get_dm_type(line).split(":")[0])
-
                             choice = self.populate_choices(
-                                self.inheritance_graph[self.get_dm_type(line)],
+                                self.inheritance_graph,
                                 parent_key,
                             )
                             file = None
@@ -253,7 +264,7 @@ class InstanceBuilder:
                                     choice.split(":")[0], choice.split(":")[1]
                                 )
                             else:
-                                self.buffer = self.buffer.replace(line,"")
+                                self.buffer = self.buffer.replace(line, "")
                             if file is not None:
                                 self.buffer = self.buffer.replace(line, "")
                                 self.build_file = file
@@ -294,8 +305,10 @@ class InstanceBuilder:
         """
         if self.concrete_list is None:
             print(
-                f"{BColors.OKCYAN} Do you want to add an Instance in this collection"
-                f"  ( {actual_collection} ) for {parent_key}? \n ACTUAL NUMBER OF INSTANCE : {instance_count} \n "
+                f"{BColors.OKCYAN} Do you want to add an Instance "
+                f"in this collection ( {actual_collection} ) "
+                f"for {parent_key}? \n "
+                f"ACTUAL NUMBER OF INSTANCE : {instance_count} \n "
                 f"(y/n){BColors.ENDC}"
             )
             choice = input()
@@ -305,18 +318,18 @@ class InstanceBuilder:
                 state = False
             else:
                 print(f"{BColors.WARNING}Please enter a valid choice{BColors.ENDC}")
-                return self.ask_for_collection(actual_collection, instance_count, parent_key)
+                return self.ask_for_collection(
+                    actual_collection, instance_count, parent_key
+                )
 
             return state
-        else:
-            for cc_dict in self.concrete_list:
-                if (
-                        self.dmrole == cc_dict["dmrole"]
-                        and self.dmtype == cc_dict["dmtype"]
-                ):
-                    return True
-                else:
-                    return False
+        for cc_dict in self.concrete_list:
+            if (
+                self.dmrole == cc_dict["dmrole"]
+                and self.dmtype == cc_dict["dmtype"]
+            ):
+                return True
+        return False
 
     @staticmethod
     def remove_instance(xml_file, dmtype):
@@ -350,9 +363,16 @@ class InstanceBuilder:
             previous_line = ""
             counter = 0
             for line in file:
-                if InstanceBuilder.get_dm_role(previous_line) != "mango:Property.associatedProperties":
-                    if "</COLLECTION>" in line and "<COLLECTION" in previous_line \
-                            or "<INSTANCE" in previous_line and "/>" in previous_line:
+                if (
+                    InstanceBuilder.get_dm_role(previous_line)
+                    != "mango:Property.associatedProperties"
+                ):
+                    if (
+                        "</COLLECTION>" in line
+                        and "<COLLECTION" in previous_line
+                        or "<INSTANCE" in previous_line
+                        and "/>" in previous_line
+                    ):
                         if "<INSTANCE" in previous_line and "/>" in previous_line:
                             to_exclude.append(counter - 2)
                         to_exclude.append(counter - 1)
@@ -383,10 +403,18 @@ class InstanceBuilder:
                         if len(dmroles) > 0:
                             if isinstance(list(dmroles.values())[0], list):
                                 dmrole = list(dmroles.values())[0][0]
-                                remove_value(dmroles, list(dmroles.keys())[0], list(dmroles.values())[0][0])
+                                remove_value(
+                                    dmroles,
+                                    list(dmroles.keys())[0],
+                                    list(dmroles.values())[0][0],
+                                )
                             else:
                                 dmrole = list(dmroles.values())[0]
-                                remove_value(dmroles, list(dmroles.keys())[0], list(dmroles.values())[0])
+                                remove_value(
+                                    dmroles,
+                                    list(dmroles.keys())[0],
+                                    list(dmroles.values())[0],
+                                )
                         else:
                             dmrole = ""
                         line = line.replace('dmrole=""', f'dmrole="{dmrole}"')
@@ -502,19 +530,44 @@ class InstanceBuilder:
 
         return dmtype
 
-    def populate_choices(self, elements, parent_key):
+    def add_abstract_classes(self, model):
+        """
+        Add the abstract classes to the list
+        """
+        for i in ["objectType", "dataType"]:
+            xml_tree = XmlUtils.xmltree_from_file(
+                self.get_model_xml_from_name(model)
+            ).xpath(f".//{i}")
+
+            for ele in xml_tree:
+                if (
+                    "abstract" in ele.attrib
+                    and ele.attrib.get("abstract").lower() == "true"
+                ):
+                    for tags in ele.getchildren():
+                        if (
+                            tags.tag == "vodml-id"
+                            and tags.text not in self.abstract_classes
+                        ):
+                            self.abstract_classes.append(f"{model}:{tags.text}")
+                            continue
+
+    def populate_choices(self, els, parent_key):
         """
         Make an input with choices from the list
         """
-
         min_occurs = 1
 
         if len(self.dmrole) > 0:
             to_check = self.dmrole.split(":")[1]
-            xml_tree = XmlUtils.xmltree_from_file(self.get_model_xml_from_name(parent_key.split(":")[0])).xpath(".//objectType/attribute")
+            xml_tree = XmlUtils.xmltree_from_file(
+                self.get_model_xml_from_name(parent_key.split(":")[0])
+            ).xpath(".//objectType/attribute")
         else:
             to_check = self.dmtype.split(":")[1]
-            xml_tree = XmlUtils.xmltree_from_file(self.get_model_xml_from_name(self.dmtype.split(":")[0])).xpath(".//objectType")
+            xml_tree = XmlUtils.xmltree_from_file(
+                self.get_model_xml_from_name(self.dmtype.split(":")[0])
+            ).xpath(".//objectType")
 
         for ele in xml_tree:
             for tags in ele.getchildren():
@@ -522,57 +575,87 @@ class InstanceBuilder:
                     ext = ele.xpath(".//multiplicity/minOccurs")[0]
                     min_occurs = int(ext.text) if ext.text is not None else 1
 
-        clean_elements = []
-        for element in elements:
-            if element not in clean_elements:
-                clean_elements.append(element)
+        elements = setup_elements(els, self.dmtype, self.abstract_classes)
 
         if self.concrete_list is not None and len(self.concrete_list) > 0:
-            cc_dict = self.concrete_list[0] if isinstance(self.concrete_list, list) else self.concrete_list
-            print(f'{BColors.BOLD}{BColors.OKBLUE}INFORMATIONS GIVEN: {BColors.ENDC}')
+            cc_dict = (
+                self.concrete_list[0]
+                if isinstance(self.concrete_list, list)
+                else self.concrete_list
+            )
+            print(f"{BColors.BOLD}{BColors.OKBLUE}INFORMATIONS GIVEN: {BColors.ENDC}")
             print(f'{BColors.OKBLUE}dmrole: {cc_dict["dmrole"]}{BColors.ENDC}')
             print(f'{BColors.OKBLUE}dmtype: {cc_dict["dmtype"]}{BColors.ENDC}')
             print(f'{BColors.OKBLUE}context: {cc_dict["context"]}{BColors.ENDC}')
             print(f'{BColors.OKBLUE}class: {cc_dict["class"]}{BColors.ENDC}')
             if (
-                    self.dmrole == cc_dict["dmrole"]
-                    and self.dmtype == cc_dict["dmtype"]
-                    and parent_key == cc_dict["context"]
+                self.dmrole == cc_dict["dmrole"]
+                and self.dmtype == cc_dict["dmtype"]
+                and parent_key == cc_dict["context"]
             ):
-                print("IN IF 1")
-                if cc_dict["class"] in clean_elements:
-                    print("Found concrete class: " + cc_dict["class"])
-                    self.concrete_list.pop(0)
-                    return cc_dict["class"]
-                else:
-                    print("IN ELSE")
-                    print(f'{BColors.WARNING}{cc_dict["class"]} is an invalid proposition for {self.dmtype} '
-                          f'(for {self.dmrole}).\n{BColors.ENDC}')
+                for element in elements:
+                    print(element)
+                    if isinstance(element, list):
+                        if cc_dict["class"] in element[0]:
+                            print("Found concrete class: " + cc_dict["class"])
+                            self.concrete_list.pop(0)
+                            return cc_dict["class"]
+                    elif cc_dict["class"] == element:
+                        print("Found concrete class: " + cc_dict["class"])
+                        self.concrete_list.pop(0)
+                        return cc_dict["class"]
+
+                print(
+                    f'{BColors.WARNING}{cc_dict["class"]}'
+                    f' is an invalid proposition '
+                    f'for {self.dmtype} (for {self.dmrole}).\n{BColors.ENDC}'
+                )
             else:
                 if min_occurs == 0:
-                    print(f'{BColors.WARNING}{self.dmrole} is optional, skipping... {BColors.ENDC}')
+                    print(
+                        f"{BColors.WARNING}{self.dmrole} is optional, "
+                        f"skipping... {BColors.ENDC}"
+                    )
                     return "None"
             if self.dmrole != cc_dict["dmrole"]:
-                print(f'{BColors.WARNING}{cc_dict["dmrole"]} is an invalid dmrole for class {self.dmtype}'
-                      f' in parent class {parent_key}. Actual dmrole: {self.dmrole}\n{BColors.ENDC}')
+                print(
+                    f'{BColors.WARNING}{cc_dict["dmrole"]} '
+                    f'is an invalid dmrole for class {self.dmtype}'
+                    f" in parent class {parent_key}. "
+                    f"Actual dmrole: {self.dmrole}\n{BColors.ENDC}"
+                )
             if self.dmtype != cc_dict["dmtype"]:
-                print(f'{BColors.WARNING}{cc_dict["dmtype"]} is an invalid dmtype for dmrole {self.dmrole}'
-                      f' in parent class {parent_key}. Actual dmtype: {self.dmtype}\n{BColors.ENDC}')
+                print(
+                    f'{BColors.WARNING}{cc_dict["dmtype"]} '
+                    f'is an invalid dmtype for dmrole {self.dmrole}'
+                    f" in parent class {parent_key}. "
+                    f"Actual dmtype: {self.dmtype}\n{BColors.ENDC}"
+                )
             if parent_key != cc_dict["context"]:
-                print(f'{BColors.WARNING}{cc_dict["context"]} is an invalid parent class for dmrole {self.dmrole}'
-                      f' and dmtype {self.dmtype}. Actual parent class: {parent_key}\n{BColors.ENDC}')
+                print(
+                    f'{BColors.WARNING}{cc_dict["context"]} '
+                    f'is an invalid parent class for dmrole {self.dmrole}'
+                    f" and dmtype {self.dmtype}. "
+                    f"Actual parent class: {parent_key}\n{BColors.ENDC}"
+                )
             self.concrete_list.pop(0)
 
         if min_occurs == 0:
-            clean_elements.append("None")
+            elements.append("None")
         print(f"{BColors.OKBLUE}Please choose from the list below : {BColors.ENDC}")
 
-        for i, clean_element in enumerate(clean_elements):
-            print(f"{BColors.GRAY}{str(i)} : {clean_element}{BColors.ENDC}")
+        for i, element in enumerate(elements):
+            if isinstance(element, list):
+                print(f"{BColors.GRAY}{str(i)} : {element[1]}{BColors.ENDC}")
+            else:
+                print(f"{BColors.GRAY}{str(i)} : {element}{BColors.ENDC}")
 
         choice = input("Your choice : ")
 
-        if choice.isdigit() and int(choice) < len(clean_elements):
-            return clean_elements[int(choice)]
+        if choice.isdigit() and int(choice) < len(elements):
+            if isinstance(elements[int(choice)], list):
+                return elements[int(choice)][0]
+            return elements[int(choice)]
+
         print(f"{BColors.WARNING}Wrong choice, please try again.{BColors.ENDC}")
         return self.populate_choices(elements, parent_key)
