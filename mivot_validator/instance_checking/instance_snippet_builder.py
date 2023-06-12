@@ -49,7 +49,11 @@ def setup_elements(graph, dmtype, abstract_list):
 
 
     for el in res:
-        if el[0] in abstract_list:
+        print(el)
+        if isinstance(el, list):
+            if el[0] in abstract_list:
+                res.remove(el)
+        if el in abstract_list or el == "mango:AssociatedMangoInstance":
             res.remove(el)
 
     return res
@@ -151,7 +155,6 @@ class InstanceBuilder:
                     actual_collection = (
                         self.collections[-1] if len(self.collections) > 0 else None
                     )
-
                 if "</INSTANCE" in line:
                     open_count -= 1
                     if open_count == 0:
@@ -225,14 +228,13 @@ class InstanceBuilder:
                             ):
                                 self.buffer = self.buffer.replace(
                                     line,
-                                    "<!-- PUT HERE REFERENCES TO OTHER PROPERTY YOU "
+                                    "<!-- PUT HERE REFERENCES TO OTHER INSTANCE YOU "
                                     "WANT TO "
                                     "ASSOCIATE OR REMOVE THIS COLLECTION -->\n",
                                 )
                         else:
                             self.dmrole = self.get_dm_role(line)
                             self.dmtype = self.get_dm_type(line)
-
                             print(
                                 f"{BColors.OKCYAN}{BColors.UNDERLINE}"
                                 f"List of possible concrete classes :{BColors.ENDC}"
@@ -641,7 +643,9 @@ class InstanceBuilder:
             self.concrete_list.pop(0)
 
         if min_occurs == 0:
-            elements.append("None")
+            if "None" not in elements:
+                elements.append("None")
+
         print(f"{BColors.OKBLUE}Please choose from the list below : {BColors.ENDC}")
 
         for i, element in enumerate(elements):
@@ -658,4 +662,4 @@ class InstanceBuilder:
             return elements[int(choice)]
 
         print(f"{BColors.WARNING}Wrong choice, please try again.{BColors.ENDC}")
-        return self.populate_choices(elements, parent_key)
+        return self.populate_choices(els, parent_key)
