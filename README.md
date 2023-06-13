@@ -42,6 +42,7 @@ Validate an XML file containing just a MAPPING block
 ```bash
  mivot-mapping-validate  <XML path>
 ```
+
 ## Examples taken out the unit test suite
 ### Check the VOTable tagged as valid
 

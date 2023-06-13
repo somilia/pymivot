@@ -1,17 +1,19 @@
-'''
+"""
 Created on 30 août 2021
 
 author: michel
-'''
+"""
 
-class Ele(object):
-    '''
+
+class Ele:
+    """
     classdocs
-    '''
+    """
+
     namespace = ""
-    VODML = namespace + "VODML"    
-    MODEL = namespace + "MODEL"    
-    GLOBALS = namespace + "GLOBALS"    
+    VODML = namespace + "VODML"
+    MODEL = namespace + "MODEL"
+    GLOBALS = namespace + "GLOBALS"
     TEMPLATES = namespace + "TEMPLATES"
     INSTANCE = namespace + "INSTANCE"
     ATTRIBUTE = namespace + "ATTRIBUTE"
@@ -20,12 +22,13 @@ class Ele(object):
     REFERENCE = namespace + "REFERENCE"
     WHERE = namespace + "WHERE"
     NOROLE = "NOROLE"
-    
-    
-class Att(object):
-    '''
+
+
+class Att:
+    """
     classdocs
-    '''
+    """
+
     dmrole = "dmrole"
     dmtype = "dmtype"
     dmid = "dmid"
@@ -37,14 +40,13 @@ class Att(object):
     ref = "ref"
     primarykey = "primarykey"
     foreignkey = "foreignkey"
-    
+
+
 def key_match(searched_key, key_set):
     if isinstance(key_set, str):
         return key_set.startswith(searched_key)
-    else:
         # May be a list or an odict_keys
-        for key in key_set:
-            if key.startswith(searched_key) is True:
-                return key
+    for key in key_set:
+        if key.startswith(searched_key) is True:
+            return key
     return None
-        

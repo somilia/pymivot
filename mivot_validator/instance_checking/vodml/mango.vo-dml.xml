@@ -255,7 +255,7 @@ As long as the vocabulary is not set, the possible values of this attribute are 
       <vodml-ref>mango:AssociatedData</vodml-ref>
     </extends>
     <composition>
-      <vodml-id>AssociatedMangoInstance.mangoInstance</vodml-id>
+      <vodml-id>AssociatedMangoInstance.mangoInstance</vodml-id> <!-- maybe chaning the AssociatedMangoInstance.mangoInstance by AssociatedMangoInstance.refSource ? -->
       <name>mangoInstance</name>
       <description>Composition link pointing on one MANGO instance associated with the source.</description>
       <datatype>
@@ -268,7 +268,7 @@ As long as the vocabulary is not set, the possible values of this attribute are 
     </composition>
   </objectType>
 
-  <objectType>
+  <objectType abstract="True">
     <vodml-id>Property</vodml-id>
     <name>Property</name>
     <description>Reference to a particular measure of the Source.
@@ -303,33 +303,7 @@ As long as the vocabulary is not set, the possible values of this attribute are 
         <maxOccurs>1</maxOccurs>
       </multiplicity>
     </attribute>
-    
-    <composition>
-      <vodml-id>Property.measure</vodml-id>
-      <name>measure</name>
-      <description>Composition link pointing to the meas:Measure instance</description>
-      <datatype>
-        <vodml-ref>meas:Measure</vodml-ref>
-      </datatype>
-      <multiplicity>
-        <minOccurs>1</minOccurs>
-        <maxOccurs>1</maxOccurs>
-      </multiplicity>
-    </composition>
-    <composition>
-      <vodml-id>Property.coverage</vodml-id>
-      <name>coverage</name>
-      <description>
-          TODO : Missing description : please, update your UML model asap.
-        </description>
-      <datatype>
-        <vodml-ref>mango:Coverage</vodml-ref>
-      </datatype>
-      <multiplicity>
-        <minOccurs>0</minOccurs>
-        <maxOccurs>1</maxOccurs>
-      </multiplicity>
-    </composition>
+
     <reference>
       <vodml-id>Property.associatedProperties</vodml-id>
       <name>associatedProperties</name>
@@ -342,70 +316,6 @@ As long as the vocabulary is not set, the possible values of this attribute are 
         <maxOccurs>-1</maxOccurs>
       </multiplicity>
     </reference>
-  </objectType>
-
-  <objectType>
-    <vodml-id>Coverage</vodml-id>
-    <name>Coverage</name>
-    <description>
-          TODO : Missing description : please, update your UML model asap.
-        </description>
-    <attribute>
-      <vodml-id>Coverage.emin</vodml-id>
-      <name>emin</name>
-      <description>
-          TODO : Missing description : please, update your UML model asap.
-        </description>
-      <datatype>
-        <vodml-ref>ivoa:real</vodml-ref>
-      </datatype>
-      <multiplicity>
-        <minOccurs>0</minOccurs>
-        <maxOccurs>1</maxOccurs>
-      </multiplicity>
-    </attribute>
-    <attribute>
-      <vodml-id>Coverage.emax</vodml-id>
-      <name>emax</name>
-      <description>
-          TODO : Missing description : please, update your UML model asap.
-        </description>
-      <datatype>
-        <vodml-ref>ivoa:real</vodml-ref>
-      </datatype>
-      <multiplicity>
-        <minOccurs>0</minOccurs>
-        <maxOccurs>1</maxOccurs>
-      </multiplicity>
-    </attribute>
-    <attribute>
-      <vodml-id>Coverage.tmin</vodml-id>
-      <name>tmin</name>
-      <description>
-          TODO : Missing description : please, update your UML model asap.
-        </description>
-      <datatype>
-        <vodml-ref>ivoa:real</vodml-ref>
-      </datatype>
-      <multiplicity>
-        <minOccurs>0</minOccurs>
-        <maxOccurs>1</maxOccurs>
-      </multiplicity>
-    </attribute>
-    <attribute>
-      <vodml-id>Coverage.tmax</vodml-id>
-      <name>tmax</name>
-      <description>
-          TODO : Missing description : please, update your UML model asap.
-        </description>
-      <datatype>
-        <vodml-ref>ivoa:real</vodml-ref>
-      </datatype>
-      <multiplicity>
-        <minOccurs>0</minOccurs>
-        <maxOccurs>1</maxOccurs>
-      </multiplicity>
-    </attribute>
   </objectType>
 
   <objectType>
@@ -613,7 +523,7 @@ As long as the vocabulary is not set, the possible values of this attribute are 
           TODO : Missing description : please, update your UML model asap.
         </description>
       <datatype>
-        <vodml-ref>:PhotFilter</vodml-ref>
+        <vodml-ref>Phot:PhotometryFilter</vodml-ref>
       </datatype>
       <multiplicity>
         <minOccurs>1</minOccurs>
@@ -627,7 +537,7 @@ As long as the vocabulary is not set, the possible values of this attribute are 
           TODO : Missing description : please, update your UML model asap.
         </description>
       <datatype>
-        <vodml-ref>:PhotFilter</vodml-ref>
+        <vodml-ref>Phot:PhotometryFilter</vodml-ref>
       </datatype>
       <multiplicity>
         <minOccurs>1</minOccurs>
