@@ -49,7 +49,6 @@ def setup_elements(graph, dmtype, abstract_list):
 
 
     for el in res:
-        print(el)
         if isinstance(el, list):
             if el[0] in abstract_list:
                 res.remove(el)
@@ -596,7 +595,6 @@ class InstanceBuilder:
                 and parent_key == cc_dict["context"]
             ):
                 for element in elements:
-                    print(element)
                     if isinstance(element, list):
                         if cc_dict["class"] in element[0]:
                             print("Found concrete class: " + cc_dict["class"])
