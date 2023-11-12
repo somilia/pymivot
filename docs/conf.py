@@ -1,6 +1,6 @@
 import sys, os
 
-sys.path.insert(0, os.path.abspath('../mivot_validator'))
+sys.path.insert(0, os.path.abspath('..'))
 source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown',
