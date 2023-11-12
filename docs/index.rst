@@ -2,9 +2,6 @@
 =================
 
 .. toctree::
-    :maxdepth: 2
+    :glob:
 
-    mivot_validator/instance_checking
-    mivot_validator/launchers
-    mivot_validator/utils
-
+    *
