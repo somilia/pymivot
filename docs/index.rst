@@ -1,7 +1,7 @@
 # MIVOT Validator
 =================
 
-  .. toctree::
+.. toctree::
     :maxdepth: 2
 
     mivot_validator/instance_checking
