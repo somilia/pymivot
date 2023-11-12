@@ -1,1 +1,3 @@
 # requirements for the doc
+sphinx
+sphinx-autobuild
