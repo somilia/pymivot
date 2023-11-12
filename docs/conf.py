@@ -1,8 +1,6 @@
 import sys, os
 
-# path to source
-this_path = os.path.dirname(os.path.abspath(__file__))
-packagedir = os.path.join(this_path, '..','mivot_validator')
+sys.path.insert(0, os.path.abspath('..'))
 
 source_suffix = {
     '.rst': 'restructuredtext',
