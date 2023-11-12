@@ -6,3 +6,5 @@ source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown',
 }
+
+source_dir = 'mivot_validator'
