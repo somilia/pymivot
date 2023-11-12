@@ -6,4 +6,6 @@ source_suffix = {
     '.md': 'markdown',
 }
 
-source_dir = 'mivot_validator'
+extensions = [
+    'sphinx.ext.autodoc'
+    ]
