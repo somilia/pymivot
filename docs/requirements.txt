@@ -1,2 +1,1 @@
 # requirements for the doc
-extname
