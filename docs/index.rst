@@ -5,4 +5,3 @@
    :toctree: _autosummary
    :recursive:
 
-   mivot_validator
