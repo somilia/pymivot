@@ -1,7 +1,7 @@
 # MIVOT Validator
 =================
 
-.. automodule::
+.. automodule:: mivot_validator
    :members:
 
 .. autosummary::
