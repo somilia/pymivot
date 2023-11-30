@@ -2,8 +2,7 @@
 =================
 
 .. automodule::
-.. autoclass::
-.. autoexception::
+   :members:
 
 .. autosummary::
    :toctree: _autosummary
