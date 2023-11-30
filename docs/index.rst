@@ -7,5 +7,6 @@
 .. autosummary::
    :toctree: _autosummary
    :recursive:
+   :members:
 
    mivot_validator
