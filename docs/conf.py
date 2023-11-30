@@ -7,5 +7,6 @@ source_suffix = {
 }
 
 extensions = [
-    'sphinx.ext.autodoc'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary'
     ]
