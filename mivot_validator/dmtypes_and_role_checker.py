@@ -1,12 +1,4 @@
-"""
-This module checks that all dmroles and dmtypes used a referenced in the mapped models
-This is a prototype
-- Only meas/coord/ivoa are checked, the other models are ignored
-- The checking is based on the vodml-id whatever their context in the vodml files
-
-all errors are reported in the self.message list. 
-The validation is considered as successful if the message list is empty at the end of the process
- 
+""" 
 Created on 2 Feb 2023
 
 @author: laurentmichel
@@ -23,7 +15,13 @@ context = ssl._create_unverified_context()
 
 class DmTypesAndRolesChecker(object):
     """
-    classdocs
+    This module checks that all dmroles and dmtypes used a referenced in the mapped models
+    This is a prototype
+    - Only meas/coord/ivoa are checked, the other models are ignored
+    - The checking is based on the vodml-id whatever their context in the vodml files
+
+    all errors are reported in the self.message list. 
+    The validation is considered as successful if the message list is empty at the end of the process
     """
 
     def __init__(self):
