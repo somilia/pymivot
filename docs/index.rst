@@ -1,10 +1,9 @@
 # MIVOT Validator
 =================
 
-.. automodule:: mivot_validator
-    :members:
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
 
-.. toctree::
-    :glob:
-
-    *
+   mivot_validator
