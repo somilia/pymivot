@@ -4,7 +4,7 @@
 .. automodule:: mivot_validator
    :members:
 
-.. autosummary::
+.. autosummary:: mivot_validator
    :toctree: _autosummary
    :recursive:
 
