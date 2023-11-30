@@ -1,6 +1,10 @@
 # MIVOT Validator
 =================
 
+.. automodule::
+.. autoclass::
+.. autoexception::
+
 .. autosummary::
    :toctree: _autosummary
    :recursive:
