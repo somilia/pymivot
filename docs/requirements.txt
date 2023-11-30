@@ -1,3 +1,4 @@
 # requirements for the doc
 sphinx
 sphinx-autobuild
+sphinx-autosummary
