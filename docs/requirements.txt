@@ -1,0 +1,9 @@
+# requirements for the doc
+lxml
+xmlschema
+xmltodict
+astropy
+sphinx
+sphinx-autobuild
+sphinx-autosummary
+sphinx_click
