@@ -7,6 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'mivot-validator'
+copyright = '2023, Laurent MICHEL'
 author = 'Laurent MICHEL'
 release = '0.0.1'
 
