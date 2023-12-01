@@ -5,5 +5,4 @@ xmltodict
 astropy
 sphinx
 sphinx-autobuild
-sphinx-autosummary
 sphinx_click
