@@ -28,9 +28,7 @@ extensions = [
     "sphinx.ext.extlinks", # Markup to shorten external links
     "sphinx.ext.doctest", # Test snippets in the documentation
     "sphinx.ext.autosummary", # Generate autodoc summaries
-    'myst_parser',
-    'sphinxcontrib.mermaid'
-]
+ ]
 
 templates_path = ['_templates']
 exclude_patterns = []
