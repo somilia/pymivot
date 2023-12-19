@@ -27,12 +27,12 @@ class TestManageMivotSchema(unittest.TestCase):
         self.assertTrue(self.mivot.db._table_exists("mango", schema_name=self.mivot.schema))
 
     def test_mivot_add_mapped_class(self):
-        self.assertEqual(self.mivot.db.fetch_data("mango", schema_name="tap_schema", columns=["instance_id"]).data, [])
+        self.assertEqual(self.mivot.db.fetch_data("mango", schema_name=CONSTANT.TAP_SCHEMA, columns=["instance_id"]).data, [])
         instance_id = self.mivot.mivot_add_mapped_class(
             "mango", "epic_src", "meas_LonLatPos",
             {"sc_ra": {"dmrole": "lon", "frame": "FK5(eq=J2000, ep=2015)"}}, "pos.main", "#POS")
         self.assertNotEqual(
-            self.mivot.db.fetch_data("mango", schema_name="tap_schema", columns=["instance_id"],
+            self.mivot.db.fetch_data("mango", schema_name=CONSTANT.TAP_SCHEMA, columns=["instance_id"],
                                      condition=f"instance_id='{instance_id}'").data, [])
 
         with self.assertRaises(TableAlreadyExistsException):
@@ -46,7 +46,7 @@ class TestManageMivotSchema(unittest.TestCase):
                 "pos.main", "#POS")
 
         self.mivot.mivot_drop_mapped_class("mango", instance_id=instance_id)
-        self.assertEqual(self.mivot.db.fetch_data("mango", schema_name="tap_schema", columns=["instance_id"],
+        self.assertEqual(self.mivot.db.fetch_data("mango", schema_name=CONSTANT.TAP_SCHEMA, columns=["instance_id"],
                                      condition=f"instance_id='{instance_id}'").data, [])
         with self.assertRaises(TableDoesNotExistException):
             self.mivot.mivot_drop_mapped_class("mango", instance_id="fake_instance_id")
@@ -58,15 +58,16 @@ class TestManageMivotSchema(unittest.TestCase):
 
         self.mivot.mivot_add_error_to_mapped_class("mango", instance_id, "error")
         self.assertNotEqual(
-            self.mivot.db.fetch_data("mango", schema_name="tap_schema", columns=["dmerror"],
+            self.mivot.db.fetch_data("mango", schema_name=CONSTANT.TAP_SCHEMA, columns=["dmerror"],
                                      condition=f"instance_id='{instance_id}'").data, [])
 
         self.mivot.mivot_drop_error_from_mapped_class("mango", instance_id)
         self.assertEqual(
-            self.mivot.db.fetch_data("mango", schema_name="tap_schema", columns=["dmerror"],
+            self.mivot.db.fetch_data("mango", schema_name=CONSTANT.TAP_SCHEMA, columns=["dmerror"],
                                      condition=f"instance_id='{instance_id}'").data, [(None,)])
 
     def tearDown(self):
+        self.mivot.db._drop_table("mango")
         self.mivot.logout()
         self.mivot.db._close_connection()
         self.postgresql.stop()

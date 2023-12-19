@@ -29,10 +29,13 @@ class ManageMivotSchema(object):
         password : str, optional
             The database password
         """
-        if dbms == "postgresql":
+        if dbms == CONSTANT.PSQL:
             self.db = Database_psql(host, port, database, user, password=None)
             if self.db.check_schema_exist(CONSTANT.TAP_SCHEMA) is True:
                 self.schema = CONSTANT.TAP_SCHEMA
+            else:
+                # TODO: add sqlite dbms
+                print("The schema TAP_SCHEMA does not exist in the database.")
         self.columns = CONSTANT.COLUMNS
 
     def logout(self):
@@ -47,12 +50,9 @@ class ManageMivotSchema(object):
         If with_association is set as True, the mapped_table TAP_SCHEMA.model_mivot_association is also created.
         An exception is risen if the mapped_table already exists
         """
-        print(self.db._table_exists(model, self.schema))
-        print(model, self.schema)
         if self.db._table_exists(model, self.schema):
             raise TableAlreadyExistsException(f"The mapped_table {self.db._get_table_name(model)} already exists in the schema tap_schema.")
 
-        # self.db.create_schema("TAP_SCHEMA")
         self.db.create_table(model, self.columns, schema_name=self.schema)
 
         if with_association is True:
@@ -77,7 +77,7 @@ class ManageMivotSchema(object):
         """
         Return the row with the given instance_id
         """
-        return self.db.fetch_data("mango", schema_name="tap_schema", columns=CONSTANT.COLUMNS_NAME, condition=f"instance_id='{instance_id}'")
+        return self.db.fetch_data("mango", schema_name=self.schema, columns=CONSTANT.COLUMNS_NAME, condition=f"instance_id='{instance_id}'", is_model=True)
 
     def mivot_add_mapped_class(self, model, mapped_table, dmtype, columns, ucd=None, vocab=None, instance_id=None):
         """
@@ -125,7 +125,7 @@ class ManageMivotSchema(object):
                 model,
                 ["instance_id", "mapped_table", "mapped_column", "dmtype", "dmrole", "frame", "ucd", "vocab"],
                 (instance_id, mapped_table, column, dmtype, dmrole, frame, ucd, vocab),
-                self.schema
+                self.schema, is_model=True
             )
 
         return instance_id
@@ -145,7 +145,7 @@ class ManageMivotSchema(object):
         """
         if not self.get_row_by_instance_id(instance_id).data:
             raise TableDoesNotExistException("The given instance_id does not exist in the mapped_table.")
-        self.db.remove_data(model, "instance_id", instance_id, self.schema)
+        self.db.remove_data(model_name=model, column_name="instance_id", value=instance_id, schema_name=self.schema)
 
     def mivot_add_error_to_mapped_class(self, model_name, instance_id, error_id):
         """
@@ -174,8 +174,6 @@ class ManageMivotSchema(object):
         if not self.get_row_by_instance_id(instance_id):
             raise TableDoesNotExistException("The given instance_id does not exist in the mapped_table.")
         if self.get_row_by_instance_id(instance_id).get("dmerror") is not None:
-            print(self.get_row_by_instance_id(instance_id).get("dmerror"))
-        # if self.db.fetch_data(model_name, schema_name="tap_schema", columns=["dmerror"], condition=f"instance_id='{instance_id}'")[0][0] is not None:
             raise TableAlreadyExistsException("The given instance_id already has an error.")
         # TODO: check the error type
         self.db.update_data(model_name, "dmerror", error_id, f"instance_id='{instance_id}'", self.schema)

@@ -38,18 +38,21 @@ class Database_psql:
             self.connection.close()
             print("Connection closed.")
 
-    def _get_table_name(self, model_name):
-        return f"{model_name}_mivot"
+    def _get_table_name(self, model_name, is_model=True):
+        if is_model:
+            return f"{model_name}_mivot"
+        else:
+            return f"{model_name}"
 
-    def _table_exists(self, model_name, schema_name="public"):
+    def _table_exists(self, model_name, schema_name="public", is_model=True):
         """
         Check if a mapped_table exists in the database.
         """
-        table_name = self._get_table_name(model_name)
         with self.connection.cursor() as cursor:
             try:
-                query = "SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = '"+schema_name+"' AND tablename = '"+table_name+"');"
-                self.execute_query(query)
+                query = f"SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = '{schema_name}' AND tablename = '{self._get_table_name(model_name, is_model)}');"
+                self.cursor.execute(query)
+                self.connection.commit()
                 result = self.cursor.fetchone()
                 return result[0]
             except psycopg2.Error as e:
@@ -60,27 +63,25 @@ class Database_psql:
         try:
             self.cursor.execute(query, values)
             self.connection.commit()
-            print("Query executed successfully.")
             return self.cursor
         except psycopg2.Error as e:
             print("Error during the connection to the database:", e)
 
-    def create_table(self, model_name, columns, schema_name='public'):
-        table_name = self._get_table_name(model_name)
+    def create_table(self, model_name, columns, schema_name='public', is_model=True):
         if self._table_exists(model_name, schema_name):
-            raise TableAlreadyExistsException(f"Table {schema_name}.{table_name} already exists.")
+            raise TableAlreadyExistsException(f'Table "{schema_name}".{self._get_table_name(model_name, is_model)} already exists.')
         try:
-            query = f"CREATE TABLE {schema_name}.{table_name} ({columns});"
+            query = f'CREATE TABLE "{schema_name}"."{self._get_table_name(model_name, is_model)}" ({columns});'
             self.execute_query(query)
-            print(f"Table {schema_name}.{table_name} created successfully.")
+            print(f'Table "{schema_name}".{self._get_table_name(model_name, is_model)} created successfully.')
         except psycopg2.Error as e:
             print("Error during the connection to the database:", e)
 
     def _drop_table(self, model_name, schema_name="public"):
         try:
-            query = f"DROP TABLE IF EXISTS {schema_name}.{self._get_table_name(model_name)} CASCADE;"
+            query = f"DROP TABLE IF EXISTS '{schema_name}'.{self._get_table_name(model_name)} CASCADE;"
             self.execute_query(query)
-            print(f"Table '{schema_name}.{self._get_table_name(model_name)}' dropped successfully.")
+            print(f"Table '{schema_name}'.{self._get_table_name(model_name)} dropped successfully.")
         except psycopg2.Error as e:
             print("Error during the connection to the database:", e)
 
@@ -94,64 +95,92 @@ class Database_psql:
                 print("-----Tables in the database:-----")
                 for table in tables:
                     print(table[0])
+                columns = [desc[0] for desc in self.cursor.description]
+                return DataWrapper(tables, columns)
             else:
                 print("No tables in the database.")
         except psycopg2.Error as e:
             print("Error during the connection to the database:", e)
 
-    def insert_data(self, model_name, column_names, values, schema_name='public'):
-        if not self._table_exists(model_name, schema_name):
-            raise TableDoesNotExistException(f"Table {schema_name}.{self._get_table_name(model_name)} does not exists.")
+    def insert_data(self, model_name, column_names, values, schema_name='public', is_model=True):
+        if not self._table_exists(model_name, schema_name, is_model=is_model):
+            raise TableDoesNotExistException(f"Table {schema_name}.{self._get_table_name(model_name, is_model)} does not exists.")
         try:
-            query = (f"INSERT INTO {schema_name}.{self._get_table_name(model_name)} "
+            query = (f'INSERT INTO "{schema_name}".{self._get_table_name(model_name, is_model)} '
                      f"({', '.join(column_names)}) VALUES ({', '.join(['%s' for _ in values])});")
 
             self.cursor.execute(query, values)
             self.connection.commit()
-            print("Data inserted successfully.")
+            print(f"Data inserted in {schema_name}.{self._get_table_name(model_name, is_model)} successfully.")
         except psycopg2.Error as e:
             print("Error during the insertion of data: ", e)
 
-    def remove_data(self, model_name, column_name, value, schema_name='public'):
-        if not self._table_exists(model_name, schema_name):
-            raise TableDoesNotExistException(f"Table {schema_name}.{self._get_table_name(model_name)} does not exists.")
-        try:
-            query = f"DELETE FROM {schema_name}.{self._get_table_name(model_name)} WHERE {column_name} = %s;"
+    def insert_and_verify_data(self, table_name, schema_name, column_names, values, is_model=True):
+        # Check if table exists
+        if not self._table_exists(table_name, schema_name, is_model=is_model):
+            raise Exception(f"Table {schema_name}.{self._get_table_name(table_name, is_model)} does not exist.")
 
-            self.cursor.execute(query, [value])
-            self.connection.commit()
-            print("Data removed successfully.")
-        except psycopg2.Error as e:
-            print("Error during the removal of data: ", e)
+        # Get table schema
+        query = f"SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = '{schema_name}' AND table_name = '{self._get_table_name(table_name, is_model)}';"
+        self.cursor.execute(query)
+        table_schema = self.cursor.fetchall()
+        print(" --- Table Schema :", table_schema)
 
-    def update_data(self, model_name, column_name, value, condition, schema_name='public'):
-        if not self._table_exists(model_name, schema_name):
-            raise TableDoesNotExistException(f"Table {schema_name}.{self._get_table_name(model_name)} does not exists.")
+        # Check if provided column names match with table schema
+        schema_column_names = [column[0] for column in table_schema]
+        if set(column_names) != set(schema_column_names):
+            raise Exception("Provided column names do not match with table schema.")
+
+        # Insert data into table
+        self.insert_data(table_name, column_names, values, schema_name, is_model=False)
+
+        # Fetch data from table to verify insertion
+        fetched_data = self.fetch_data(model_name=table_name, schema_name=schema_name, columns=column_names, is_model=False)
+        if values not in fetched_data.data:
+            raise Exception("Data verification failed after insertion.")
+
+    def remove_data(self, model_name, column_name, value, schema_name='public', is_model=True):
+        if not self._table_exists(model_name, schema_name, is_model=is_model):
+            raise TableDoesNotExistException(f"Table {schema_name}.{self._get_table_name(model_name, is_model)} does not exists.")
         try:
-            if value == "NULL":
-                query = f"UPDATE {schema_name}.{self._get_table_name(model_name)} SET {column_name} = NULL WHERE {condition};"
-            else:
-                query = f"UPDATE {schema_name}.{self._get_table_name(model_name)} SET {column_name} = '{value}' WHERE {condition};"
+            query = (f'DELETE FROM "{schema_name}".{self._get_table_name(model_name, is_model)} WHERE {column_name} = '
+                    f"'{value}';")
 
             self.cursor.execute(query)
             self.connection.commit()
-            print("Data updated successfully.")
+            print(f"Data where {column_name} = {value} removed successfully in {schema_name}.{self._get_table_name(model_name, is_model)}.")
+        except psycopg2.Error as e:
+            print("Error during the removal of data: ", e)
+
+    def update_data(self, model_name, column_name, value, condition, schema_name='public', is_model=True):
+        if not self._table_exists(model_name, schema_name, is_model=is_model):
+            raise TableDoesNotExistException(f'Table "{schema_name}".{self._get_table_name(model_name, is_model)} does not exists.')
+        try:
+            if value == "NULL":
+                query = f'UPDATE "{schema_name}".{self._get_table_name(model_name, is_model)} SET {column_name} = NULL WHERE {condition};'
+            else:
+                query = (f'UPDATE "{schema_name}".{self._get_table_name(model_name, is_model)} SET {column_name} = '
+                         f"'{value}' WHERE {condition};")
+
+            self.cursor.execute(query)
+            self.connection.commit()
+            print(f'Data updated in "{schema_name}".{self._get_table_name(model_name, is_model)} successfully.')
         except psycopg2.Error as e:
             print("Error during the update of data: ", e)
 
-    def fetch_data(self, model_name, schema_name='public', columns=None, condition=None):
-        table_name = self._get_table_name(model_name)
-        if not self._table_exists(model_name, schema_name):
-            raise TableDoesNotExistException(f"Table {schema_name}.{table_name} does not exists.")
+    def fetch_data(self, model_name, schema_name='public', columns=None, condition=None, is_model=True):
+        if not self._table_exists(model_name, schema_name=schema_name, is_model=is_model):
+            raise TableDoesNotExistException(f'Table "{schema_name}".{self._get_table_name(model_name, is_model)} does not exists.')
         try:
             columns_str = "*" if columns is None else ", ".join(columns)
-            query = f"SELECT {columns_str} FROM {schema_name}.{table_name}"
+            query = f'SELECT {columns_str} FROM "{schema_name}".{self._get_table_name(model_name, is_model)}'
 
             if condition:
                 query += f" WHERE {condition}"
-
             self.execute_query(query)
             data = self.cursor.fetchall()
+            if columns is None:
+                columns = [desc[0] for desc in self.cursor.description]
             return DataWrapper(data, columns)
 
         except psycopg2.Error as e:
@@ -167,18 +196,20 @@ class Database_psql:
             print("No data in the mapped_table.")
 
     def create_schema(self, schema_name):
+        if self.check_schema_exist(schema_name):
+            raise exceptions.SchemaAlreadyExistsException(f'Schema "{schema_name}" already exists.')
         try:
-            query = f"CREATE SCHEMA {schema_name};"
+            query = f'CREATE SCHEMA "{schema_name}";'
             self.cursor.execute(query)
             self.connection.commit()
 
-            print(f"Schema '{schema_name}' built successfully.")
+            print(f'Schema "{schema_name}" built successfully.')
         except psycopg2.Error as e:
             print("Error during the creation of the schema: ", e)
 
     def drop_schema(self, schema_name):
         try:
-            query = f"DROP SCHEMA IF EXISTS {schema_name} CASCADE;"
+            query = f"DROP SCHEMA IF EXISTS '{schema_name}' CASCADE;"
             self.cursor.execute(query)
             self.connection.commit()
 

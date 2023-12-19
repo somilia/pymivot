@@ -1,6 +1,6 @@
 
 class CONSTANT:
-    TAP_SCHEMA = "tap_schema"
+    TAP_SCHEMA = "TAP_SCHEMA"
     COLUMNS = """
             instance_id TEXT NOT NULL,
             mapped_table TEXT NOT NULL,
@@ -13,3 +13,4 @@ class CONSTANT:
             vocab TEXT
         """
     COLUMNS_NAME = ["instance_id", "mapped_table", "mapped_column", "dmtype", "dmrole", "dmerror", "frame", "ucd", "vocab"]
+    PSQL = "postgresql"
