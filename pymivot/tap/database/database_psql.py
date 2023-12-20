@@ -79,9 +79,9 @@ class Database_psql:
 
     def _drop_table(self, model_name, schema_name="public"):
         try:
-            query = f"DROP TABLE IF EXISTS '{schema_name}'.{self._get_table_name(model_name)} CASCADE;"
+            query = f'DROP TABLE IF EXISTS "{schema_name}".{self._get_table_name(model_name)} CASCADE;'
             self.execute_query(query)
-            print(f"Table '{schema_name}'.{self._get_table_name(model_name)} dropped successfully.")
+            print(f'Table "{schema_name}".{self._get_table_name(model_name)} dropped successfully.')
         except psycopg2.Error as e:
             print("Error during the connection to the database:", e)
 
@@ -102,7 +102,7 @@ class Database_psql:
         except psycopg2.Error as e:
             print("Error during the connection to the database:", e)
 
-    def insert_data(self, model_name, column_names, values, schema_name='public', is_model=True):
+    def _insert_data(self, model_name, column_names, values, schema_name='public', is_model=True):
         if not self._table_exists(model_name, schema_name, is_model=is_model):
             raise TableDoesNotExistException(f"Table {schema_name}.{self._get_table_name(model_name, is_model)} does not exists.")
         try:
@@ -128,15 +128,18 @@ class Database_psql:
 
         # Check if provided column names match with table schema
         schema_column_names = [column[0] for column in table_schema]
-        if set(column_names) != set(schema_column_names):
+        # if set(column_names) != set(schema_column_names):
+        if not set(column_names).issubset(set(schema_column_names)):
             raise Exception("Provided column names do not match with table schema.")
 
         # Insert data into table
-        self.insert_data(table_name, column_names, values, schema_name, is_model=False)
+        self._insert_data(table_name, column_names, values, schema_name, is_model=is_model)
 
         # Fetch data from table to verify insertion
-        fetched_data = self.fetch_data(model_name=table_name, schema_name=schema_name, columns=column_names, is_model=False)
+        fetched_data = self.fetch_data(model_name=table_name, schema_name=schema_name, columns=column_names, is_model=is_model)
         if values not in fetched_data.data:
+            print(" --- Fetched data :", fetched_data.data)
+            print(" --- Values :", values)
             raise Exception("Data verification failed after insertion.")
 
     def remove_data(self, model_name, column_name, value, schema_name='public', is_model=True):

@@ -39,7 +39,10 @@ class DataWrapper:
         print("- ",self.columns)
         if row is not None:
             print("- Row", row, ":")
-            print("- ", self.data[row-1])
+            if row == 0:
+                print("- No data")
+            else:
+                print("- ", self.data[row-1])
         elif nb_rows is not None:
             print("- Rows:")
             for row in self.data[:nb_rows]:

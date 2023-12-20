@@ -51,6 +51,10 @@ class TestManageMivotSchema(unittest.TestCase):
         with self.assertRaises(TableDoesNotExistException):
             self.mivot.mivot_drop_mapped_class("mango", instance_id="fake_instance_id")
 
+        # Test with ucd and vocab parameters set to None (default)
+        self.mivot.mivot_add_mapped_class("mango", "epic_src", "meas_LonLatPos2",
+                                          {"sc_ra": {"dmrole": "lon", "frame": "FK5(eq=J2000, ep=2015)"}})
+
     def test_mivot_add_error_to_mapped_class(self):
         instance_id = self.mivot.mivot_add_mapped_class(
             "mango", "epic_src", "meas_LonLatPos",

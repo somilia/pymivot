@@ -121,11 +121,12 @@ class ManageMivotSchema(object):
             column = key
             dmrole = columns[key]["dmrole"]
             frame = columns[key]["frame"]
-            self.db.insert_data(
-                model,
-                ["instance_id", "mapped_table", "mapped_column", "dmtype", "dmrole", "frame", "ucd", "vocab"],
-                (instance_id, mapped_table, column, dmtype, dmrole, frame, ucd, vocab),
-                self.schema, is_model=True
+            self.db.insert_and_verify_data(
+                table_name=model,
+                schema_name=self.schema,
+                column_names=CONSTANT.COLUMNS_NAME,
+                values=(instance_id, mapped_table, column, dmtype, dmrole, None, frame, ucd, vocab),
+                is_model=True
             )
 
         return instance_id

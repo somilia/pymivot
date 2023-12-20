@@ -71,13 +71,13 @@ class TestDatabase(unittest.TestCase):
     def test_insert_and_fetch_data(self):
         columns = """id SERIAL PRIMARY KEY, first_name TEXT, last_name TEXT"""
         # Test the insert_data method with an existing mapped_table
-        self.db.insert_data('first_table_test', ['first_name', 'last_name'], ('John', 'Doe'))
-        self.db.insert_data('first_table_test', ['first_name', 'last_name'], ('Jane', 'Doe'))
-        self.db.insert_data('first_table_test', ['first_name', 'last_name'], ('John', 'Smith'))
+        self.db._insert_data('first_table_test', ['first_name', 'last_name'], ('John', 'Doe'))
+        self.db._insert_data('first_table_test', ['first_name', 'last_name'], ('Jane', 'Doe'))
+        self.db._insert_data('first_table_test', ['first_name', 'last_name'], ('John', 'Smith'))
 
         # Test the insert_data method with a non-existing mapped_table
         with self.assertRaises(TableDoesNotExistException):
-            self.db.insert_data('table_inexistante', ['first_name', 'last_name'], ('John', 'Doe'))
+            self.db._insert_data('table_inexistante', ['first_name', 'last_name'], ('John', 'Doe'))
 
         # Test the fetch_data method with an existing mapped_table
         data = self.db.fetch_data('first_table_test').data
@@ -105,13 +105,23 @@ class TestDatabase(unittest.TestCase):
             self.db.remove_data('table_inexistante', column_name='id', value=1)
 
         # Test with schema
-        self.db.insert_data('first_table_test_with_schema', ['first_name', 'last_name'], ('John', 'Doe'), schema_name='first_schema_test')
-        self.db.insert_data('first_table_test_with_schema', ['first_name', 'last_name'], ('Jane', 'Doe'), schema_name='first_schema_test')
-        self.db.insert_data('first_table_test_with_schema', ['first_name', 'last_name'], ('John', 'Smith'), schema_name='first_schema_test')
+        self.db._insert_data('first_table_test_with_schema', ['first_name', 'last_name'], ('John', 'Doe'), schema_name='first_schema_test')
+        self.db._insert_data('first_table_test_with_schema', ['first_name', 'last_name'], ('Jane', 'Doe'), schema_name='first_schema_test')
+        self.db._insert_data('first_table_test_with_schema', ['first_name', 'last_name'], ('John', 'Smith'), schema_name='first_schema_test')
         data = self.db.fetch_data('first_table_test_with_schema', schema_name='first_schema_test').data
         self.assertEqual(len(data), 3)
 
-
+    def test_insert_with_verification(self):
+        self.db.insert_and_verify_data(table_name='first_table_test_with_schema', schema_name='first_schema_test', column_names=['first_name', 'last_name'], values=('Jamy', 'Ley'))
+        data = self.db.fetch_data('first_table_test_with_schema', schema_name='first_schema_test').data
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0][1], 'Jamy')
+        self.db.insert_and_verify_data(table_name='first_table_test_with_schema', schema_name='first_schema_test', column_names=['last_name', 'first_name'], values=('Ley2', 'Jamy2'))
+        data = self.db.fetch_data('first_table_test_with_schema', schema_name='first_schema_test').data
+        self.assertEqual(len(data), 2)
+        self.assertEqual(data[1][1], 'Jamy2')
+        with self.assertRaises(psycopg2.errors.NotNullViolation):
+            self.db.insert_and_verify_data(table_name='first_table_test_with_schema', schema_name='first_schema_test', column_names=['first_name', 'last_name'], values=(None, 'Ley'))
 
 if __name__ == '__main__':
     unittest.main()
