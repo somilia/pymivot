@@ -11,21 +11,20 @@ XML instances to be checked are provided as XML snippets
 import os
 import unittest
 import traceback
-from pymivot.validator.utils.xml_utils import XmlUtils
-from pymivot.validator.utils.dict_utils import DictUtils
+from pymivot.validator.mivot_validator.utils.xml_utils import XmlUtils
 
-from pymivot.validator.instance_checking.instance_checker import (
+from pymivot.validator.mivot_validator.instance_checking.instance_checker import (
     InstanceChecker,
     CheckFailedException,
 )
-from pymivot.validator.instance_checking.xml_interpreter.exceptions import (
+from pymivot.validator.mivot_validator.instance_checking.xml_interpreter.exceptions import (
     MappingException,
 )
 
 mapping_sample = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 vodml_sample = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
-    "../validator/",
+    "../mivot_validator/",
     "instance_checking/",
     "vodml/",
 )

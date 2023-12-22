@@ -7,7 +7,7 @@ Created on 2022/07/01
 """
 import os
 import unittest
-from pymivot.validator.annotated_votable_validator import AnnotatedVOTableValidator
+from pymivot.validator.mivot_validator.annotated_votable_validator import AnnotatedVOTableValidator
 
 mapping_sample = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 

@@ -7,7 +7,7 @@ Test suite validating that all role and types of the annotation are consistent w
 """
 import os
 import unittest
-from pymivot.validator import DmTypesAndRolesChecker
+from pymivot.validator.mivot_validator.dmtypes_and_role_checker import DmTypesAndRolesChecker
 
 mapping_sample = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 

@@ -7,8 +7,8 @@ Created on 9 May 2023
 import unittest
 import os
 
-from pymivot.validator.utils.xml_utils import XmlUtils
-from pymivot.validator.instance_checking.model_snippets_builder import ModelBuilder
+from pymivot.validator.mivot_validator.utils.xml_utils import XmlUtils
+from pymivot.validator.mivot_validator.instance_checking.model_snippets_builder import ModelBuilder
 
 OUTPUT = os.path.abspath(os.getcwd() + "/../tmp_snippets/")
 MODELS = {

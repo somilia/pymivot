@@ -8,19 +8,19 @@ Test checking that the validator builds correct inheritence trees.
 """
 import os
 import unittest
-from pymivot.validator.utils.dict_utils import DictUtils
+from pymivot.validator.mivot_validator.utils.dict_utils import DictUtils
 
-from pymivot.validator.instance_checking.instance_checker import (
+from pymivot.validator.mivot_validator.instance_checking.instance_checker import (
     InstanceChecker,
 )
-from pymivot.validator.instance_checking.instance_checker import (
+from pymivot.validator.mivot_validator.instance_checking.inheritance_checker import (
     InheritanceChecker,
 )
 
 mapping_sample = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 vodml_sample = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
-    "../validator/",
+    "../mivot_validator/",
     "instance_checking/",
     "vodml/",
 )

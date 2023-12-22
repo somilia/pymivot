@@ -2,13 +2,13 @@
 Created on 2022/09
 
 Test suite validating the annotation blocks extracted from annotated 
-VOTables against the MIVOT schema 
+VOTables against the MIVOT tap_schema
 
 @author: laurentmichel
 """
 import os
 import unittest
-from pymivot.validator.annotated_votable_validator import AnnotatedVOTableValidator
+from pymivot.validator.mivot_validator.annotated_votable_validator import AnnotatedVOTableValidator
 
 mapping_sample = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 

@@ -10,7 +10,8 @@ class CONSTANT:
             dmerror TEXT,
             frame TEXT,
             ucd TEXT,
-            vocab TEXT
+            vocab TEXT,
+            mandatory BOOLEAN NOT NULL DEFAULT FALSE
         """
-    COLUMNS_NAME = ["instance_id", "mapped_table", "mapped_column", "dmtype", "dmrole", "dmerror", "frame", "ucd", "vocab"]
+    COLUMNS_NAME = ["instance_id", "mapped_table", "mapped_column", "dmtype", "dmrole", "dmerror", "frame", "ucd", "vocab", "mandatory"]
     PSQL = "postgresql"

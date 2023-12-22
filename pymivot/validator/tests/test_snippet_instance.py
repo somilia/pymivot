@@ -7,9 +7,8 @@ Created on 9 May 2023
 import unittest
 import os
 import filecmp
-from pymivot.validator.launchers.instance_snippet_launcher import check_args
-from pymivot.validator.instance_checking.instance_snippet_builder import InstanceBuilder
-from pymivot.validator.instance_checking.snippet_builder import Builder
+from pymivot.validator.mivot_validator.launchers.instance_snippet_launcher import check_args
+from pymivot.validator.mivot_validator.instance_checking.instance_snippet_builder import InstanceBuilder
 
 OUTPUT = os.path.abspath(os.getcwd() + "/../tmp_snippets/")
 FILE_NAME = "meas.Position.res"

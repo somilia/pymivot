@@ -1,5 +1,5 @@
 """
-Setup script for mivot-validator
+Setup script for mivot-validator2
 @author: Laurent Michel
 """
 
@@ -7,13 +7,13 @@ from setuptools import setup, find_packages
 
 entry_points = {
     "console_scripts": [
-        "mivot-votable-validate = mivot_validator.launchers.votable_launcher:main",
-        "mivot-validate = mivot_validator.launchers.votable_launcher:main",
-        "mivot-mapping-validate = mivot_validator.launchers.mivot_launcher:main",
-        "types-and-roles-validate = mivot_validator.launchers.typesandroles_launcher:main",
-        "mivot-instance-validate = mivot_validator.launchers.instance_checking_launcher:main",
-        "mivot-snippet-model = mivot_validator.launchers.model_snippets_launcher:main",
-        "mivot-snippet-instance = mivot_validator.launchers.instance_snippet_launcher:main",
+        "mivot-votable-validate = pymivot.validator2.launchers.votable_launcher:main",
+        "mivot-validate = pymivot.validator2.launchers.votable_launcher:main",
+        "mivot-mapping-validate = pymivot.validator2.launchers.mivot_launcher:main",
+        "types-and-roles-validate = pymivot.validator2.launchers.typesandroles_launcher:main",
+        "mivot-instance-validate = pymivot.validator2.launchers.instance_checking_launcher:main",
+        "mivot-snippet-model = pymivot.validator2.launchers.model_snippets_launcher:main",
+        "mivot-snippet-instance = pymivot.validator2.launchers.instance_snippet_launcher:main",
     ]
 }
 
@@ -22,7 +22,7 @@ with open("README.md", encoding="utf-8") as file:
 
 
 setup(
-    name="mivot-validator",
+    name="mivot-validator2",
     url="https://github.com/ivoa/mivot-validator",
     author="Laurent Michel",
     author_email="laurent.michel@astro.unistra.fr",

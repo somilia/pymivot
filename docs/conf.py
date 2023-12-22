@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'mivot-validator'
+project = 'mivot-validator2'
 author = 'Laurent MICHEL'
 release = '0.0.1'
 

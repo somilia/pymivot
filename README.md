@@ -16,7 +16,7 @@ The validator is distributed as a Python package.
 It won't be published in the PIP repo while MIVOT is not a standard.
 
 ```bash
-BossMacBookPro$ pip3 install --force-reinstall git+https://github.com/ivoa/mivot-validator.git#egg=mivot-validator
+BossMacBookPro$ pip3 install --force-reinstall git+https://github.com/ivoa/mivot-validator.git#egg=mivot-validator2
 ```
 
 ## Usage
@@ -24,9 +24,9 @@ BossMacBookPro$ pip3 install --force-reinstall git+https://github.com/ivoa/mivot
 ### Let's play with the unit-test sample
 
 ```bash
-BossMacBookPro$ ls mivot-validator/tests/data/
+BossMacBookPro$ ls mivot-validator2/tests/data/
 test_instance_ko_1.xml	test_instance_ok_1.xml
-cd mivot-validator/
+cd mivot-validator2/
 pytest tests
 ```
 
@@ -47,13 +47,13 @@ Validate an XML file containing just a MAPPING block
 ### Check the VOTable tagged as valid
 
 ```bash
-BossMacBookPro$ ls mivot-validator/tests/data/
+BossMacBookPro$ ls mivot-validator2/tests/data/
 test_instance_ko_1.xml	test_instance_ok_1.xml
-BossMacBookPro$ mivot-votable-validate  mivot-validator/tests/data/test_instance_ok_1.xml 
+BossMacBookPro$ mivot-votable-validate  mivot-validator2/tests/data/test_instance_ok_1.xml 
    INFO - [__init__.py:  7 -   <module>()] - mivot_validator package intialized
    INFO - [schemas.py:1228 - include_schema()] - Resource 'XMLSchema.xsd' is already loaded
-   INFO - [xml_validator.py: 17 -   __init__()] - Using schema http://www.ivoa.net/xml/VOTable/v1.3
-   INFO - [xml_validator.py: 17 -   __init__()] - Using schema https://raw.githubusercontent.com/ivoa-std/ModelInstanceInVot/master/schema/xsd/mivot-v1.0.xsd
+   INFO - [xml_validator.py: 17 -   __init__()] - Using tap_schema http://www.ivoa.net/xml/VOTable/v1.3
+   INFO - [xml_validator.py: 17 -   __init__()] - Using tap_schema https://raw.githubusercontent.com/ivoa-std/ModelInstanceInVot/master/schema/xsd/mivot-v1.0.xsd
    INFO - [annotated_votable_validator.py: 76 - __validate_file()] - Validate file test_instance_ok_1.xml
    INFO - [annotated_votable_validator.py: 77 - __validate_file()] - - Validate against VOTable/v1.3
    INFO - [annotated_votable_validator.py: 83 - __validate_file()] - - passed
@@ -64,11 +64,11 @@ BossMacBookPro$ mivot-votable-validate  mivot-validator/tests/data/test_instance
 ### Check the file tagged as not valid
 
 ```bash
-laurentmichel$ mivot-votable-validate  mivot-validator/tests/data/test_instance_ko_1.xml 
+laurentmichel$ mivot-votable-validate  mivot-validator2/tests/data/test_instance_ko_1.xml 
    INFO - [__init__.py:  7 -   <module>()] - mivot_validator package intialized
    INFO - [schemas.py:1228 - include_schema()] - Resource 'XMLSchema.xsd' is already loaded
-   INFO - [xml_validator.py: 17 -   __init__()] - Using schema http://www.ivoa.net/xml/VOTable/v1.3
-   INFO - [xml_validator.py: 17 -   __init__()] - Using schema https://raw.githubusercontent.com/ivoa-std/ModelInstanceInVot/master/schema/xsd/mivot-v1.0.xsd
+   INFO - [xml_validator.py: 17 -   __init__()] - Using tap_schema http://www.ivoa.net/xml/VOTable/v1.3
+   INFO - [xml_validator.py: 17 -   __init__()] - Using tap_schema https://raw.githubusercontent.com/ivoa-std/ModelInstanceInVot/master/schema/xsd/mivot-v1.0.xsd
    INFO - [annotated_votable_validator.py: 76 - __validate_file()] - Validate file test_instance_ko_1.xml
    INFO - [annotated_votable_validator.py: 77 - __validate_file()] - - Validate against VOTable/v1.3
    INFO - [annotated_votable_validator.py: 83 - __validate_file()] - - passed
