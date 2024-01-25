@@ -1,8 +1,10 @@
 from pymivot.tap.features.model_connection import ModelConnection
 from pymivot.tap.utils.constant import CONSTANT
 from pymivot.tap.database.databasepsql import DatabasePSQL
-from pymivot.tap.exceptions.exceptions import TableAlreadyExistsException, TableDoesNotExistException, \
-    IdAlreadyExistsException, DmroleInvalidException, ColumnDoesNotExistException
+from pymivot.tap.exceptions.exceptions import (TableAlreadyExistsException,
+                                               TableDoesNotExistException,
+                                               IdAlreadyExistsException,
+                                               ColumnDoesNotExistException, PropertyInvalidException)
 
 
 class ManageMivotSchema(object):
@@ -11,7 +13,9 @@ class ManageMivotSchema(object):
         self.db = None
         self.tap_schema = None
         self.columns = None
-        self.model_check_mango = ModelConnection("../../validator/mivot_validator/instance_checking/vodml/mango.vo-dml.xml",
+        self.model_check_mango = ModelConnection("../validator/mivot_validator/instance_checking/vodml/mango.vo-dml.xml",
+                                           "pymivot/tap/tmp_snippets")
+        self.model_check_meas = ModelConnection("../validator/mivot_validator/instance_checking/vodml/Meas-v1.vo-dml.xml",
                                            "pymivot/tap/tmp_snippets")
 
     def login(self, dbms, host, port, database, user, password=None):
@@ -38,7 +42,6 @@ class ManageMivotSchema(object):
             if self.db.check_schema_exist(CONSTANT.TAP_SCHEMA) is True:
                 self.tap_schema = CONSTANT.TAP_SCHEMA
             else:
-                # TODO: add sqlite dbms
                 print("The tap_schema TAP_SCHEMA does not exist in the database.")
         self.columns = CONSTANT.COLUMNS
 
@@ -92,7 +95,7 @@ class ManageMivotSchema(object):
         dmtype : str
             The mapped column type
         column : dict
-            format: {column: {dmrole, frame=None}, …}
+            format: {column1: {dmrole=lon, frame=None, mandatory=False, property=prop, snippet="mango.source"}, …}
         ucd : str, optional
             The mapped column ucd
         vocab : str, optional
@@ -126,6 +129,13 @@ class ManageMivotSchema(object):
             column = key
             dmrole = columns[key]["dmrole"]
             frame = columns[key]["frame"]
+            snippet = columns[key]["snippet"]
+            try:
+                property = columns[key]["property"]
+            except KeyError:
+                raise PropertyInvalidException("The property is missing.")
+            if property not in ["prop", "error", "frame"]:
+                raise PropertyInvalidException("The property must be in (prop, error, frame).")
             # Check if mandatory is present in the columns dict
             if "mandatory" not in columns[key].keys():
                 mandatory = False
@@ -136,7 +146,7 @@ class ManageMivotSchema(object):
                     table_name=model,
                     schema_name=self.tap_schema,
                     column_names=CONSTANT.COLUMNS_NAME,
-                    values=(instance_id, mapped_table, column, dmtype, dmrole, None, frame, ucd, vocab, mandatory),
+                    values=(instance_id, mapped_table, column, dmtype, dmrole, None, frame, ucd, vocab, mandatory, property, snippet),
                     is_model=True
                 )
 
@@ -146,7 +156,6 @@ class ManageMivotSchema(object):
         """
         Drop a mapped class with its associations. This class uses the VODML file to check
         Return an auto-generated instance_id of not given as a parameter
-        Rise an exception if instance_id does not exist in the mapped_table
 
         Parameters
         ----------
@@ -154,6 +163,11 @@ class ManageMivotSchema(object):
             The model name
         instance_id : str
             The mapped column instance_id
+
+        Raises
+        ------
+        TableDoesNotExistException
+            If instance_id does not exist in the mapped_table
         """
         if not self.get_row_by_instance_id(model, instance_id).data:
             raise TableDoesNotExistException("The given instance_id does not exist in the mapped_table.")
@@ -185,7 +199,6 @@ class ManageMivotSchema(object):
             If the given column does not exist in the model_table
         """
         model_data = self.db.fetch_data(model, schema_name=CONSTANT.TAP_SCHEMA, columns=["instance_id", "mapped_column", "mandatory"])
-        table_data = self.db.fetch_data(mapped_table, schema_name='public', columns=columns, is_model=False)
 
         # Check if the mapped_table exists in the TAP_SCHEMA.tables
         if not self.db.fetch_data("tables", schema_name=CONSTANT.TAP_SCHEMA, columns=["table_name"], condition=f"table_name='{mapped_table}'", is_model=False).data:
@@ -214,7 +227,6 @@ class ManageMivotSchema(object):
     def set_mandatory(self, model, instance_id, mandatory):
         """
         Set the mandatory value of the mapped class instance_id
-        Rise an exception if instance_id does not exist in the mapped_table
 
         Parameters
         ----------
@@ -224,6 +236,11 @@ class ManageMivotSchema(object):
             The mapped column instance_id
         mandatory : bool
             The mandatory value
+
+        Raises
+        ------
+        TableDoesNotExistException
+            If instance_id does not exist in the mapped_table
         """
         if not self.get_row_by_instance_id(model, instance_id):
             raise TableDoesNotExistException("The given instance_id does not exist in the mapped_table.")
@@ -235,7 +252,7 @@ class ManageMivotSchema(object):
         Rise an exception if:
         - Instance_id has already an error
         - Error_id does not exist in the mapped_table
-        - The error type breaks the model rules
+        - The error type breaks the model rules : TODO
 
         Parameters
         ----------
@@ -255,7 +272,7 @@ class ManageMivotSchema(object):
         """
         if not self.get_row_by_instance_id(model, instance_id):
             raise TableDoesNotExistException("The given instance_id does not exist in the mapped_table.")
-        if self.get_row_by_instance_id(model, instance_id).get("dmerror") is not None:
+        if self.get_row_by_instance_id(model, instance_id).get("dmerror")[0] is not None:
             raise TableAlreadyExistsException("The given instance_id already has an error.")
         # TODO: check the error type
         self.db.update_data(model, "dmerror", error_id, f"instance_id='{instance_id}'", self.tap_schema)

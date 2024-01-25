@@ -28,6 +28,10 @@ class ModelConnection:
             raise Exception(f"File {vodml_path} is not writable")
 
     def get_dmtypes_mango_model(self):
+        """
+        Get the dmtype and dmrole of the VODML model
+        but also of the imported models like meas
+        """
         dmtypes_mango_model = {}
         for ele in self.vodml.xpath(".//vodml-id"):
             if '.' in ele.text.lower():
@@ -36,6 +40,11 @@ class ModelConnection:
                         dmtypes_mango_model[ele.text.lower().split('.', 2)[1]] = [ele.text.lower().split('.', 2)[2]]
                     else:
                         dmtypes_mango_model[ele.text.lower().split('.', 2)[1]].append(ele.text.lower().split('.', 2)[2])
+        # for ele in self.vodml.xpath(".//import/url"):
+        #     new_vodm_path = "/pymivot/validator/mivot_validator/instance_checking/vodml/"+ele.text.lower().split('/')[-1]
+        #
+        #     if os.path.exists(new_vodm_path):
+        #         print(f"Importing {new_vodm_path}")
 
         return dmtypes_mango_model
 
@@ -78,15 +87,3 @@ class ModelConnection:
                 raise DmroleInvalidException(f"{dmrole_candidate} is not a dmrole of {dmtype_candidate} in the VODML model {self.model_name}")
         else:
             raise DmtypeInvalidException(f"{dmtype_candidate} is not a dmtype of {self.model_name}")
-        # dmtype_exists = False
-        # for ele in self.vodml.xpath(".//vodml-id"):
-        #     if '.' in ele.text.lower():
-        #         if ele.text.lower().split('.', 2)[1] == dmtype_candidate.lower():
-        #             if ele.text.lower().split('.', 1)[1] == candidate:
-        #                 print(f"{candidate} is a valid dmrole")
-        #                 return True
-        #             dmtype_exists = True
-        # if dmtype_exists:
-        #     raise DmroleInvalidException(f"{dmrole_candidate} is not a dmrole of {dmtype_candidate} in the VODML model {self.model_name}")
-        # else:
-        #     raise DmtypeInvalidException(f"{dmtype_candidate} is not a dmtype of {self.model_name}")

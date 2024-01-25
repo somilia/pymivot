@@ -11,7 +11,9 @@ class CONSTANT:
             frame TEXT,
             ucd TEXT,
             vocab TEXT,
-            mandatory BOOLEAN NOT NULL DEFAULT FALSE
+            mandatory BOOLEAN NOT NULL DEFAULT FALSE,
+            property TEXT,
+            snippet TEXT
         """
-    COLUMNS_NAME = ["instance_id", "mapped_table", "mapped_column", "dmtype", "dmrole", "dmerror", "frame", "ucd", "vocab", "mandatory"]
+    COLUMNS_NAME = ["instance_id", "mapped_table", "mapped_column", "dmtype", "dmrole", "dmerror", "frame", "ucd", "vocab", "mandatory", "property", "snippet"]
     PSQL = "postgresql"

@@ -60,3 +60,9 @@ class FrameInvalidException(Exception):
     Exception raised when the frame is not valid in the VODML model.
     """
     pass
+
+class PropertyInvalidException(Exception):
+    """
+    Exception raised when the property is not valid (missing or not in (prop, error, frame)).
+    """
+    pass
